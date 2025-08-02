@@ -1,103 +1,404 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import { easeInOut, motion } from 'framer-motion';
+import { Button } from '@/components/ui/button';
+import { ArrowRight } from 'lucide-react';
+import { Pacifico, Azeret_Mono } from 'next/font/google';
+import { cn } from '@/lib/utils';
+import { useState, useEffect } from 'react';
+import SlideButton from '@/components/ui/slide-button';
+const pacifico = Pacifico({
+  subsets: ['latin'],
+  weight: ['400'],
+  variable: '--font-pacifico',
+});
+
+const azeretMono = Azeret_Mono({
+  subsets: ['latin'],
+  weight: ['400', '500', '600'],
+  variable: '--font-azeret-mono',
+});
+
+function AnimatedText() {
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div className="mx-auto mb-10 max-w-xl px-4 h-16 flex items-center justify-center">
+      <motion.p
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: easeInOut, delay: 1.5 }}
+        className={cn(
+          "text-muted-foreground text-lg leading-relaxed sm:text-xl md:text-2xl text-center font-medium tracking-wide",
+          azeretMono.className
+        )}
+      >
+        <span
+          id="zoom-target-t"
+          className="relative inline-block font-bold text-primary"
+        >
+          Slide To Continue
+        </span>
+      </motion.p>
+    </div>
+  );
+}
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+function StarShape({
+  size = 100,
+  gradient = 'from-white/[0.08]'
+}: {
+  size?: number;
+  gradient?: string;
+}) {
+  // Create star path - 5-pointed star
+  const starPath = `
+    M${size / 2},${size * 0.1} 
+    L${size * 0.61},${size * 0.35} 
+    L${size * 0.95},${size * 0.35} 
+    L${size * 0.68},${size * 0.57} 
+    L${size * 0.79},${size * 0.91} 
+    L${size / 2},${size * 0.7} 
+    L${size * 0.21},${size * 0.91} 
+    L${size * 0.32},${size * 0.57} 
+    L${size * 0.05},${size * 0.35} 
+    L${size * 0.39},${size * 0.35} 
+    Z
+  `;
+
+  return (
+    <div
+      className="relative"
+      style={{ width: size, height: size }}
+    >
+      <svg
+        width={size}
+        height={size}
+        viewBox={`0 0 ${size} ${size}`}
+        className="absolute inset-0"
+      >
+        <defs>
+          <linearGradient id={`starGradient-${size}`} x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="rgba(255,255,255,0.8)" />
+            <stop offset="50%" stopColor="rgba(255,255,255,0.4)" />
+            <stop offset="100%" stopColor="rgba(255,255,255,0.1)" />
+          </linearGradient>
+          <filter id={`starGlow-${size}`}>
+            <feGaussianBlur stdDeviation="3" result="coloredBlur" />
+            <feMerge>
+              <feMergeNode in="coloredBlur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+
+        {/* Star shape */}
+        <path
+          d={starPath}
+          fill={`url(#starGradient-${size})`}
+          stroke="rgba(255,255,255,0.6)"
+          strokeWidth="2"
+          filter={`url(#starGlow-${size})`}
+          className="drop-shadow-lg"
+        />
+
+        {/* Inner sparkle */}
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={size * 0.08}
+          fill="rgba(255,255,255,0.9)"
+          className="animate-pulse"
+        />
+      </svg>
+
+      {/* Additional glow effect */}
+      <div
+        className={cn(
+          'absolute inset-0 rounded-full blur-xl opacity-50',
+          'bg-gradient-to-r',
+          gradient
+        )}
+        style={{
+          transform: 'scale(1.2)',
+        }}
+      />
+    </div>
+  );
+}
+
+function ElegantShape({
+  className,
+  delay = 0,
+  width = 400,
+  height = 100,
+  rotate = 0,
+  gradient = 'from-white/[0.08]',
+}: {
+  className?: string;
+  delay?: number;
+  width?: number;
+  height?: number;
+  rotate?: number;
+  gradient?: string;
+}) {
+  // Use the smaller dimension to determine star size
+  const starSize = Math.min(width, height);
+
+  return (
+    <motion.div
+      initial={{
+        opacity: 0,
+        y: -150,
+        rotate: rotate - 15,
+      }}
+      animate={{
+        opacity: 1,
+        y: 0,
+        rotate: rotate,
+      }}
+      transition={{
+        duration: 2.4,
+        delay,
+        ease: [0.23, 0.86, 0.39, 0.96],
+        opacity: { duration: 1.2 },
+      }}
+      className={cn('absolute', className)}
+    >
+      <motion.div
+        animate={{
+          y: [0, 15, 0],
+          rotate: [0, 5, 0],
+        }}
+        transition={{
+          duration: 12,
+          repeat: Number.POSITIVE_INFINITY,
+          ease: 'easeInOut',
+        }}
+        style={{
+          width,
+          height,
+        }}
+        className="relative flex items-center justify-center"
+      >
+        <motion.div
+          animate={{
+            rotate: [0, 360],
+          }}
+          transition={{
+            duration: 20,
+            repeat: Number.POSITIVE_INFINITY,
+            ease: 'linear',
+          }}
+        >
+          <StarShape size={starSize} gradient={gradient} />
+        </motion.div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+export default function HeroGeometric({
+  badge = 'Aditya Vikram Mahendru',
+  title1 = 'Code Smart',
+  title2 = 'Deploy Faster',
+}: {
+  badge?: string;
+  title1?: string;
+  title2?: string;
+}) {
+  const [isSlideComplete, setIsSlideComplete] = useState(false);
+  const [showZoom, setShowZoom] = useState(false);
+  const [zoomCenter, setZoomCenter] = useState({ x: 0, y: 0 });
+
+  const handleSlideComplete = () => {
+    setIsSlideComplete(true);
+
+    // Get the position of the T in "Slide (T)o continue"
+    const targetElement = document.getElementById('zoom-target-t');
+    if (targetElement && typeof window !== 'undefined') {
+      const rect = targetElement.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+
+      // Store the position for the zoom animation
+      setZoomCenter({ x: centerX, y: centerY });
+    }
+
+    // Start zoom animation
+    setTimeout(() => {
+      setShowZoom(true);
+    }, 100);
+
+    // Route to next page after zoom animation
+    setTimeout(() => {
+      if (typeof window !== 'undefined') {
+        window.location.href = '/about';
+      }
+    }, 1500);
+  };
+  const fadeUpVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: (i: number) => ({
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 1,
+        delay: 0.5 + i * 0.2,
+        ease: easeInOut,
+      },
+    }),
+  };
+
+  return (
+    <div className="bg-background relative flex min-h-screen w-full items-center justify-center overflow-hidden dark:bg-black">
+      {/* Zoom overlay for the "T" */}
+      {showZoom && typeof window !== 'undefined' && (
+        <motion.div
+          initial={{
+            scale: 0,
+            opacity: 0,
+            x: zoomCenter.x - window.innerWidth / 2,
+            y: zoomCenter.y - window.innerHeight / 2
+          }}
+          animate={{
+            scale: 50,
+            opacity: 1,
+            x: 0,
+            y: 0
+          }}
+          transition={{ duration: 1.2, ease: [0.23, 1, 0.32, 1] }}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-white dark:bg-black"
+          style={{
+            transformOrigin: `${zoomCenter.x}px ${zoomCenter.y}px`
+          }}
+        >
+          <motion.span
+            initial={{ scale: 1 }}
+            animate={{ scale: 0.02 }}
+            transition={{ duration: 1.2, ease: [0.23, 1, 0.32, 1] }}
+            className={cn(
+              'text-[20rem] font-bold text-primary',
+              azeretMono.className
+            )}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+            T
+          </motion.span>
+        </motion.div>
+      )}
+
+      <div className="from-primary/20 dark:from-primary/30 absolute inset-0 bg-gradient-to-br via-transparent to-rose-500/20 blur-3xl dark:to-rose-500/30" />
+
+      <div className="absolute inset-0 overflow-hidden">
+        <ElegantShape
+          delay={0.3}
+          width={140}
+          height={140}
+          rotate={12}
+          gradient="from-indigo-500/70"
+          className="top-[15%] left-[-10%] md:top-[20%] md:left-[-5%]"
+        />
+
+        <ElegantShape
+          delay={0.5}
+          width={120}
+          height={120}
+          rotate={-15}
+          gradient="from-rose-400"
+          className="top-[70%] right-[-5%] md:top-[75%] md:right-[0%]"
+        />
+
+        <ElegantShape
+          delay={0.4}
+          width={80}
+          height={80}
+          rotate={-8}
+          gradient="from-violet-400"
+          className="bottom-[5%] left-[5%] md:bottom-[10%] md:left-[10%]"
+        />
+
+        <ElegantShape
+          delay={0.6}
+          width={60}
+          height={60}
+          rotate={20}
+          gradient="from-amber-500/70 dark:from-amber-400/90"
+          className="top-[10%] right-[15%] md:top-[15%] md:right-[20%]"
+        />
+
+        <ElegantShape
+          delay={0.7}
+          width={40}
+          height={40}
+          rotate={-25}
+          gradient="from-cyan-500/70 dark:from-cyan-400/90"
+          className="top-[5%] left-[20%] md:top-[10%] md:left-[25%]"
+        />
+      </div>
+
+      <div className="relative z-10 container mx-auto max-w-6xl px-4 md:px-6">
+        <div className="mx-auto max-w-3xl text-center">
+          <motion.div
+            custom={0}
+            variants={fadeUpVariants}
+            initial="hidden"
+            animate="visible"
+            className="border-primary/30 bg-card/50 mb-8 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 shadow-sm backdrop-blur-sm md:mb-12"
+          >
+            <span className="text-foreground text-sm font-medium tracking-wide">
+              {badge}
+            </span>
+          </motion.div>
+
+          <motion.div
+            custom={1}
+            variants={fadeUpVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            <h1 className="mx-4 mb-6 text-4xl font-bold tracking-tight sm:text-6xl md:mb-8 md:text-8xl">
+              <span className="from-foreground to-foreground/80 bg-gradient-to-b bg-clip-text text-transparent">
+                {title1}
+              </span>
+              <br />
+              <span
+                className={cn(
+                  'from-primary via-primary/90 bg-gradient-to-r to-rose-500 bg-clip-text p-4 text-transparent',
+                  pacifico.className,
+                  'font-bold',
+                )}
+              >
+                {title2}
+              </span>
+            </h1>
+          </motion.div>
+
+          <motion.div
+            custom={2}
+            variants={fadeUpVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            <AnimatedText />
+          </motion.div>
+
+          <motion.div
+            custom={3}
+            variants={fadeUpVariants}
+            initial="hidden"
+            animate="visible"
+            className="flex justify-center"
+          >
+            <SlideButton
+              className="mx-auto w-full max-w-xs bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 shadow-lg shadow-emerald-500/25 border-emerald-400/50 relative overflow-hidden"
+              size="lg"
+              variant="primary"
+              href="/about"
+              onSlideComplete={handleSlideComplete}
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+          </motion.div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
+
+      <div className="from-background to-background/80 pointer-events-none absolute inset-0 bg-gradient-to-t via-transparent dark:from-black dark:to-black/80" />
     </div>
   );
 }
