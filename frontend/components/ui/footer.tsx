@@ -58,10 +58,10 @@ const Footer = () => {
           {/* Center - Links (optional) */}
           <motion.div variants={itemVariants} className="hidden md:flex items-center space-x-6">
             <a
-              href="/privacy"
+              href="/whoami"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
-              Privacy
+              Who Am I?
             </a>
             <a
               href="/terms"
