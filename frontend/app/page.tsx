@@ -231,7 +231,7 @@ export default function HeroGeometric({
     // Route to next page after zoom animation
     setTimeout(() => {
       if (typeof window !== 'undefined') {
-        window.location.href = '/about';
+        window.location.href = '/whoami';
       }
     }, 1500);
   };
