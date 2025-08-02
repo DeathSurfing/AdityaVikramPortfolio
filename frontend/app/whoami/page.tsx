@@ -220,7 +220,7 @@ export default function WhoAmIPage() {
               className="flex flex-col sm:flex-row gap-4 justify-center"
             >
               <a
-                href="mailto:hello@adityamahendru.com"
+                href="mailto:jobs.aditya.vikram.mahendru@gmail.com"
                 className="px-8 py-4 bg-primary text-primary-foreground rounded-full font-medium hover:bg-primary/90 transition-colors"
               >
                 Get In Touch

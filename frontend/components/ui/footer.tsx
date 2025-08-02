@@ -64,16 +64,16 @@ const Footer = () => {
               Who Am I?
             </a>
             <a
-              href="/terms"
+              href="/projects"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
-              Terms
+              Projects
             </a>
             <a
-              href="/contact"
+              href="/resume"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
-              Contact
+              Resume
             </a>
           </motion.div>
 
