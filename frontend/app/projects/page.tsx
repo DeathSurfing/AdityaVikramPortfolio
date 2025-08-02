@@ -15,21 +15,21 @@ type Project = {
 
 const projects: Project[] = [
   {
-    name: "Portfolio Website",
-    description: "Personal website built with Next.js and Tailwind CSS",
-    image: "/card/1.png",
-    link: "https://yourportfolio.com"
+    name: "Woxsen Student Council",
+    description: "Woxsen Student Council website with ShadCN components and Next.js",
+    image: "/card/woxsenstudentcouncil.png",
+    link: "https://woxsenstudetcouncil.com"
   },
   {
     name: "MUN Registration",
     description: "Multi-step registration app using ShadCN components",
-    image: "/card/2.png",
-    link: "https://example.com/mun"
+    image: "/card/munreg.png",
+    link: "https://mun.woxsenstudentcouncil.com"
   },
   {
     name: "Laundry System",
     description: "Woxsen laundry management with QR-based bag drop",
-    image: "/card/3.png",
+    image: "/card/laundry.png",
     link: "https://laundry.woxsen.in"
   }
 ]
