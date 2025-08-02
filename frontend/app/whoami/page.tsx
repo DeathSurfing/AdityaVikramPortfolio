@@ -4,6 +4,8 @@ import { motion } from 'framer-motion';
 import LenisSmoothScroll from '@/components/ui/lenis-smooth-scroll';
 import { Azeret_Mono } from 'next/font/google';
 import { cn } from '@/lib/utils';
+import { AnimatedTestimonials } from '@/components/ui/animated-testimonials';
+
 
 const azeretMono = Azeret_Mono({
   subsets: ['latin'],
@@ -150,6 +152,42 @@ export default function WhoAmIPage() {
                 </motion.div>
               ))}
             </div>
+          </div>
+        </section>
+        {/* Testimonials Section */}
+        <section className="min-h-screen flex items-center justify-center px-4 py-20 bg-muted/10">
+          <div className="max-w-6xl mx-auto w-full">
+            <motion.h2
+              initial={{ opacity: 0, y: 60 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
+              className="text-4xl md:text-5xl font-bold text-center mb-16"
+            >
+              What People Say
+            </motion.h2>
+            <AnimatedTestimonials
+              testimonials={[
+                {
+                  quote: "Aditya is one of the most creative indivdiuals I’ve worked with.",
+                  name: "Pranjal Das",
+                  designation: "Student Council President at Woxsen University",
+                  src: "/testimonials/pranjal.webp",
+                },
+                {
+                  quote: "His problem-solving skills and UI sense are top-notch.",
+                  name: "Melvin Johnson",
+                  designation: "Intern at AI Research Center Woxsen University",
+                  src: "/testimonials/melvin.webp",
+                },
+                {
+                  quote: "He blends design and code like an artist.",
+                  name: "Mitansh Seghal",
+                  designation: "Software Engineer",
+                  src: "/testimonials/mitansh.webp",
+                },
+              ]}
+            />
           </div>
         </section>
 
