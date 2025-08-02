@@ -3,6 +3,13 @@
 import { motion } from 'framer-motion';
 import { useTheme } from 'next-themes';
 import { ThemeSwitcher } from '@/components/ui/kibo-ui/theme-switcher';
+import { Home } from 'lucide-react';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 const Footer = () => {
   const { theme, setTheme } = useTheme();
@@ -17,7 +24,7 @@ const Footer = () => {
       y: 0,
       transition: {
         duration: 0.8,
-        delay: 2, // Delay to let page content load first
+        delay: 2,
         ease: [0.23, 1, 0.32, 1],
         staggerChildren: 0.1,
       },
@@ -48,14 +55,27 @@ const Footer = () => {
     >
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
-          {/* Left side - Brand/Copyright */}
+          {/* Left side - Home Icon */}
           <motion.div variants={itemVariants} className="flex items-center space-x-4">
-            <p className="text-sm text-muted-foreground">
-              © 2025 Aditya Vikram Mahendru
-            </p>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <a
+                    href="/"
+                    className="text-muted-foreground hover:text-foreground transition-colors"
+                    aria-label="Home"
+                  >
+                    <Home className="h-5 w-5" />
+                  </a>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Home</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </motion.div>
 
-          {/* Center - Links (optional) */}
+          {/* Center - Links */}
           <motion.div variants={itemVariants} className="hidden md:flex items-center space-x-6">
             <a
               href="/whoami"
@@ -70,7 +90,7 @@ const Footer = () => {
               Projects
             </a>
             <a
-              href="/resume"
+              href="/uploads/Resume.pdf"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               Resume
@@ -92,3 +112,4 @@ const Footer = () => {
 };
 
 export default Footer;
+

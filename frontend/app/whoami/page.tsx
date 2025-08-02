@@ -88,10 +88,19 @@ export default function WhoAmIPage() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
-              className="h-96 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-2xl"
-            />
+              className="h-full w-full flex justify-center"
+            >
+              <div className="w-72 h-72 md:w-96 md:h-96 relative rounded-2xl overflow-hidden shadow-lg border border-border">
+                <img
+                  src="/AdityaVikram.webp"
+                  alt="Aditya Vikram"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </motion.div>
           </div>
         </section>
+
 
         {/* Skills Section */}
         <section className="min-h-screen flex items-center px-4 py-20">
