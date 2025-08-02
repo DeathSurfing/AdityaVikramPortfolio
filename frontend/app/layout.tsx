@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import MouseFollower from "@/components/ui/mouse-follower"; // Adjust path as needed
+import Footer from "@/components/ui/footer"; // Adjust path as needed
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,11 +31,12 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased pb-16`}
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <MouseFollower />
           {children}
+          <Footer />
         </ThemeProvider>
       </body>
     </html>
