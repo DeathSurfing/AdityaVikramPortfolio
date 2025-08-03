@@ -204,6 +204,12 @@ export default function HomePage() {
   const title1 = 'Code Smart';
   const title2 = 'Deploy Faster';
 
+  const handleRedirect = () => {
+    if (typeof window !== 'undefined') {
+      window.location.href = '/whoami';
+    }
+  };
+
   const fadeUpVariants = {
     hidden: { opacity: 0, y: 30 },
     visible: (i: number) => ({
@@ -322,10 +328,10 @@ export default function HomePage() {
             className="flex justify-center"
           >
             <SlideButton
+              onSlideComplete={handleRedirect}
               className="mx-auto w-full max-w-xs bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 shadow-lg shadow-emerald-500/25 border-emerald-400/50 relative overflow-hidden"
               size="lg"
               variant="default"
-              href="/about"
             />
           </motion.div>
         </div>
