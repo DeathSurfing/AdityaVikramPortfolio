@@ -199,41 +199,10 @@ function ElegantShape({
 
 // This is now a proper Next.js page component (no props)
 export default function HomePage() {
-  const [isSlideComplete, setIsSlideComplete] = useState(false);
-  const [showZoom, setShowZoom] = useState(false);
-  const [zoomCenter, setZoomCenter] = useState({ x: 0, y: 0 });
-
   // Default values are now defined within the component
   const badge = 'Aditya Vikram Mahendru';
   const title1 = 'Code Smart';
   const title2 = 'Deploy Faster';
-
-  const handleSlideComplete = () => {
-    setIsSlideComplete(true);
-
-    // Get the position of the T in "Slide (T)o continue"
-    const targetElement = document.getElementById('zoom-target-t');
-    if (targetElement && typeof window !== 'undefined') {
-      const rect = targetElement.getBoundingClientRect();
-      const centerX = rect.left + rect.width / 2;
-      const centerY = rect.top + rect.height / 2;
-
-      // Store the position for the zoom animation
-      setZoomCenter({ x: centerX, y: centerY });
-    }
-
-    // Start zoom animation
-    setTimeout(() => {
-      setShowZoom(true);
-    }, 100);
-
-    // Route to next page after zoom animation
-    setTimeout(() => {
-      if (typeof window !== 'undefined') {
-        window.location.href = '/whoami';
-      }
-    }, 1500);
-  };
 
   const fadeUpVariants = {
     hidden: { opacity: 0, y: 30 },
@@ -250,41 +219,6 @@ export default function HomePage() {
 
   return (
     <div className="bg-background relative flex min-h-screen w-full items-center justify-center overflow-hidden dark:bg-black">
-      {/* Zoom overlay for the "T" */}
-      {showZoom && typeof window !== 'undefined' && (
-        <motion.div
-          initial={{
-            scale: 0,
-            opacity: 0,
-            x: zoomCenter.x - window.innerWidth / 2,
-            y: zoomCenter.y - window.innerHeight / 2
-          }}
-          animate={{
-            scale: 50,
-            opacity: 1,
-            x: 0,
-            y: 0
-          }}
-          transition={{ duration: 1.2, ease: [0.23, 1, 0.32, 1] }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-white dark:bg-black"
-          style={{
-            transformOrigin: `${zoomCenter.x}px ${zoomCenter.y}px`
-          }}
-        >
-          <motion.span
-            initial={{ scale: 1 }}
-            animate={{ scale: 0.02 }}
-            transition={{ duration: 1.2, ease: [0.23, 1, 0.32, 1] }}
-            className={cn(
-              'text-[20rem] font-bold text-primary',
-              azeretMono.className
-            )}
-          >
-            T
-          </motion.span>
-        </motion.div>
-      )}
-
       <div className="from-primary/20 dark:from-primary/30 absolute inset-0 bg-gradient-to-br via-transparent to-rose-500/20 blur-3xl dark:to-rose-500/30" />
 
       <div className="absolute inset-0 overflow-hidden">
@@ -392,7 +326,6 @@ export default function HomePage() {
               size="lg"
               variant="default"
               href="/about"
-              onSlideComplete={handleSlideComplete}
             />
           </motion.div>
         </div>
