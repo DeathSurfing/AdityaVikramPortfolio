@@ -31,7 +31,32 @@ const projects: Project[] = [
     description: "Woxsen laundry management with QR-based bag drop",
     image: "/card/laundry.png",
     link: "https://laundry.woxsen.in"
+  },
+  {
+    name: "Spotify Top 100 Analysis",
+    description: "Segmenting Spotify music data to predict song hit potential",
+    image: "https://opengraph.githubassets.com/1/DeathSurfing/Spotify-Top-100-Analysis",
+    link: "https://github.com/DeathSurfing/Spotify-Top-100-Analysis"
+  },
+  {
+    name: "Slang Translator",
+    description: "AI-powered slang translator using LLaMA 3.1",
+    image: "https://opengraph.githubassets.com/1/DeathSurfing/Slang-Translator",
+    link: "https://github.com/DeathSurfing/Slang-Translator"
+  },
+  {
+    name: "CNN From Scratch",
+    description: "A convolutional neural network built from scratch in Rust",
+    image: "https://opengraph.githubassets.com/1/DeathSurfing/CNN-From-Scratch",
+    link: "https://github.com/DeathSurfing/CNN-From-Scratch"
+  },
+  {
+    name: "NoteRefactor",
+    description: "Interactive notebook tool for cleaning and refactoring text data",
+    image: "https://opengraph.githubassets.com/1/DeathSurfing/NoteRefactor",
+    link: "https://github.com/DeathSurfing/NoteRefactor"
   }
+
 ]
 
 export default function ProjectsPage() {
