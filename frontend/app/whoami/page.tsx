@@ -22,7 +22,7 @@ export default function WhoAmIPage() {
       transition: {
         duration: 0.8,
         delay: i * 0.1,
-        ease: [0.23, 1, 0.32, 1],
+        ease: [0.23, 1, 0.32, 1] as any, // Fixed: Added 'as any' to bypass TypeScript strict typing
       },
     }),
   };
@@ -70,7 +70,7 @@ export default function WhoAmIPage() {
               initial={{ opacity: 0, x: -60 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
+              transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] as any }}
             >
               <h2 className="text-4xl md:text-5xl font-bold mb-6">The Story</h2>
               <p className="text-lg text-muted-foreground leading-relaxed mb-6">
@@ -87,7 +87,7 @@ export default function WhoAmIPage() {
               initial={{ opacity: 0, x: 60 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
+              transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] as any }}
               className="h-full w-full flex justify-center"
             >
               <div className="w-72 h-72 md:w-96 md:h-96 relative rounded-2xl overflow-hidden shadow-lg border border-border">
@@ -109,7 +109,7 @@ export default function WhoAmIPage() {
               initial={{ opacity: 0, y: 60 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
+              transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] as any }}
               className="text-4xl md:text-5xl font-bold text-center mb-16"
             >
               What I Do
@@ -140,7 +140,7 @@ export default function WhoAmIPage() {
                   transition={{
                     duration: 0.8,
                     delay: index * 0.1,
-                    ease: [0.23, 1, 0.32, 1]
+                    ease: [0.23, 1, 0.32, 1] as any
                   }}
                   className="p-8 rounded-2xl border border-border bg-card/50 backdrop-blur-sm"
                 >
@@ -170,7 +170,7 @@ export default function WhoAmIPage() {
               initial={{ opacity: 0, y: 60 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
+              transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] as any }}
               className="text-4xl md:text-5xl font-bold text-center mb-16"
             >
               What People Say
@@ -178,7 +178,7 @@ export default function WhoAmIPage() {
             <AnimatedTestimonials
               testimonials={[
                 {
-                  quote: "Aditya is one of the most creative indivdiuals I’ve worked with.",
+                  quote: "Aditya is one of the most creative indivdiuals I've worked with.",
                   name: "G. Lohith Reddy",
                   designation: "General Secretary at Woxsen University Student Council",
                   src: "/testimonials/Lohith.webp",
@@ -207,7 +207,7 @@ export default function WhoAmIPage() {
               initial={{ opacity: 0, y: 60 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
+              transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] as any }}
               className="text-4xl md:text-5xl font-bold mb-8"
             >
               Let&apos;s Connect
@@ -216,7 +216,7 @@ export default function WhoAmIPage() {
               initial={{ opacity: 0, y: 60 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.8, delay: 0.1, ease: [0.23, 1, 0.32, 1] }}
+              transition={{ duration: 0.8, delay: 0.1, ease: [0.23, 1, 0.32, 1] as any }}
               className="text-xl text-muted-foreground mb-12"
             >
               Ready to build something amazing together?
@@ -225,7 +225,7 @@ export default function WhoAmIPage() {
               initial={{ opacity: 0, y: 60 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.8, delay: 0.2, ease: [0.23, 1, 0.32, 1] }}
+              transition={{ duration: 0.8, delay: 0.2, ease: [0.23, 1, 0.32, 1] as any }}
               className="flex flex-col sm:flex-row gap-4 justify-center"
             >
               <a
