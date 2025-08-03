@@ -1,0 +1,34 @@
+name: Deploy Portfolio (Self-hosted)
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout latest code
+        uses: actions/checkout@v3
+
+      - name: Stop existing containers
+        run: |
+          docker ps -a --filter "ancestor=adityavikram-portfolio" --format "{{.ID}}" | xargs -r docker rm -f || true
+
+      - name: Pull latest changes
+        run: |
+          git fetch origin
+          git reset --hard origin/main
+
+      - name: Build app with Nixpacks
+        run: |
+          cd frontend  # Change this if your frontend folder has a different name
+          nixpacks build . -t adityavikram-portfolio
+
+      - name: Start new container on port 8594
+        run: |
+          docker run -d \
+            --name adityavikram-portfolio \
+            -p 8594:3000 \
+            adityavikram-portfolio
