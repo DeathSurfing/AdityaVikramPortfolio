@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { useTheme } from 'next-themes';
 import { Home, User, FolderOpen, FileText, Sun, Moon, Monitor, Github, Linkedin, Twitter, Mail, Users, Youtube } from 'lucide-react';
 import { FloatingDock } from '@/components/ui/floating-dock';
-import { PopoverForm } from '@/components/ui/popover-form';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useState, useEffect } from 'react';
 
 type Theme = "light" | "dark" | "system";
@@ -116,15 +116,8 @@ const Footer = () => {
 
         {/* Social Links Popover */}
         <div className="hidden md:flex">
-          <PopoverForm
-            title="Social Links"
-            open={socialPopoverOpen}
-            setOpen={setSocialPopoverOpen}
-            width="240px"
-            height="280px"
-            showCloseButton={true}
-            showSuccess={false}
-            trigger={
+          <Popover open={socialPopoverOpen} onOpenChange={setSocialPopoverOpen}>
+            <PopoverTrigger asChild>
               <motion.button
                 className="h-12 w-12 flex items-center justify-center rounded-full bg-background/80 backdrop-blur-md border border-border/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
                 whileHover={{ scale: 1.1 }}
@@ -133,42 +126,33 @@ const Footer = () => {
               >
                 <Users className="h-4 w-4" />
               </motion.button>
-            }
-            openChild={
-              <div className="p-4">
-                <h3 className="text-sm font-medium text-foreground mb-3">
-                  Connect with me
-                </h3>
-                <div className="space-y-3">
-                  {socialLinks.map((social) => (
-                    <a
-                      key={social.name}
-                      href={social.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={`flex items-center px-3 py-2 text-sm rounded-md hover:bg-muted/50 transition-colors ${social.color}`}
-                    >
-                      {social.icon}
-                      <span className="ml-3">{social.name}</span>
-                    </a>
-                  ))}
-                </div>
+            </PopoverTrigger>
+            <PopoverContent className="w-60 p-4" align="center" side="top">
+              <h3 className="text-sm font-medium text-foreground mb-3">
+                Connect with me
+              </h3>
+              <div className="space-y-3">
+                {socialLinks.map((social) => (
+                  <a
+                    key={social.name}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`flex items-center px-3 py-2 text-sm rounded-md hover:bg-muted/50 transition-colors ${social.color}`}
+                  >
+                    {social.icon}
+                    <span className="ml-3">{social.name}</span>
+                  </a>
+                ))}
               </div>
-            }
-          />
+            </PopoverContent>
+          </Popover>
         </div>
 
         {/* Theme Switcher Popover */}
         <div className="hidden md:flex">
-          <PopoverForm
-            title="Choose Theme"
-            open={themePopoverOpen}
-            setOpen={setThemePopoverOpen}
-            width="200px"
-            height="175px"
-            showCloseButton={true}
-            showSuccess={false}
-            trigger={
+          <Popover open={themePopoverOpen} onOpenChange={setThemePopoverOpen}>
+            <PopoverTrigger asChild>
               <motion.button
                 className="h-12 w-12 flex items-center justify-center rounded-full bg-background/80 backdrop-blur-md border border-border/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
                 whileHover={{ scale: 1.1 }}
@@ -177,35 +161,33 @@ const Footer = () => {
               >
                 {getThemeIcon()}
               </motion.button>
-            }
-            openChild={
-              <div className="p-2">
-                <h3 className="text-sm tracking-tight text-muted-foreground mb-2">
-                  Theme
-                </h3>
-                <div className="space-y-2">
-                  {themes.map((t) => (
-                    <button
-                      key={t}
-                      onClick={() => {
-                        setTheme(t);
-                        setThemePopoverOpen(false);
-                      }}
-                      className={`w-full flex items-center px-3 py-2 text-sm rounded-md transition-colors ${theme === t
-                        ? "bg-primary text-primary-foreground"
-                        : "hover:bg-muted/50"
-                        }`}
-                    >
-                      {t === "light" && <Sun className="mr-2 h-4 w-4" />}
-                      {t === "dark" && <Moon className="mr-2 h-4 w-4" />}
-                      {t === "system" && <Monitor className="mr-2 h-4 w-4" />}
-                      <span className="capitalize">{t}</span>
-                    </button>
-                  ))}
-                </div>
+            </PopoverTrigger>
+            <PopoverContent className="w-48 p-2" align="center" side="top">
+              <h3 className="text-sm tracking-tight text-muted-foreground mb-2">
+                Theme
+              </h3>
+              <div className="space-y-2">
+                {themes.map((t) => (
+                  <button
+                    key={t}
+                    onClick={() => {
+                      setTheme(t);
+                      setThemePopoverOpen(false);
+                    }}
+                    className={`w-full flex items-center px-3 py-2 text-sm rounded-md transition-colors ${theme === t
+                      ? "bg-primary text-primary-foreground"
+                      : "hover:bg-muted/50"
+                      }`}
+                  >
+                    {t === "light" && <Sun className="mr-2 h-4 w-4" />}
+                    {t === "dark" && <Moon className="mr-2 h-4 w-4" />}
+                    {t === "system" && <Monitor className="mr-2 h-4 w-4" />}
+                    <span className="capitalize">{t}</span>
+                  </button>
+                ))}
               </div>
-            }
-          />
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
     </motion.footer>
