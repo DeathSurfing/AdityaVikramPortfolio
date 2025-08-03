@@ -5,6 +5,7 @@ import LenisSmoothScroll from '@/components/ui/lenis-smooth-scroll';
 import { Azeret_Mono } from 'next/font/google';
 import { cn } from '@/lib/utils';
 import { AnimatedTestimonials } from '@/components/ui/animated-testimonials';
+import BlurVignette from '@/components/ui/blur-vignette';
 
 
 const azeretMono = Azeret_Mono({
@@ -91,11 +92,13 @@ export default function WhoAmIPage() {
               className="h-full w-full flex justify-center"
             >
               <div className="w-72 h-72 md:w-96 md:h-96 relative rounded-2xl overflow-hidden shadow-lg border border-border">
-                <img
-                  src="/AdityaVikram.webp"
-                  alt="Aditya Vikram"
-                  className="w-full h-full object-cover"
-                />
+                <BlurVignette>
+                  <img
+                    src="/AdityaVikram.webp"
+                    alt="Aditya Vikram"
+                    className="w-full h-full object-cover"
+                  />
+                </BlurVignette>
               </div>
             </motion.div>
           </div>
