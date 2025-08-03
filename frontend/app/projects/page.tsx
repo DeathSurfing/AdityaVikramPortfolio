@@ -18,7 +18,7 @@ const projects: Project[] = [
     name: "Woxsen Student Council",
     description: "Woxsen Student Council website with ShadCN components and Next.js",
     image: "/card/woxsenstudentcouncil.png",
-    link: "https://woxsenstudetcouncil.com"
+    link: "https://woxsenstudentcouncil.com"
   },
   {
     name: "MUN Registration",
