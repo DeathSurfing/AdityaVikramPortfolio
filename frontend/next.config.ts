@@ -7,10 +7,8 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true, // ✅ disables ESLint during `next build`
   },
-  optimizeFonts: true,
-  experimental: {
-    optimizeCss: true,
-  },
+  // Removed optimizeFonts (not a valid Next.js option)
+  // Removed optimizeCss to avoid critters dependency issue
 };
 
 export default nextConfig;
