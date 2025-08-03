@@ -7,6 +7,10 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true, // ✅ disables ESLint during `next build`
   },
+  optimizeFonts: true,
+  experimental: {
+    optimizeCss: true,
+  },
 };
 
 export default nextConfig;
