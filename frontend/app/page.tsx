@@ -390,7 +390,7 @@ export default function HomePage() {
             <SlideButton
               className="mx-auto w-full max-w-xs bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 shadow-lg shadow-emerald-500/25 border-emerald-400/50 relative overflow-hidden"
               size="lg"
-              variant="primary"
+              variant="default"
               href="/about"
               onSlideComplete={handleSlideComplete}
             />
