@@ -74,13 +74,13 @@ export default function WhoAmIPage() {
             >
               <h2 className="text-4xl md:text-5xl font-bold mb-6">The Story</h2>
               <p className="text-lg text-muted-foreground leading-relaxed mb-6">
-                I'm a passionate developer who believes in building experiences that matter.
+                I&apos;m a passionate developer who believes in building experiences that matter.
                 My journey started with curiosity and has evolved into a dedication to crafting
                 digital solutions that make a difference.
               </p>
               <p className="text-lg text-muted-foreground leading-relaxed">
                 Every line of code I write is an opportunity to solve problems,
-                create beauty, and push the boundaries of what's possible on the web.
+                create beauty, and push the boundaries of what&apos;s possible on the web.
               </p>
             </motion.div>
             <motion.div
@@ -210,7 +210,7 @@ export default function WhoAmIPage() {
               transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
               className="text-4xl md:text-5xl font-bold mb-8"
             >
-              Let's Connect
+              Let&apos;s Connect
             </motion.h2>
             <motion.p
               initial={{ opacity: 0, y: 60 }}
