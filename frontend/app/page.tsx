@@ -6,7 +6,6 @@ import { ArrowRight } from 'lucide-react';
 import { Pacifico, Azeret_Mono } from 'next/font/google';
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
-import SlideButton from '@/components/ui/slide-button';
 
 const pacifico = Pacifico({
   subsets: ['latin'],
@@ -36,7 +35,6 @@ function AnimatedText() {
           id="zoom-target-t"
           className="relative inline-block font-bold text-primary"
         >
-          Slide To Continue
         </span>
       </motion.p>
     </div>
@@ -327,12 +325,14 @@ export default function HomePage() {
             animate="visible"
             className="flex justify-center"
           >
-            <SlideButton
-              onSlideComplete={handleRedirect}
-              className="mx-auto w-full max-w-xs bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 shadow-lg shadow-emerald-500/25 border-emerald-400/50 relative overflow-hidden"
+            <Button
+              onClick={handleRedirect}
+              className="mx-auto w-full max-w-xs bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white shadow-lg shadow-emerald-500/25 border border-emerald-400/50"
               size="lg"
-              variant="default"
-            />
+            >
+              Get to know me
+            </Button>
+
           </motion.div>
         </div>
       </div>
