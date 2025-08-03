@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from 'react';
 import Lenis from '@studio-freight/lenis';
-import { useFrame } from '@studio-freight/lenis/dist/react';
 
 interface LenisSmoothScrollProps {
   children: React.ReactNode;
