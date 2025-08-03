@@ -1,0 +1,11 @@
+# nixpacks.toml
+
+[phases.setup]
+nixPkgs = ["nodejs_24"]
+
+[phases.build]
+cmds = ["npm install", "npm run build"]
+
+[phases.start]
+cmd = "npm start"
+
