@@ -1,10 +1,12 @@
 'use client'
 
 import { useState } from "react"
-import { CardSwipe } from "@/components/ui/card-swipe"
 import { Button } from "@/components/ui/button"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+import HoverExpand from "@/components/ui/hover-expand"
+
+import { Badge } from "@/components/ui/badge"
+import { SparklesIcon } from "lucide-react"
 
 type Project = {
   name: string
@@ -56,11 +58,10 @@ const projects: Project[] = [
     image: "https://opengraph.githubassets.com/1/DeathSurfing/NoteRefactor",
     link: "https://github.com/DeathSurfing/NoteRefactor"
   }
-
 ]
 
 export default function ProjectsPage() {
-  const [view, setView] = useState<"cards" | "table">("cards")
+  const [view, setView] = useState<"hover" | "table">("hover")
 
   return (
     <div className="max-w-6xl mx-auto py-12 px-4">
@@ -69,43 +70,90 @@ export default function ProjectsPage() {
         <ToggleGroup
           type="single"
           value={view}
-          onValueChange={(val) => val && setView(val as "cards" | "table")}
+          onValueChange={(val) => val && setView(val as "hover" | "table")}
         >
-          <ToggleGroupItem value="cards">Card View</ToggleGroupItem>
+          <ToggleGroupItem value="hover">Hover View</ToggleGroupItem>
           <ToggleGroupItem value="table">Table View</ToggleGroupItem>
         </ToggleGroup>
       </div>
 
-      {view === "cards" ? (
-        <CardSwipe
-          images={projects.map(p => ({ src: p.image, alt: p.name }))}
-          autoplayDelay={2000}
-          slideShadows={false}
-        />
+      {view === "hover" ? (
+        <section className="mx-auto w-full rounded-[24px] border border-black/5 p-2 shadow-sm">
+          <div className="relative mx-auto flex w-full flex-col items-center justify-center rounded-[24px] border border-black/5 bg-neutral-800/5 shadow-sm md:gap-8">
+            <article className="relative z-50 mt-8 flex flex-col items-center justify-center">
+              <Badge
+                variant="outline"
+                className="mb-3 rounded-[14px] border border-black/10 bg-white text-base"
+              >
+                <SparklesIcon className="fill-[#EEBDE0] stroke-1 text-neutral-800" />
+                Interactive Preview
+              </Badge>
+              <h1 className="max-w-2xl text-center text-3xl font-semibold tracking-tight">
+                Hover over project images to expand
+              </h1>
+            </article>
+
+            <div className="w-full p-4">
+              <HoverExpand
+                images={projects.map(p => p.image)}
+                initialSelectedIndex={0}
+                thumbnailHeight={200}
+                modalImageSize={500}
+                maxThumbnails={projects.length}
+                renderThumbnail={(image, index) => (
+                  <div className="p-2">
+                    <div className="text-lg font-medium">{projects[index].name}</div>
+                    <div className="text-sm text-gray-500">{projects[index].description}</div>
+                  </div>
+                )}
+                renderModalContent={(image, index) => (
+                  <div className="p-6">
+                    <h2 className="text-2xl font-bold mb-2">{projects[index].name}</h2>
+                    <p className="text-gray-600 mb-4">{projects[index].description}</p>
+                    {projects[index].link && (
+                      <a
+                        href={projects[index].link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-block px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors"
+                      >
+                        Visit Project
+                      </a>
+                    )}
+                  </div>
+                )}
+              />
+            </div>
+          </div>
+        </section>
       ) : (
         <div className="overflow-x-auto rounded-xl border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[150px]">Preview</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Description</TableHead>
-                <TableHead className="text-right">Link</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {projects.map((project, i) => (
-                <TableRow key={i}>
-                  <TableCell>
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Preview</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Link</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {projects.map((project, index) => (
+                <tr key={index}>
+                  <td className="px-6 py-4 whitespace-nowrap">
                     <img
                       src={project.image}
                       alt={project.name}
-                      className="w-24 h-16 object-cover rounded-md"
+                      className="h-12 w-12 rounded-md object-cover"
                     />
-                  </TableCell>
-                  <TableCell>{project.name}</TableCell>
-                  <TableCell>{project.description}</TableCell>
-                  <TableCell className="text-right">
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    {project.name}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-500">
+                    {project.description}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {project.link && (
                       <a
                         href={project.link}
@@ -116,14 +164,13 @@ export default function ProjectsPage() {
                         Visit
                       </a>
                     )}
-                  </TableCell>
-                </TableRow>
+                  </td>
+                </tr>
               ))}
-            </TableBody>
-          </Table>
+            </tbody>
+          </table>
         </div>
       )}
     </div>
   )
 }
-
