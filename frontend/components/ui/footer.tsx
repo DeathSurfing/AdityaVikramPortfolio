@@ -1,18 +1,88 @@
 'use client';
 import { motion } from 'framer-motion';
-import Link from 'next/link';
 import { useTheme } from 'next-themes';
-import { ThemeSwitcher } from '@/components/ui/kibo-ui/theme-switcher';
-import { Home } from 'lucide-react';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Home, User, FolderOpen, FileText, Sun, Moon, Monitor, Github, Linkedin, Twitter, Mail, Users, Youtube } from 'lucide-react';
+import { FloatingDock } from '@/components/ui/floating-dock';
+import { PopoverForm } from '@/components/ui/popover-form';
+import { useState, useEffect } from 'react';
+
+type Theme = "light" | "dark" | "system";
 
 const Footer = () => {
   const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  const [themePopoverOpen, setThemePopoverOpen] = useState(false);
+  const [socialPopoverOpen, setSocialPopoverOpen] = useState(false);
+
+  // Ensure component is mounted to avoid hydration issues
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const getThemeIcon = () => {
+    if (!mounted) return <Monitor className="h-4 w-4" />;
+
+    switch (theme) {
+      case 'light':
+        return <Sun className="h-4 w-4" />;
+      case 'dark':
+        return <Moon className="h-4 w-4" />;
+      default:
+        return <Monitor className="h-4 w-4" />;
+    }
+  };
+
+  const themes: Theme[] = ["light", "dark", "system"];
+
+  const socialLinks = [
+    {
+      name: "GitHub",
+      icon: <Github className="h-4 w-4" />,
+      href: "https://github.com/DeathSurfing",
+      color: "hover:text-gray-900 dark:hover:text-white"
+    },
+    {
+      name: "LinkedIn",
+      icon: <Linkedin className="h-4 w-4" />,
+      href: "https://www.linkedin.com/in/aditya-vikram-mahendru/",
+      color: "hover:text-blue-600"
+    },
+    {
+      name: "Youtube",
+      icon: <Youtube className="h-4 w-4" />,
+      href: "https://www.youtube.com/@VikramMahendru",
+      color: "hover:text-blue-400"
+    },
+    {
+      name: "Email",
+      icon: <Mail className="h-4 w-4" />,
+      href: "mailto:jobs.aditya.vikram.mahendru@gmail.com",
+      color: "hover:text-red-500"
+    },
+  ];
+
+  const dockItems = [
+    {
+      title: "Home",
+      icon: <Home className="h-4 w-4" />,
+      href: "/",
+    },
+    {
+      title: "Who Am I?",
+      icon: <User className="h-4 w-4" />,
+      href: "/whoami",
+    },
+    {
+      title: "Projects",
+      icon: <FolderOpen className="h-4 w-4" />,
+      href: "/projects",
+    },
+    {
+      title: "Resume",
+      icon: <FileText className="h-4 w-4" />,
+      href: "/uploads/Resume.pdf",
+    },
+  ];
 
   const footerVariants = {
     hidden: {
@@ -25,23 +95,7 @@ const Footer = () => {
       transition: {
         duration: 0.8,
         delay: 2,
-        ease: [0.23, 1, 0.32, 1] as any, // Fixed: Added 'as any'
-        staggerChildren: 0.1,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: {
-      opacity: 0,
-      y: 30,
-    },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.6,
-        ease: [0.23, 1, 0.32, 1] as any, // Fixed: Added 'as any'
+        ease: [0.23, 1, 0.32, 1] as any,
       },
     },
   };
@@ -51,62 +105,107 @@ const Footer = () => {
       initial="hidden"
       animate="visible"
       variants={footerVariants}
-      className="fixed bottom-0 left-0 right-0 z-40 bg-background/80 backdrop-blur-md border-t border-border/50 shadow-lg"
+      className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-40"
     >
-      <div className="container mx-auto px-4 py-3">
-        <div className="flex items-center justify-between">
-          {/* Left side - Home Icon */}
-          <motion.div variants={itemVariants} className="flex items-center space-x-4">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Link
-                    href="/"
-                    className="text-muted-foreground hover:text-foreground transition-colors"
-                    aria-label="Home"
-                  >
-                    <Home className="h-5 w-5" />
-                  </Link>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Home</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </motion.div>
+      <div className="flex items-center gap-4">
+        <FloatingDock
+          items={dockItems}
+          desktopClassName="bg-background/80 backdrop-blur-md border border-border/50 shadow-lg"
+          mobileClassName="bg-background/80 backdrop-blur-md border border-border/50 shadow-lg"
+        />
 
-          {/* Center - Links */}
-          <motion.div variants={itemVariants} className="hidden md:flex items-center space-x-6">
-            <Link
-              href="/whoami"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Who Am I?
-            </Link>
-            <Link
-              href="/projects"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Projects
-            </Link>
-            <a
-              href="/uploads/Resume.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Resume
-            </a>
-          </motion.div>
+        {/* Social Links Popover */}
+        <div className="hidden md:flex">
+          <PopoverForm
+            title="Social Links"
+            open={socialPopoverOpen}
+            setOpen={setSocialPopoverOpen}
+            width="240px"
+            height="280px"
+            showCloseButton={true}
+            showSuccess={false}
+            trigger={
+              <motion.button
+                className="h-12 w-12 flex items-center justify-center rounded-full bg-background/80 backdrop-blur-md border border-border/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                title="Social Links"
+              >
+                <Users className="h-4 w-4" />
+              </motion.button>
+            }
+            openChild={
+              <div className="p-4">
+                <h3 className="text-sm font-medium text-foreground mb-3">
+                  Connect with me
+                </h3>
+                <div className="space-y-3">
+                  {socialLinks.map((social) => (
+                    <a
+                      key={social.name}
+                      href={social.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`flex items-center px-3 py-2 text-sm rounded-md hover:bg-muted/50 transition-colors ${social.color}`}
+                    >
+                      {social.icon}
+                      <span className="ml-3">{social.name}</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            }
+          />
+        </div>
 
-          {/* Right side - Theme Switcher */}
-          <motion.div variants={itemVariants} className="flex items-center">
-            <ThemeSwitcher
-              value={theme as 'light' | 'dark' | 'system'}
-              onChange={setTheme}
-              defaultValue="system"
-            />
-          </motion.div>
+        {/* Theme Switcher Popover */}
+        <div className="hidden md:flex">
+          <PopoverForm
+            title="Choose Theme"
+            open={themePopoverOpen}
+            setOpen={setThemePopoverOpen}
+            width="200px"
+            height="175px"
+            showCloseButton={true}
+            showSuccess={false}
+            trigger={
+              <motion.button
+                className="h-12 w-12 flex items-center justify-center rounded-full bg-background/80 backdrop-blur-md border border-border/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                title={`Current theme: ${mounted ? theme : 'system'}`}
+              >
+                {getThemeIcon()}
+              </motion.button>
+            }
+            openChild={
+              <div className="p-2">
+                <h3 className="text-sm tracking-tight text-muted-foreground mb-2">
+                  Theme
+                </h3>
+                <div className="space-y-2">
+                  {themes.map((t) => (
+                    <button
+                      key={t}
+                      onClick={() => {
+                        setTheme(t);
+                        setThemePopoverOpen(false);
+                      }}
+                      className={`w-full flex items-center px-3 py-2 text-sm rounded-md transition-colors ${theme === t
+                        ? "bg-primary text-primary-foreground"
+                        : "hover:bg-muted/50"
+                        }`}
+                    >
+                      {t === "light" && <Sun className="mr-2 h-4 w-4" />}
+                      {t === "dark" && <Moon className="mr-2 h-4 w-4" />}
+                      {t === "system" && <Monitor className="mr-2 h-4 w-4" />}
+                      <span className="capitalize">{t}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            }
+          />
         </div>
       </div>
     </motion.footer>

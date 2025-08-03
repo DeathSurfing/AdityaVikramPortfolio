@@ -325,13 +325,6 @@ export default function HomePage() {
             animate="visible"
             className="flex justify-center"
           >
-            <Button
-              onClick={handleRedirect}
-              className="mx-auto w-full max-w-xs bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white shadow-lg shadow-emerald-500/25 border border-emerald-400/50"
-              size="lg"
-            >
-              Get to know me
-            </Button>
 
           </motion.div>
         </div>
