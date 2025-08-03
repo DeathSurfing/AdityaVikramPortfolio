@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, {
   forwardRef,
@@ -7,7 +7,7 @@ import React, {
   useRef,
   useState,
   type JSX,
-} from "react"
+} from "react";
 import {
   AnimatePresence,
   motion,
@@ -15,20 +15,21 @@ import {
   useSpring,
   useTransform,
   type PanInfo,
-} from "framer-motion"
-import { Check, Loader2, SendHorizontal, X } from "lucide-react"
+} from "framer-motion";
+import { Check, Loader2, SendHorizontal, X } from "lucide-react";
+import { v4 as uuidv4 } from "uuid"; // ✅ Import UUID
 
-import { cn } from "@/lib/utils"
-import { Button, buttonVariants } from "@/components/ui/button"
-import { type VariantProps } from "class-variance-authority"
+import { cn } from "@/lib/utils";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { type VariantProps } from "class-variance-authority";
 
-const DRAG_CONSTRAINTS = { left: 0, right: 155 }
-const DRAG_THRESHOLD = 0.9
+const DRAG_CONSTRAINTS = { left: 0, right: 155 };
+const DRAG_THRESHOLD = 0.9;
 
 const BUTTON_STATES = {
   initial: { width: "12rem" },
   completed: { width: "8rem" },
-}
+};
 
 const ANIMATION_CONFIG = {
   spring: {
@@ -37,11 +38,11 @@ const ANIMATION_CONFIG = {
     damping: 40,
     mass: 0.8,
   },
-}
+};
 
 type StatusIconProps = {
-  status: string
-}
+  status: string;
+};
 
 const StatusIcon: React.FC<StatusIconProps> = ({ status }) => {
   const iconMap: Record<StatusIconProps["status"], JSX.Element> = useMemo(
@@ -51,36 +52,36 @@ const StatusIcon: React.FC<StatusIconProps> = ({ status }) => {
       error: <X size={20} />,
     }),
     []
-  )
+  );
 
-  if (!iconMap[status]) return null
+  if (!iconMap[status]) return null;
 
   return (
     <motion.div
-      key={crypto.randomUUID()}
+      key={uuidv4()} // ✅ replaced
       initial={{ opacity: 0, scale: 0.5 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0 }}
     >
       {iconMap[status]}
     </motion.div>
-  )
-}
+  );
+};
 
 const useButtonStatus = (resolveTo: "success" | "error") => {
   const [status, setStatus] = useState<
     "idle" | "loading" | "success" | "error"
-  >("idle")
+  >("idle");
 
   const handleSubmit = useCallback(() => {
-    setStatus("loading")
+    setStatus("loading");
     setTimeout(() => {
-      setStatus(resolveTo)
-    }, 500) // Reduced to 500ms for faster response
-  }, [resolveTo])
+      setStatus(resolveTo);
+    }, 500);
+  }, [resolveTo]);
 
-  return { status, handleSubmit }
-}
+  return { status, handleSubmit };
+};
 
 interface SlideButtonProps extends
   React.ComponentProps<"button">,
@@ -91,51 +92,50 @@ interface SlideButtonProps extends
 
 const SlideButton = forwardRef<HTMLButtonElement, SlideButtonProps>(
   ({ className, onSlideComplete, variant, size, asChild = false, ...props }, ref) => {
-    const [isDragging, setIsDragging] = useState(false)
-    const [completed, setCompleted] = useState(false)
-    const dragHandleRef = useRef<HTMLDivElement | null>(null)
-    const { status, handleSubmit } = useButtonStatus("success")
+    const [isDragging, setIsDragging] = useState(false);
+    const [completed, setCompleted] = useState(false);
+    const dragHandleRef = useRef<HTMLDivElement | null>(null);
+    const { status, handleSubmit } = useButtonStatus("success");
 
-    const dragX = useMotionValue(0)
-    const springX = useSpring(dragX, ANIMATION_CONFIG.spring)
+    const dragX = useMotionValue(0);
+    const springX = useSpring(dragX, ANIMATION_CONFIG.spring);
     const dragProgress = useTransform(
       springX,
       [0, DRAG_CONSTRAINTS.right],
       [0, 1]
-    )
+    );
 
     const handleDragStart = useCallback(() => {
-      if (completed) return
-      setIsDragging(true)
-    }, [completed])
+      if (completed) return;
+      setIsDragging(true);
+    }, [completed]);
 
     const handleDragEnd = () => {
-      if (completed) return
-      setIsDragging(false)
+      if (completed) return;
+      setIsDragging(false);
 
-      const progress = dragProgress.get()
+      const progress = dragProgress.get();
       if (progress >= DRAG_THRESHOLD) {
-        setCompleted(true)
-        handleSubmit()
-        // Call the callback after a short delay to allow the animation to start
+        setCompleted(true);
+        handleSubmit();
         setTimeout(() => {
-          onSlideComplete?.()
-        }, 600) // Wait for status animation to complete
+          onSlideComplete?.();
+        }, 600);
       } else {
-        dragX.set(0)
+        dragX.set(0);
       }
-    }
+    };
 
     const handleDrag = (
       _event: MouseEvent | TouchEvent | PointerEvent,
       info: PanInfo
     ) => {
-      if (completed) return
-      const newX = Math.max(0, Math.min(info.offset.x, DRAG_CONSTRAINTS.right))
-      dragX.set(newX)
-    }
+      if (completed) return;
+      const newX = Math.max(0, Math.min(info.offset.x, DRAG_CONSTRAINTS.right));
+      dragX.set(newX);
+    };
 
-    const adjustedWidth = useTransform(springX, (x) => x + 10)
+    const adjustedWidth = useTransform(springX, (x) => x + 10);
 
     return (
       <motion.div
@@ -145,13 +145,11 @@ const SlideButton = forwardRef<HTMLButtonElement, SlideButtonProps>(
       >
         {!completed && (
           <motion.div
-            style={{
-              width: adjustedWidth,
-            }}
+            style={{ width: adjustedWidth }}
             className="absolute inset-y-0 left-0 z-0 rounded-full bg-accent"
           />
         )}
-        <AnimatePresence key={crypto.randomUUID()}>
+        <AnimatePresence key={uuidv4()}> {/* ✅ replaced */}
           {!completed && (
             <motion.div
               ref={dragHandleRef}
@@ -184,7 +182,7 @@ const SlideButton = forwardRef<HTMLButtonElement, SlideButtonProps>(
           )}
         </AnimatePresence>
 
-        <AnimatePresence key={crypto.randomUUID()}>
+        <AnimatePresence key={uuidv4()}> {/* ✅ replaced */}
           {completed && (
             <motion.div
               className="absolute inset-0 flex items-center justify-center"
@@ -204,7 +202,7 @@ const SlideButton = forwardRef<HTMLButtonElement, SlideButtonProps>(
                   className
                 )}
               >
-                <AnimatePresence key={crypto.randomUUID()} mode="wait">
+                <AnimatePresence key={uuidv4()} mode="wait"> {/* ✅ replaced */}
                   <StatusIcon status={status} />
                 </AnimatePresence>
               </Button>
@@ -212,10 +210,10 @@ const SlideButton = forwardRef<HTMLButtonElement, SlideButtonProps>(
           )}
         </AnimatePresence>
       </motion.div>
-    )
+    );
   }
-)
+);
 
-SlideButton.displayName = "SlideButton"
+SlideButton.displayName = "SlideButton";
 
-export default SlideButton
+export default SlideButton;
