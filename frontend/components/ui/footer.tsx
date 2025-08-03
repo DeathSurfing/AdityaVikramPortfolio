@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { ThemeSwitcher } from '@/components/ui/kibo-ui/theme-switcher';
 import { Home } from 'lucide-react';
@@ -60,13 +61,13 @@ const Footer = () => {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <a
+                  <Link
                     href="/"
                     className="text-muted-foreground hover:text-foreground transition-colors"
                     aria-label="Home"
                   >
                     <Home className="h-5 w-5" />
-                  </a>
+                  </Link>
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>Home</p>
@@ -77,20 +78,22 @@ const Footer = () => {
 
           {/* Center - Links */}
           <motion.div variants={itemVariants} className="hidden md:flex items-center space-x-6">
-            <a
+            <Link
               href="/whoami"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               Who Am I?
-            </a>
-            <a
+            </Link>
+            <Link
               href="/projects"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               Projects
-            </a>
+            </Link>
             <a
               href="/uploads/Resume.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               Resume
