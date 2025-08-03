@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "next-themes";
-import MouseFollower from "@/components/ui/mouse-follower"; // Adjust path as needed
-import Footer from "@/components/ui/footer"; // Adjust path as needed
+import MouseFollower from "@/components/ui/mouse-follower";
+import Footer from "@/components/ui/footer";
+import CryptoPolyfill from "@/components/utility/crypto-polyfill"; // NEW
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,6 +35,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased pb-16`}
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <CryptoPolyfill /> {/* Ensures crypto.randomUUID exists */}
           <MouseFollower />
           {children}
           <Footer />
@@ -42,3 +44,4 @@ export default function RootLayout({
     </html>
   );
 }
+
