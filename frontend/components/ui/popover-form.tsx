@@ -28,7 +28,7 @@ export function PopoverForm({
   showCloseButton = false,
 }: PopoverFormProps) {
   const ref = useRef<HTMLDivElement>(null)
-  useClickOutside(ref, () => setOpen(false))
+  useClickOutside(ref as RefObject<HTMLElement>, () => setOpen(false))
 
   return (
     <div
@@ -140,8 +140,9 @@ export function PopoverFormButton({
   )
 }
 
-const useClickOutside = (
-  ref: RefObject<HTMLElement>,
+// Updated useClickOutside hook to handle HTMLDivElement | null
+const useClickOutside = <T extends HTMLElement>(
+  ref: RefObject<T | null>,
   handleOnClickOutside: (event: MouseEvent | TouchEvent) => void
 ) => {
   useEffect(() => {
