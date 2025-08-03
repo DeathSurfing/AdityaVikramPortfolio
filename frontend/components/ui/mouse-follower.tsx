@@ -54,6 +54,9 @@ export default function MouseFollower() {
       setIsHovering(isHoverableElement);
     };
 
+    // Hide the default cursor
+    document.body.style.cursor = 'none';
+
     // Add event listeners
     document.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseenter', handleMouseEnter);
@@ -61,6 +64,8 @@ export default function MouseFollower() {
     document.addEventListener('mouseover', handleMouseOver);
 
     return () => {
+      // Restore default cursor on cleanup
+      document.body.style.cursor = 'auto';
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseenter', handleMouseEnter);
       document.removeEventListener('mouseleave', handleMouseLeave);
@@ -76,6 +81,7 @@ export default function MouseFollower() {
 
     if (isMobile) {
       setIsVisible(false);
+      document.body.style.cursor = 'auto'; // Restore cursor on mobile
     }
   }, []);
 
@@ -83,7 +89,7 @@ export default function MouseFollower() {
 
   return (
     <>
-      {/* Main cursor circle */}
+      {/* Main cursor circle - made smaller */}
       <motion.div
         className="fixed top-0 left-0 pointer-events-none z-[9999] mix-blend-difference"
         style={{
@@ -91,7 +97,7 @@ export default function MouseFollower() {
           y: springY,
         }}
         animate={{
-          scale: isHovering ? 1.5 : 1,
+          scale: isHovering ? 1.2 : 1,
           opacity: isVisible ? 1 : 0,
         }}
         transition={{
@@ -99,10 +105,10 @@ export default function MouseFollower() {
           opacity: { duration: 0.2 },
         }}
       >
-        <div className="w-16 h-16 bg-white rounded-full transform -translate-x-1/2 -translate-y-1/2" />
+        <div className="w-6 h-6 bg-white rounded-full transform -translate-x-1/2 -translate-y-1/2" />
       </motion.div>
 
-      {/* Trailing glow effect */}
+      {/* Trailing glow effect - made smaller */}
       <motion.div
         className="fixed top-0 left-0 pointer-events-none z-[9998]"
         style={{
@@ -110,18 +116,18 @@ export default function MouseFollower() {
           y: springY,
         }}
         animate={{
-          scale: isHovering ? 2 : 1.5,
-          opacity: isVisible ? 0.3 : 0,
+          scale: isHovering ? 1.5 : 1.2,
+          opacity: isVisible ? 0.2 : 0,
         }}
         transition={{
           scale: { duration: 0.3, ease: 'easeOut' },
           opacity: { duration: 0.3 },
         }}
       >
-        <div className="w-24 h-24 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full blur-md transform -translate-x-1/2 -translate-y-1/2" />
+        <div className="w-12 h-12 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full blur-md transform -translate-x-1/2 -translate-y-1/2" />
       </motion.div>
 
-      {/* Outer ring for hover state */}
+      {/* Outer ring for hover state - made smaller */}
       <motion.div
         className="fixed top-0 left-0 pointer-events-none z-[9997]"
         style={{
@@ -130,14 +136,14 @@ export default function MouseFollower() {
         }}
         animate={{
           scale: isHovering ? 1 : 0,
-          opacity: isHovering ? 0.6 : 0,
+          opacity: isHovering ? 0.4 : 0,
         }}
         transition={{
           duration: 0.2,
           ease: 'easeOut',
         }}
       >
-        <div className="w-32 h-32 border-2 border-white rounded-full transform -translate-x-1/2 -translate-y-1/2" />
+        <div className="w-16 h-16 border-2 border-white rounded-full transform -translate-x-1/2 -translate-y-1/2" />
       </motion.div>
     </>
   );
