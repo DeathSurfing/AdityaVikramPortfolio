@@ -7,6 +7,7 @@ import { Pacifico, Azeret_Mono } from 'next/font/google';
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
 import SlideButton from '@/components/ui/slide-button';
+
 const pacifico = Pacifico({
   subsets: ['latin'],
   weight: ['400'],
@@ -196,18 +197,16 @@ function ElegantShape({
   );
 }
 
-export default function HeroGeometric({
-  badge = 'Aditya Vikram Mahendru',
-  title1 = 'Code Smart',
-  title2 = 'Deploy Faster',
-}: {
-  badge?: string;
-  title1?: string;
-  title2?: string;
-}) {
+// This is now a proper Next.js page component (no props)
+export default function HomePage() {
   const [isSlideComplete, setIsSlideComplete] = useState(false);
   const [showZoom, setShowZoom] = useState(false);
   const [zoomCenter, setZoomCenter] = useState({ x: 0, y: 0 });
+
+  // Default values are now defined within the component
+  const badge = 'Aditya Vikram Mahendru';
+  const title1 = 'Code Smart';
+  const title2 = 'Deploy Faster';
 
   const handleSlideComplete = () => {
     setIsSlideComplete(true);
@@ -235,6 +234,7 @@ export default function HeroGeometric({
       }
     }, 1500);
   };
+
   const fadeUpVariants = {
     hidden: { opacity: 0, y: 30 },
     visible: (i: number) => ({
