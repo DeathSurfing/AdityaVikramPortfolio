@@ -5,3 +5,4 @@ ___
 - Swap from card stack to https://ui.aceternity.com/components/draggable-card 
 - Create social section using https://skiper-ui.com/docs/components/text-effect-flipper
 - Change table view in projects to use https://ui.aceternity.com/components/expandable-card
+- Add Experience page PRIORITY
