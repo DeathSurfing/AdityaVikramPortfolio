@@ -50,7 +50,7 @@ done
 # Test frontend (give it more time)
 echo "🔍 Checking frontend..."
 sleep 15
-if curl -f http://localhost:3000 > /dev/null 2>&1; then
+if curl -f http://localhost:8594 > /dev/null 2>&1; then
     echo "✅ Frontend ready!"
 else
     echo "⚠️ Frontend still starting (this is normal)"
@@ -61,7 +61,7 @@ echo "🧪 Testing Ollama proxy..."
 curl -f http://localhost:5950/health
 echo ""
 echo "✅ Deployment complete!"
-echo "🔥 Frontend: http://localhost:3000"
+echo "🔥 Frontend: http://localhost:8594"
 echo "🌐 Ollama proxy: http://localhost:5950"
 echo "💬 Ready for Cloudflare tunnel routing"
 echo "📋 Container status:"
