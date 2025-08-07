@@ -21,7 +21,7 @@ interface Message {
 }
 
 interface ChatbotHomeProps {
-  onSwitchToOriginal?: () => void;
+  _onSwitchToOriginal?: () => void;
 }
 
 export function ChatbotHome({ _onSwitchToOriginal }: ChatbotHomeProps) {

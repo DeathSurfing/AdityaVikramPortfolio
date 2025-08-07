@@ -87,7 +87,7 @@ export function HomePageToggle() {
             exit={{ opacity: 0, x: -50 }}
             transition={{ duration: 0.5, ease: "easeInOut" }}
           >
-            <ChatbotHome onSwitchToOriginal={switchToOriginal} />
+            <ChatbotHome _onSwitchToOriginal={switchToOriginal} />
           </motion.div>
         )}
       </AnimatePresence>
