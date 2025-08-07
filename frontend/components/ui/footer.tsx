@@ -106,7 +106,7 @@ const Footer = () => {
       transition: {
         duration: 0.8,
         delay: 2,
-        ease: [0.23, 1, 0.32, 1] as any,
+        ease: [0.23, 1, 0.32, 1] as const,
       },
     },
   };
