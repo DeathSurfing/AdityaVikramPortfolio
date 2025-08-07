@@ -1,0 +1,198 @@
+name: Simple Deploy (No Linting)
+
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'ollama-proxy/**'
+  workflow_dispatch:
+    inputs:
+      skip_linting:
+        description: 'Skip linting and deploy directly'
+        required: false
+        default: 'true'
+
+env:
+  OLLAMA_MODEL: gpt-oss:20b
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    name: 🚀 Simple Deploy
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Check system requirements
+      run: |
+        echo "🔍 Checking system requirements..."
+        echo "OS: $(uname -a)"
+        echo "Docker version: $(docker --version)"
+        echo "Docker Compose version: $(docker compose version)"
+        echo "Available disk space:"
+        df -h
+
+    - name: Basic validation
+      working-directory: ./ollama-proxy
+      run: |
+        echo "🔍 Basic validation..."
+        echo "Checking main.py exists..."
+        ls -la main.py
+        echo "Validating Docker configuration..."
+        docker compose config
+
+    - name: Check if Ollama is running
+      run: |
+        echo "🔍 Checking Ollama status..."
+        if curl -f http://localhost:11434/api/tags > /dev/null 2>&1; then
+          echo "✅ Ollama is running"
+          echo "📋 Available models:"
+          curl -s http://localhost:11434/api/tags | jq -r '.models[].name' 2>/dev/null || curl -s http://localhost:11434/api/tags || echo "Could not parse models"
+        else
+          echo "❌ Ollama is not running. Please start Ollama on the runner."
+          echo "   Command: ollama serve"
+          exit 1
+        fi
+
+    - name: Check/Pull model
+      run: |
+        echo "🔍 Checking if model ${{ env.OLLAMA_MODEL }} is available..."
+        if curl -s http://localhost:11434/api/tags | jq -r '.models[].name' 2>/dev/null | grep -q "${{ env.OLLAMA_MODEL }}"; then
+          echo "✅ Model ${{ env.OLLAMA_MODEL }} is available"
+        elif curl -s http://localhost:11434/api/tags | grep -q "${{ env.OLLAMA_MODEL }}"; then
+          echo "✅ Model ${{ env.OLLAMA_MODEL }} is available"
+        else
+          echo "⬇️ Model ${{ env.OLLAMA_MODEL }} not found, pulling..."
+          ollama pull ${{ env.OLLAMA_MODEL }}
+          echo "✅ Model pulled successfully"
+        fi
+
+    - name: Stop existing deployment
+      working-directory: ./ollama-proxy
+      run: |
+        echo "🛑 Stopping existing deployment..."
+        docker compose down || true
+        docker system prune -f || true
+
+    - name: Deploy with Docker Compose
+      working-directory: ./ollama-proxy
+      run: |
+        echo "🚀 Deploying Ollama proxy with Docker Compose..."
+        export OLLAMA_MODEL=${{ env.OLLAMA_MODEL }}
+        docker compose up --build -d
+
+    - name: Wait for service to be ready
+      run: |
+        echo "⏳ Waiting for service to be ready..."
+        timeout=120
+        elapsed=0
+        
+        while [ $elapsed -lt $timeout ]; do
+          if curl -f http://localhost:5950/health > /dev/null 2>&1; then
+            echo "✅ Service is ready!"
+            break
+          fi
+          echo "   Waiting... ($elapsed/$timeout seconds)"
+          sleep 10
+          elapsed=$((elapsed + 10))
+        done
+        
+        if [ $elapsed -ge $timeout ]; then
+          echo "❌ Timeout waiting for service"
+          echo "📋 Container logs:"
+          docker compose -f ./ollama-proxy/docker-compose.yml logs
+          exit 1
+        fi
+
+    - name: Test deployment
+      run: |
+        echo "🧪 Running basic deployment tests..."
+        
+        # Test health endpoint
+        echo "Testing health endpoint..."
+        health_response=$(curl -s http://localhost:5950/health)
+        echo "Health response: $health_response"
+        
+        # Test chat endpoint
+        echo "Testing chat endpoint..."
+        chat_response=$(curl -s -X POST http://localhost:5950/api/chat \
+          -H "Content-Type: application/json" \
+          -d '{"message": "Hello! Just testing the deployment."}' \
+          --max-time 30)
+        
+        if echo "$chat_response" | grep -q "message"; then
+          echo "✅ Chat endpoint working!"
+        else
+          echo "❌ Chat endpoint failed"
+          echo "   Response: $chat_response"
+          exit 1
+        fi
+
+    - name: Test CORS
+      run: |
+        echo "🌐 Testing CORS for your domains..."
+        # Test portfolio.adityavikram.dev
+        cors1=$(curl -s -I -H "Origin: https://portfolio.adityavikram.dev" \
+          -H "Access-Control-Request-Method: POST" \
+          -H "Access-Control-Request-Headers: Content-Type" \
+          -X OPTIONS http://localhost:5950/api/chat)
+        
+        if echo "$cors1" | grep -q "access-control-allow-origin"; then
+          echo "✅ CORS working for portfolio.adityavikram.dev"
+        else
+          echo "⚠️ CORS headers not found for portfolio.adityavikram.dev"
+        fi
+        
+        # Test adityavikram.dev
+        cors2=$(curl -s -I -H "Origin: https://adityavikram.dev" \
+          -H "Access-Control-Request-Method: POST" \
+          -H "Access-Control-Request-Headers: Content-Type" \
+          -X OPTIONS http://localhost:5950/api/chat)
+          
+        if echo "$cors2" | grep -q "access-control-allow-origin"; then
+          echo "✅ CORS working for adityavikram.dev"
+        else
+          echo "⚠️ CORS headers not found for adityavikram.dev"
+        fi
+
+    - name: Container health check
+      working-directory: ./ollama-proxy
+      run: |
+        echo "🏥 Checking container health..."
+        docker compose ps
+        
+        # Check if container is healthy
+        if docker compose ps | grep -q "healthy"; then
+          echo "✅ Container is healthy"
+        elif docker compose ps | grep -q "Up"; then
+          echo "✅ Container is running"
+        else
+          echo "⚠️ Container health unclear, checking logs..."
+          docker compose logs --tail 10
+        fi
+
+    - name: Clean up old images
+      run: |
+        echo "🧹 Cleaning up old Docker images..."
+        docker image prune -f --filter "until=24h"
+
+    - name: Deployment summary
+      working-directory: ./ollama-proxy
+      run: |
+        echo "📊 Deployment Summary"
+        echo "===================="
+        echo "✅ Ollama proxy deployed successfully"
+        echo "🤖 Model: ${{ env.OLLAMA_MODEL }}"
+        echo "🌐 Health check: http://localhost:5950/health"
+        echo "💬 Chat endpoint: http://localhost:5950/api/chat"
+        echo "🔗 Ready for Cloudflare tunnel routing"
+        echo ""
+        echo "📋 Container status:"
+        docker compose ps
+        echo ""
+        echo "🌐 Your domains should be able to access:"
+        echo "   - https://portfolio.adityavikram.dev/api/chat"
+        echo "   - https://adityavikram.dev/api/chat"
+        echo ""
+        echo "✨ Deployment complete!"
