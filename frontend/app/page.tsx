@@ -1,42 +1,22 @@
 'use client';
 
-import { easeInOut, motion } from 'framer-motion';
-import { Pacifico, Azeret_Mono } from 'next/font/google';
+import { motion } from 'framer-motion';
+import { Inter, Geist_Mono } from 'next/font/google';
 import { cn } from '@/lib/utils';
+import { Calendar, MapPin, Code2, Zap, Users, Download, Github, Linkedin, Mail } from 'lucide-react';
 
-const pacifico = Pacifico({
+const inter = Inter({
   subsets: ['latin'],
-  weight: ['400'],
-  variable: '--font-pacifico',
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-inter',
 });
 
-const azeretMono = Azeret_Mono({
+const geistMono = Geist_Mono({
   subsets: ['latin'],
-  weight: ['400', '500', '600'],
-  variable: '--font-azeret-mono',
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-geist-mono',
 });
 
-function AnimatedText() {
-  return (
-    <div className="mx-auto mb-10 max-w-xl px-4 h-16 flex items-center justify-center">
-      <motion.p
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: easeInOut, delay: 1.5 }}
-        className={cn(
-          "text-muted-foreground text-lg leading-relaxed sm:text-xl md:text-2xl text-center font-medium tracking-wide",
-          azeretMono.className
-        )}
-      >
-        <span
-          id="zoom-target-t"
-          className="relative inline-block font-bold text-primary"
-        >
-        </span>
-      </motion.p>
-    </div>
-  );
-}
 
 function StarShape({
   size = 100,
@@ -192,31 +172,25 @@ function ElegantShape({
   );
 }
 
-// This is now a proper Next.js page component (no props)
 export default function HomePage() {
-  // Default values are now defined within the component
-  const badge = 'Aditya Vikram Mahendru';
-  const title1 = 'Code Smart';
-  const title2 = 'Deploy Faster';
-
-
   const fadeUpVariants = {
     hidden: { opacity: 0, y: 30 },
     visible: (i: number) => ({
       opacity: 1,
       y: 0,
       transition: {
-        duration: 1,
-        delay: 0.5 + i * 0.2,
-        ease: easeInOut,
+        duration: 0.8,
+        delay: 0.3 + i * 0.1,
+        ease: [0.23, 1, 0.32, 1] as const,
       },
     }),
   };
 
   return (
-    <div className="bg-background relative flex min-h-screen w-full items-center justify-center overflow-hidden dark:bg-black">
+    <div className={cn("bg-background relative flex min-h-screen w-full items-center justify-center overflow-hidden", inter.variable)}>
       <div className="from-primary/20 dark:from-primary/30 absolute inset-0 bg-gradient-to-br via-transparent to-rose-500/20 blur-3xl dark:to-rose-500/30" />
 
+      {/* Animated Stars Background */}
       <div className="absolute inset-0 overflow-hidden">
         <ElegantShape
           delay={0.3}
@@ -264,60 +238,153 @@ export default function HomePage() {
         />
       </div>
 
-      <div className="relative z-10 container mx-auto max-w-6xl px-4 md:px-6">
-        <div className="mx-auto max-w-3xl text-center">
+      {/* Main Content */}
+      <div className="relative z-10 container mx-auto max-w-5xl px-6">
+        <div className="text-center space-y-8">
+          {/* Header */}
           <motion.div
             custom={0}
             variants={fadeUpVariants}
             initial="hidden"
             animate="visible"
-            className="border-primary/30 bg-card/50 mb-8 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 shadow-sm backdrop-blur-sm md:mb-12"
+            className="space-y-4"
           >
-            <span className="text-foreground text-sm font-medium tracking-wide">
-              {badge}
-            </span>
+            <h1 className="text-5xl md:text-7xl font-bold tracking-tight">
+              <span className="bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
+                Aditya Vikram Mahendru
+              </span>
+            </h1>
+            <p className="text-xl md:text-2xl text-muted-foreground font-medium">
+              Software Engineering Intern | AI & ML Enthusiast
+            </p>
+            <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground">
+              <div className="flex items-center gap-1">
+                <MapPin className="h-4 w-4" />
+                <span>Hyderabad, India</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <Calendar className="h-4 w-4" />
+                <span>B.Tech CSE (AI & ML), 2028</span>
+              </div>
+            </div>
           </motion.div>
 
+          {/* Key Stats */}
           <motion.div
             custom={1}
             variants={fadeUpVariants}
             initial="hidden"
             animate="visible"
+            className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto"
           >
-            <h1 className="mx-4 mb-6 text-4xl font-bold tracking-tight sm:text-6xl md:mb-8 md:text-8xl">
-              <span className="from-foreground to-foreground/80 bg-gradient-to-b bg-clip-text text-transparent">
-                {title1}
-              </span>
-              <br />
-              <span
-                className={cn(
-                  'from-primary via-primary/90 bg-gradient-to-r to-rose-500 bg-clip-text p-4 text-transparent',
-                  pacifico.className,
-                  'font-bold',
-                )}
-              >
-                {title2}
-              </span>
-            </h1>
+            <div className="bg-card/40 backdrop-blur-sm border border-border/50 rounded-xl p-4 text-center">
+              <Zap className="h-6 w-6 text-primary mx-auto mb-2" />
+              <div className="text-xl font-bold">100%</div>
+              <div className="text-sm text-muted-foreground">Faster Deployment</div>
+            </div>
+            
+            <div className="bg-card/40 backdrop-blur-sm border border-border/50 rounded-xl p-4 text-center">
+              <Users className="h-6 w-6 text-primary mx-auto mb-2" />
+              <div className="text-xl font-bold">6,000+</div>
+              <div className="text-sm text-muted-foreground">Users Served</div>
+            </div>
+            
+            <div className="bg-card/40 backdrop-blur-sm border border-border/50 rounded-xl p-4 text-center">
+              <Code2 className="h-6 w-6 text-primary mx-auto mb-2" />
+              <div className="text-xl font-bold">55%</div>
+              <div className="text-sm text-muted-foreground">Cost Reduction</div>
+            </div>
+            
+            <div className="bg-card/40 backdrop-blur-sm border border-border/50 rounded-xl p-4 text-center">
+              <Calendar className="h-6 w-6 text-primary mx-auto mb-2" />
+              <div className="text-xl font-bold">6mo</div>
+              <div className="text-sm text-muted-foreground">Current Internship</div>
+            </div>
           </motion.div>
 
+          {/* Tech Stack */}
           <motion.div
             custom={2}
             variants={fadeUpVariants}
             initial="hidden"
             animate="visible"
+            className="space-y-4"
           >
-            <AnimatedText />
+            <h3 className="text-lg font-semibold text-foreground">Tech Stack</h3>
+            <div className={cn("flex flex-wrap justify-center gap-3 max-w-3xl mx-auto", geistMono.className)}>
+              {[
+                'Python (CUDA)', 'JavaScript', 'Rust', 'Next.js', 'FastAPI', 'Flask', 
+                'Docker', 'PostgreSQL', 'GitHub Actions', 'Tailwind CSS'
+              ].map((tech) => (
+                <span
+                  key={tech}
+                  className="px-3 py-1 text-sm bg-primary/10 text-primary rounded-full border border-primary/20 font-medium"
+                >
+                  {tech}
+                </span>
+              ))}
+            </div>
           </motion.div>
 
+          {/* CTAs */}
           <motion.div
             custom={3}
             variants={fadeUpVariants}
             initial="hidden"
             animate="visible"
-            className="flex justify-center"
+            className="flex flex-wrap justify-center gap-4"
           >
+            <a
+              href="/uploads/Resume.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors"
+            >
+              <Download className="h-4 w-4" />
+              Download Resume
+            </a>
+            
+            <div className="flex gap-3">
+              <a
+                href="https://github.com/DeathSurfing"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center w-12 h-12 bg-card/60 backdrop-blur-sm border border-border/50 rounded-lg hover:bg-card/80 transition-colors"
+              >
+                <Github className="h-5 w-5" />
+              </a>
+              
+              <a
+                href="https://www.linkedin.com/in/aditya-vikram-mahendru/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center w-12 h-12 bg-card/60 backdrop-blur-sm border border-border/50 rounded-lg hover:bg-card/80 transition-colors"
+              >
+                <Linkedin className="h-5 w-5" />
+              </a>
+              
+              <a
+                href="mailto:jobs.aditya.vikram.mahendru@gmail.com"
+                className="inline-flex items-center justify-center w-12 h-12 bg-card/60 backdrop-blur-sm border border-border/50 rounded-lg hover:bg-card/80 transition-colors"
+              >
+                <Mail className="h-5 w-5" />
+              </a>
+            </div>
+          </motion.div>
 
+          {/* Quick Summary */}
+          <motion.div
+            custom={4}
+            variants={fadeUpVariants}
+            initial="hidden"
+            animate="visible"
+            className="max-w-2xl mx-auto text-center"
+          >
+            <p className="text-muted-foreground leading-relaxed">
+              Currently interning at <span className="text-foreground font-semibold">Woxsen AI Research Center</span>, 
+              building scalable systems for 6,000+ users. Passionate about backend development, DevOps, 
+              and AI/ML with hands-on experience in production environments.
+            </p>
           </motion.div>
         </div>
       </div>
