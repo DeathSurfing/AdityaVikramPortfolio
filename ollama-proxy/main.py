@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 # Configuration
 OLLAMA_ENDPOINT = os.getenv("OLLAMA_ENDPOINT", "http://localhost:11434")
-OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.2")
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "gpt-oss:20b")
 
 # Pydantic models for request/response validation
 class ChatMessage(BaseModel):
