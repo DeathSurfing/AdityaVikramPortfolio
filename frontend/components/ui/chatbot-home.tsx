@@ -24,7 +24,7 @@ interface ChatbotHomeProps {
   onSwitchToOriginal?: () => void;
 }
 
-export function ChatbotHome({ onSwitchToOriginal }: ChatbotHomeProps) {
+export function ChatbotHome({ _onSwitchToOriginal }: ChatbotHomeProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -123,7 +123,7 @@ Hey there! I'm your **AI assistant** powered by Ollama. I know all about **Adity
       const assistantMessage: Message = {
         id: Date.now().toString(),
         role: 'assistant',
-        content: data.message || 'I received your message but couldn\'t generate a proper response.',
+        content: data.message || 'I received your message but couldn&apos;t generate a proper response.',
         timestamp: new Date(),
       };
       
@@ -206,7 +206,7 @@ Hey there! I'm your **AI assistant** powered by Ollama. I know all about **Adity
                 <div className="inline-block p-4 rounded-full bg-gradient-to-br from-primary/10 to-accent/10 mb-4">
                   <Bot className="w-12 h-12 text-primary" />
                 </div>
-                <h2 className="text-2xl font-bold mb-2">Welcome to Aditya's AI Assistant!</h2>
+                <h2 className="text-2xl font-bold mb-2">Welcome to Aditya&apos;s AI Assistant!</h2>
                 <p className="text-muted-foreground">Initializing conversation...</p>
               </motion.div>
             )}

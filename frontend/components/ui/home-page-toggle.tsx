@@ -2,9 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Bot, Home, Sparkles } from 'lucide-react';
+import { Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { ChatbotHome } from './chatbot-home';
 import { HomeContent } from '@/app/home-content';
 
@@ -12,7 +11,7 @@ type ViewMode = 'original' | 'chatbot';
 
 export function HomePageToggle() {
   const [viewMode, setViewMode] = useState<ViewMode>('original');
-  const [isFirstVisit, setIsFirstVisit] = useState(true);
+  const [_isFirstVisit, setIsFirstVisit] = useState(true);
 
   useEffect(() => {
     // Check if user has visited before
