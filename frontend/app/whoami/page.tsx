@@ -6,6 +6,7 @@ import { Azeret_Mono } from 'next/font/google';
 import { cn } from '@/lib/utils';
 import { AnimatedTestimonials } from '@/components/ui/animated-testimonials';
 import BlurVignette from '@/components/ui/blur-vignette';
+import { SocialSection } from '@/components/ui/text-effect-flipper';
 
 
 const azeretMono = Azeret_Mono({
@@ -202,6 +203,9 @@ export default function WhoAmIPage() {
             />
           </div>
         </section>
+
+        {/* Social Section */}
+        <SocialSection />
 
         {/* Contact Section */}
         <section className="min-h-screen flex items-center px-4 py-20">

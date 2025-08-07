@@ -1,7 +1,7 @@
 'use client';
 import { motion } from 'framer-motion';
 import { useTheme } from 'next-themes';
-import { Home, User, FolderOpen, FileText, Sun, Moon, Monitor, Github, Linkedin, Twitter, Mail, Users, Youtube } from 'lucide-react';
+import { Home, User, FolderOpen, FileText, Sun, Moon, Monitor, Github, Linkedin, Twitter, Mail, Users, Youtube, Briefcase } from 'lucide-react';
 import { FloatingDock } from '@/components/ui/floating-dock';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useState, useEffect } from 'react';
@@ -76,6 +76,11 @@ const Footer = () => {
       title: "Projects",
       icon: <FolderOpen className="h-4 w-4" />,
       href: "/projects",
+    },
+    {
+      title: "Experience",
+      icon: <Briefcase className="h-4 w-4" />,
+      href: "/experience",
     },
     {
       title: "Resume",
