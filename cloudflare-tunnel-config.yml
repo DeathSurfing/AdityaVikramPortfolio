@@ -1,0 +1,27 @@
+tunnel: your-tunnel-id  # Replace with your actual tunnel ID
+credentials-file: /path/to/your/tunnel/credentials.json  # Replace with your actual path
+
+ingress:
+  # 🎯 Proxy Ollama (via FastAPI proxy) on portfolio.adityavikram.dev/api/*
+  - hostname: portfolio.adityavikram.dev
+    path: /api/*
+    service: http://localhost:5950
+
+  # 🌐 Main portfolio site
+  - hostname: portfolio.adityavikram.dev
+    service: http://localhost:8594
+
+  # 🏠 Root domain
+  - hostname: adityavikram.dev
+    service: http://localhost:8594
+
+  # 🧩 Tambola routes
+  - hostname: tambola.adityavikram.dev
+    path: /api/*
+    service: http://localhost:8120
+
+  - hostname: tambola.adityavikram.dev
+    service: http://localhost:8119
+
+  # ❌ Catch-all
+  - service: http_status:404
