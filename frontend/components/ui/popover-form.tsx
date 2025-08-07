@@ -39,7 +39,7 @@ export function PopoverForm({
         layoutId={`${title}-wrapper`}
         onClick={() => setOpen(true)}
         style={{ borderRadius: 8 }}
-        className="flex h-9 items-center border bg-white dark:bg-[#121212] px-3 text-sm font-medium outline-none"
+        className="flex h-9 items-center border bg-background dark:bg-card px-3 text-sm font-medium outline-none"
       >
         <motion.span layoutId={`${title}-title`}>{title}</motion.span>
       </motion.button>
@@ -91,7 +91,7 @@ export function PopoverForm({
                   transition={{ type: "spring", duration: 0.4, bounce: 0 }}
                   key="open-child"
                   style={{ borderRadius: 10 }}
-                  className="h-full border bg-white dark:bg-[#121212] z-20 "
+                  className="h-full border bg-background dark:bg-card z-20 "
                 >
                   {openChild}
                 </motion.div>
@@ -114,7 +114,7 @@ export function PopoverFormButton({
   return (
     <button
       type="submit"
-      className="ml-auto flex h-6 w-26 items-center justify-center overflow-hidden rounded-md bg-gradient-to-b from-primary/90 to-primary px-3 text-xs font-semibold text-primary-foreground shadow-[0_0_1px_1px_rgba(255,255,255,0.08)_inset,0_1px_1.5px_0_rgba(0,0,0,0.32),0_0_0_0.5px_#1a94ff]"
+      className="ml-auto flex h-6 w-26 items-center justify-center overflow-hidden rounded-md bg-gradient-to-b from-primary/90 to-primary px-3 text-xs font-semibold text-primary-foreground shadow-md"
     >
       <AnimatePresence mode="popLayout" initial={false}>
         <motion.span
@@ -177,12 +177,11 @@ export function PopoverFormSuccess({
       >
         <path
           d="M27.6 16C27.6 17.5234 27.3 19.0318 26.717 20.4392C26.1341 21.8465 25.2796 23.1253 24.2025 24.2025C23.1253 25.2796 21.8465 26.1341 20.4392 26.717C19.0318 27.3 17.5234 27.6 16 27.6C14.4767 27.6 12.9683 27.3 11.5609 26.717C10.1535 26.1341 8.87475 25.2796 7.79759 24.2025C6.72043 23.1253 5.86598 21.8465 5.28302 20.4392C4.70007 19.0318 4.40002 17.5234 4.40002 16C4.40002 12.9235 5.62216 9.97301 7.79759 7.79759C9.97301 5.62216 12.9235 4.40002 16 4.40002C19.0765 4.40002 22.027 5.62216 24.2025 7.79759C26.3779 9.97301 27.6 12.9235 27.6 16Z"
-          fill="#2090FF"
-          fillOpacity="0.16"
+          className="fill-primary/20"
         />
         <path
           d="M12.1334 16.9667L15.0334 19.8667L19.8667 13.1M27.6 16C27.6 17.5234 27.3 19.0318 26.717 20.4392C26.1341 21.8465 25.2796 23.1253 24.2025 24.2025C23.1253 25.2796 21.8465 26.1341 20.4392 26.717C19.0318 27.3 17.5234 27.6 16 27.6C14.4767 27.6 12.9683 27.3 11.5609 26.717C10.1535 26.1341 8.87475 25.2796 7.79759 24.2025C6.72043 23.1253 5.86598 21.8465 5.28302 20.4392C4.70007 19.0318 4.40002 17.5234 4.40002 16C4.40002 12.9235 5.62216 9.97301 7.79759 7.79759C9.97301 5.62216 12.9235 4.40002 16 4.40002C19.0765 4.40002 22.027 5.62216 24.2025 7.79759C26.3779 9.97301 27.6 12.9235 27.6 16Z"
-          stroke="#2090FF"
+          className="stroke-primary"
           strokeWidth="2.4"
           strokeLinecap="round"
           strokeLinejoin="round"
