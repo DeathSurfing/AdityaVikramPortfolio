@@ -247,7 +247,7 @@ export default function BlogPage() {
                   Blog Coming Soon
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-                  I&apos;m preparing to share technical insights, project deep-dives, and lessons learned 
+                  I'm preparing to share technical insights, project deep-dives, and lessons learned 
                   from building real-world applications. Stay tuned for exciting content!
                 </p>
               </motion.div>
@@ -315,7 +315,7 @@ export default function BlogPage() {
                 <div className="p-8 rounded-2xl border border-border bg-card/30 backdrop-blur-sm">
                   <h3 className="text-2xl font-bold text-foreground mb-4">Get Notified</h3>
                   <p className="text-muted-foreground mb-6 leading-relaxed">
-                    Want to be the first to read my posts? Drop me a line and I&apos;ll notify you when the blog launches!
+                    Want to be the first to read my posts? Drop me a line and I'll notify you when the blog launches!
                   </p>
                   <div className="flex flex-col sm:flex-row gap-4 justify-center">
                     <a

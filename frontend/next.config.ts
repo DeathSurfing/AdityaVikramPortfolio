@@ -1,7 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: 'standalone', // Enable standalone output for Docker
   images: {
     domains: ['opengraph.githubassets.com'],
   },

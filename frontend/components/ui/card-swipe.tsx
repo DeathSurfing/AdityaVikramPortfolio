@@ -38,7 +38,7 @@ export const CardSwipe: React.FC<CarouselProps> = ({
   border-radius: 18px;
   font-size: 22px;
   font-weight: bold;
-  color: hsl(var(--foreground));
+  color: #fff;
   }
   
   .swiper-slide img {
@@ -56,7 +56,7 @@ export const CardSwipe: React.FC<CarouselProps> = ({
             variant="outline"
             className="absolute left-4 top-6 rounded-[14px] border border-black/10 text-base md:left-6"
           >
-            <SparklesIcon className="fill-accent stroke-1 text-accent-foreground" />
+            <SparklesIcon className="fill-[#EEBDE0] stroke-1 text-neutral-800" />{" "}
             My projects
           </Badge>
           <div className="flex flex-col justify-center pb-2 pl-4 pt-14 md:items-center">

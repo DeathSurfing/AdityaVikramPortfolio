@@ -20,34 +20,12 @@ interface ThemeToggleAnimationProps {
 }
 
 export default function ThemeToggleButton({
-  variant,
-  start,
+  variant = "circle-blur",
+  start = "top-left",
   showLabel = false,
   url = "",
 }: ThemeToggleAnimationProps) {
   const { theme, setTheme } = useTheme()
-  
-  // Available animation variants
-  const animations = [
-    { variant: "circle", start: "center" },
-    { variant: "circle-blur", start: "top-left" },
-    { variant: "polygon", start: "center" },
-    { variant: "slide-horizontal", start: "left" },
-    { variant: "slide-horizontal", start: "right" },
-    { variant: "slide-vertical", start: "top" },
-    { variant: "slide-vertical", start: "bottom" },
-    { variant: "fade-blur", start: "center" },
-    { variant: "spiral", start: "center" },
-    { variant: "diamond", start: "center" },
-    { variant: "wave", start: "center" },
-  ] as const
-  
-  // Use provided variant/start or pick random
-  const getRandomAnimation = () => {
-    if (variant && start) return { variant, start }
-    const randomIndex = Math.floor(Math.random() * animations.length)
-    return animations[randomIndex]
-  }
 
   const styleId = "theme-transition-styles"
 
@@ -71,8 +49,7 @@ export default function ThemeToggleButton({
   }, [])
 
   const toggleTheme = React.useCallback(() => {
-    const { variant: animVariant, start: animStart } = getRandomAnimation()
-    const animation = createAnimation(animVariant as AnimationVariant, animStart as AnimationStart, url)
+    const animation = createAnimation(variant, start, url)
 
     updateStyles(animation.css, animation.name)
 
@@ -88,7 +65,7 @@ export default function ThemeToggleButton({
     }
 
     document.startViewTransition(switchTheme)
-  }, [theme, setTheme, variant, start, url, updateStyles])
+  }, [theme, setTheme])
 
   return (
     <Button

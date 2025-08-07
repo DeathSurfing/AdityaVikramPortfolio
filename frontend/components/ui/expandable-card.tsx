@@ -84,7 +84,7 @@ export function ExpandableCardDemo({
                   layoutId={`button-${active.name}-${id}`}
                   href={active.link}
                   target="_blank"
-                  className="px-4 py-3 text-sm rounded-full font-bold bg-primary text-primary-foreground mt-4 md:mt-0"
+                  className="px-4 py-3 text-sm rounded-full font-bold bg-green-500 text-white mt-4 md:mt-0"
                 >
                   {active.link?.includes('github') ? 'View Code' : 'Visit Site'}
                 </motion.a>
@@ -159,7 +159,7 @@ export function ExpandableCardDemo({
             </div>
             <motion.button
               layoutId={`button-${card.name}-${id}`}
-              className="px-4 py-2 text-sm rounded-full font-bold bg-secondary hover:bg-primary hover:text-primary-foreground text-secondary-foreground mt-4 md:mt-0"
+              className="px-4 py-2 text-sm rounded-full font-bold bg-gray-100 hover:bg-green-500 hover:text-white text-black mt-4 md:mt-0"
             >
               {card.link?.includes('github') ? 'View Code' : 'Visit Site'}
             </motion.button>

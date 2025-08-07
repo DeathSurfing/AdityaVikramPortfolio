@@ -55,25 +55,25 @@ export function SocialSection() {
       name: "GitHub",
       href: "https://github.com/DeathSurfing",
       icon: Github,
-      color: "hover:text-foreground"
+      color: "hover:text-gray-900 dark:hover:text-white"
     },
     {
       name: "LinkedIn", 
       href: "https://www.linkedin.com/in/aditya-vikram-mahendru/",
       icon: Linkedin,
-      color: "hover:text-primary"
+      color: "hover:text-blue-600"
     },
     {
       name: "YouTube",
       href: "https://www.youtube.com/@VikramMahendru", 
       icon: Youtube,
-      color: "hover:text-destructive"
+      color: "hover:text-red-600"
     },
     {
       name: "Email",
       href: "mailto:jobs.aditya.vikram.mahendru@gmail.com",
       icon: Mail,
-      color: "hover:text-accent"
+      color: "hover:text-green-600"
     }
   ];
 
