@@ -53,9 +53,9 @@ function StarShape({
       >
         <defs>
           <linearGradient id={`starGradient-${size}`} x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="rgba(255,255,255,0.8)" />
-            <stop offset="50%" stopColor="rgba(255,255,255,0.4)" />
-            <stop offset="100%" stopColor="rgba(255,255,255,0.1)" />
+            <stop offset="0%" className="[stop-color:rgba(0,0,0,0.8)] dark:[stop-color:rgba(255,255,255,0.8)]" />
+            <stop offset="50%" className="[stop-color:rgba(0,0,0,0.4)] dark:[stop-color:rgba(255,255,255,0.4)]" />
+            <stop offset="100%" className="[stop-color:rgba(0,0,0,0.1)] dark:[stop-color:rgba(255,255,255,0.1)]" />
           </linearGradient>
           <filter id={`starGlow-${size}`}>
             <feGaussianBlur stdDeviation="3" result="coloredBlur" />
@@ -70,10 +70,9 @@ function StarShape({
         <path
           d={starPath}
           fill={`url(#starGradient-${size})`}
-          stroke="rgba(255,255,255,0.6)"
+          className="stroke-black/60 dark:stroke-white/60 drop-shadow-lg"
           strokeWidth="2"
           filter={`url(#starGlow-${size})`}
-          className="drop-shadow-lg"
         />
 
         {/* Inner sparkle */}
@@ -81,8 +80,7 @@ function StarShape({
           cx={size / 2}
           cy={size / 2}
           r={size * 0.08}
-          fill="rgba(255,255,255,0.9)"
-          className="animate-pulse"
+          className="fill-black/90 dark:fill-white/90 animate-pulse"
         />
       </svg>
 
@@ -326,9 +324,49 @@ export default function HomePage() {
             </div>
           </motion.div>
 
-          {/* CTAs */}
+          {/* No-BS Look Into Me */}
           <motion.div
             custom={3}
+            variants={fadeUpVariants}
+            initial="hidden"
+            animate="visible"
+            className="space-y-6 max-w-3xl mx-auto"
+          >
+            <h3 className="text-lg font-semibold text-foreground">No-BS Look Into Me</h3>
+            <div className="grid md:grid-cols-2 gap-4 text-left">
+              <div className="bg-card/30 backdrop-blur-sm border border-border/40 rounded-xl p-4 space-y-3">
+                <h4 className="font-semibold text-foreground">🚀 What Drives Me</h4>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  I love solving complex problems with simple, elegant code. Whether it's optimizing deployment times or building systems for thousands of users, I get excited about making things work better and faster.
+                </p>
+              </div>
+              
+              <div className="bg-card/30 backdrop-blur-sm border border-border/40 rounded-xl p-4 space-y-3">
+                <h4 className="font-semibold text-foreground">💡 My Approach</h4>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  I believe in learning by building. That's why I built a CNN from scratch in Rust instead of just using TensorFlow. I want to understand how things work under the hood.
+                </p>
+              </div>
+              
+              <div className="bg-card/30 backdrop-blur-sm border border-border/40 rounded-xl p-4 space-y-3">
+                <h4 className="font-semibold text-foreground">🔧 What I'm Good At</h4>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Taking ideas from concept to production. I don't just write code - I think about scalability, cost optimization, and user experience. My internship showed me how to balance technical excellence with business needs.
+                </p>
+              </div>
+              
+              <div className="bg-card/30 backdrop-blur-sm border border-border/40 rounded-xl p-4 space-y-3">
+                <h4 className="font-semibold text-foreground">🎯 What's Next</h4>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Looking for opportunities where I can contribute to meaningful projects, learn from experienced teams, and continue growing as a software engineer. I'm particularly interested in backend systems and AI applications.
+                </p>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* CTAs */}
+          <motion.div
+            custom={4}
             variants={fadeUpVariants}
             initial="hidden"
             animate="visible"
@@ -374,7 +412,7 @@ export default function HomePage() {
 
           {/* Quick Summary */}
           <motion.div
-            custom={4}
+            custom={5}
             variants={fadeUpVariants}
             initial="hidden"
             animate="visible"
