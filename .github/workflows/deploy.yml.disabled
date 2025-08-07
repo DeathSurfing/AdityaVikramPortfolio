@@ -1,5 +1,10 @@
 name: 🚀 Deploy Portfolio
 
+permissions:
+  contents: read
+  packages: write
+  security-events: write
+
 on:
   push:
     branches: [main, master]
@@ -23,8 +28,8 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME_FRONTEND: ${{ github.repository }}-frontend
-  IMAGE_NAME_PROXY: ${{ github.repository }}-proxy
+  IMAGE_NAME_FRONTEND: ${{ github.repository_owner }}/adityavikramportfolio-frontend
+  IMAGE_NAME_PROXY: ${{ github.repository_owner }}/adityavikramportfolio-proxy
 
 jobs:
   # ==============================================================================

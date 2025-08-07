@@ -1,6 +1,7 @@
 services:
   # Next.js Frontend
   frontend:
+    image: portfolio-frontend:latest
     build:
       context: ./frontend
       dockerfile: Dockerfile
@@ -24,6 +25,7 @@ services:
 
   # FastAPI Ollama Proxy
   ollama-proxy:
+    image: portfolio-proxy:latest
     build:
       context: ./ollama-proxy
       dockerfile: Dockerfile
