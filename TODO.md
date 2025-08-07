@@ -13,8 +13,6 @@ ___
 - ✅ Added loading animations components (spinner, dots, pulse) for better UX
 
 ## 🔄 Future Improvements
-- [ ] Individual blog post pages with full content
-- [ ] Search functionality for projects and blog posts
 - [ ] Dark/light mode animations and transitions
-- [ ] Advanced project sorting (by date, popularity, etc.)
-- [ ] Contact form with email integration
+- [ ] Add a guided tour at the home page at the beginning
+
