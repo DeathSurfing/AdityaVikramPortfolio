@@ -1,0 +1,155 @@
+name: Deploy Ollama Proxy
+
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'ollama-proxy/**'
+      - 'frontend/**'
+      - '.github/workflows/deploy-ollama-proxy.yml'
+  pull_request:
+    branches: [ main, master ]
+    paths:
+      - 'ollama-proxy/**'
+      - 'frontend/**'
+  workflow_dispatch:
+
+env:
+  OLLAMA_MODEL: gpt-oss:20b
+
+jobs:
+  frontend-lint:
+    runs-on: self-hosted
+    name: 🎨 Lint Frontend
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: './frontend/package-lock.json'
+
+    - name: Install frontend dependencies
+      working-directory: ./frontend
+      run: |
+        echo "📦 Installing frontend dependencies..."
+        npm ci
+
+    - name: Lint frontend code
+      working-directory: ./frontend
+      run: |
+        echo "🔍 Linting frontend code..."
+        npm run lint
+
+    - name: Type check frontend
+      working-directory: ./frontend
+      run: |
+        echo "📝 Type checking frontend..."
+        npx tsc --noEmit
+
+    - name: Validate Docker configurations
+      run: |
+        echo "🐳 Validating Docker configurations..."
+        docker compose -f ./ollama-proxy/docker-compose.yml config
+        docker compose -f ./docker-compose.yml config || echo "⚠️ Root docker-compose not found, skipping"
+
+  deploy:
+    runs-on: self-hosted
+    name: 🚀 Deploy Ollama Proxy
+    needs: frontend-lint
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Check system requirements
+      run: |
+        echo "🔍 Checking system requirements..."
+        echo "Docker version: $(docker --version)"
+        echo "Docker Compose version: $(docker compose version)"
+        echo "Available disk space:"
+        df -h
+
+    - name: Check if Ollama is running
+      run: |
+        echo "🔍 Checking Ollama status..."
+        if curl -f http://localhost:11434/api/tags > /dev/null 2>&1; then
+          echo "✅ Ollama is running"
+          echo "📋 Available models:"
+          curl -s http://localhost:11434/api/tags | jq -r '.models[].name' || echo "Could not list models"
+        else
+          echo "❌ Ollama is not running. Please start Ollama on the runner."
+          echo "   Command: ollama serve"
+          exit 1
+        fi
+
+    - name: Check/Pull model
+      run: |
+        echo "🔍 Checking if model ${{ env.OLLAMA_MODEL }} is available..."
+        if ! curl -s http://localhost:11434/api/tags | jq -r '.models[].name' | grep -q "${{ env.OLLAMA_MODEL }}"; then
+          echo "⬇️ Model ${{ env.OLLAMA_MODEL }} not found, pulling..."
+          ollama pull ${{ env.OLLAMA_MODEL }}
+          echo "✅ Model pulled successfully"
+        else
+          echo "✅ Model ${{ env.OLLAMA_MODEL }} is available"
+        fi
+
+    - name: Stop existing deployment
+      run: |
+        echo "🛑 Stopping existing deployment..."
+        docker compose down || true
+        docker system prune -f || true
+
+    - name: Deploy Frontend + Ollama Proxy
+      run: |
+        echo "🚀 Deploying Frontend + Ollama proxy with Docker Compose..."
+        export OLLAMA_MODEL=${{ env.OLLAMA_MODEL }}
+        docker compose up --build -d frontend ollama-proxy
+
+    - name: Wait for services
+      run: |
+        echo "⏳ Waiting for services..."
+        for i in {1..12}; do
+            if curl -f http://localhost:5950/health > /dev/null 2>&1; then
+                echo "✅ Ollama proxy ready!"
+                break
+            fi
+            echo "   Attempt $i/12..."
+            sleep 10
+        done
+
+    - name: Test frontend and proxy
+      run: |
+        # Test frontend (give it more time)
+        echo "🔍 Checking frontend..."
+        sleep 15
+        if curl -f http://localhost:3000 > /dev/null 2>&1; then
+            echo "✅ Frontend ready!"
+        else
+            echo "⚠️ Frontend still starting (this is normal)"
+        fi
+        
+        # Test Ollama proxy
+        echo "🧪 Testing Ollama proxy..."
+        curl -f http://localhost:5950/health
+        echo ""
+        echo "✅ Deployment complete!"
+
+    - name: Clean up old images
+      run: |
+        echo "🧹 Cleaning up old Docker images..."
+        docker image prune -f --filter "until=24h"
+
+    - name: Deployment summary
+      run: |
+        echo "✅ Deployment complete!"
+        echo "🔥 Frontend: http://localhost:3000"
+        echo "🌐 Ollama proxy: http://localhost:5950"
+        echo "💬 Ready for Cloudflare tunnel routing"
+        echo "📋 Container status:"
+        docker compose ps

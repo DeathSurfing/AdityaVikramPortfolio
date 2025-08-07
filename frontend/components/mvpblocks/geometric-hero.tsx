@@ -103,7 +103,7 @@ export default function HeroGeometric({
 
   return (
     <div className="bg-background relative flex min-h-screen w-full items-center justify-center overflow-hidden dark:bg-black">
-      <div className="from-primary/20 dark:from-primary/30 absolute inset-0 bg-gradient-to-br via-transparent to-rose-500/20 blur-3xl dark:to-rose-500/30" />
+      <div className="from-primary/20 dark:from-primary/30 absolute inset-0 bg-gradient-to-br via-transparent to-accent/20 blur-3xl dark:to-accent/30" />
 
       <div className="absolute inset-0 overflow-hidden">
         <ElegantShape
@@ -111,7 +111,7 @@ export default function HeroGeometric({
           width={600}
           height={140}
           rotate={12}
-          gradient="from-indigo-500/70"
+          gradient="from-primary/70"
           className="top-[15%] left-[-10%] md:top-[20%] md:left-[-5%]"
         />
 
@@ -120,7 +120,7 @@ export default function HeroGeometric({
           width={500}
           height={120}
           rotate={-15}
-          gradient="from-rose-400"
+          gradient="from-accent/60"
           className="top-[70%] right-[-5%] md:top-[75%] md:right-[0%]"
         />
 
@@ -129,7 +129,7 @@ export default function HeroGeometric({
           width={300}
           height={80}
           rotate={-8}
-          gradient="from-violet-400"
+          gradient="from-secondary/60"
           className="bottom-[5%] left-[5%] md:bottom-[10%] md:left-[10%]"
         />
 
@@ -138,7 +138,7 @@ export default function HeroGeometric({
           width={200}
           height={60}
           rotate={20}
-          gradient="from-amber-500/70 dark:from-amber-400/90"
+          gradient="from-accent/70 dark:from-accent/90"
           className="top-[10%] right-[15%] md:top-[15%] md:right-[20%]"
         />
 
@@ -147,7 +147,7 @@ export default function HeroGeometric({
           width={150}
           height={40}
           rotate={-25}
-          gradient="from-cyan-500/70 dark:from-cyan-400/90"
+          gradient="from-primary/70 dark:from-primary/90"
           className="top-[5%] left-[20%] md:top-[10%] md:left-[25%]"
         />
       </div>
@@ -180,7 +180,7 @@ export default function HeroGeometric({
               <br />
               <span
                 className={cn(
-                  'from-primary via-primary/90 bg-gradient-to-r to-rose-500 bg-clip-text p-4 text-transparent',
+                  'from-primary via-primary/90 bg-gradient-to-r to-accent bg-clip-text p-4 text-transparent',
                   pacifico.className,
                   'font-bold',
                 )}
@@ -211,7 +211,7 @@ export default function HeroGeometric({
           >
             <Button
               size="lg"
-              className="from-primary shadow-primary/10 hover:from-primary/90 rounded-full border-none bg-gradient-to-r to-rose-500 shadow-md hover:to-rose-500/90"
+              className="from-primary shadow-primary/10 hover:from-primary/90 rounded-full border-none bg-gradient-to-r to-accent shadow-md hover:to-accent/90"
             >
               Get Started
               <ArrowRight className="ml-2 h-4 w-4" />

@@ -40,25 +40,25 @@ const Footer = () => {
       name: "GitHub",
       icon: <Github className="h-4 w-4" />,
       href: "https://github.com/DeathSurfing",
-      color: "hover:text-gray-900 dark:hover:text-white"
+      color: "hover:text-foreground"
     },
     {
       name: "LinkedIn",
       icon: <Linkedin className="h-4 w-4" />,
       href: "https://www.linkedin.com/in/aditya-vikram-mahendru/",
-      color: "hover:text-blue-600"
+      color: "hover:text-primary"
     },
     {
       name: "Youtube",
       icon: <Youtube className="h-4 w-4" />,
       href: "https://www.youtube.com/@VikramMahendru",
-      color: "hover:text-blue-400"
+      color: "hover:text-secondary"
     },
     {
       name: "Email",
       icon: <Mail className="h-4 w-4" />,
       href: "mailto:jobs.aditya.vikram.mahendru@gmail.com",
-      color: "hover:text-red-500"
+      color: "hover:text-destructive"
     },
   ];
 
