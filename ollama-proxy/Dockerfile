@@ -7,7 +7,7 @@ WORKDIR /app
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     OLLAMA_ENDPOINT=http://localhost:11434 \
-    OLLAMA_MODEL=llama3.2
+    OLLAMA_MODEL=gpt-oss:20b
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
