@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { Carousel, Card } from "@/components/ui/apple-cards-carousel"
-import { ExpandableCardDemo } from "@/components/ui/expandable-card"
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+import { Badge } from "@/components/ui/badge"
+import { X } from "lucide-react"
 import React from "react"
 
 type Project = {
@@ -211,10 +211,38 @@ const projects: Project[] = [
 ]
 
 export default function ProjectsPage() {
-  const [view, setView] = useState<"cards" | "table">("cards")
+  const [selectedCategory, setSelectedCategory] = useState<string>("All")
+  const [selectedTech, setSelectedTech] = useState<string[]>([])
+
+  // Extract unique categories and technologies
+  const categories = ["All", ...new Set(projects.map(p => p.category))]
+  const allTechnologies = [...new Set(projects.flatMap(p => p.technologies || []))]
+
+  // Filter projects based on selected category and technologies
+  const filteredProjects = useMemo(() => {
+    return projects.filter(project => {
+      const categoryMatch = selectedCategory === "All" || project.category === selectedCategory
+      const techMatch = selectedTech.length === 0 || 
+        (project.technologies && selectedTech.every(tech => project.technologies?.includes(tech)))
+      return categoryMatch && techMatch
+    })
+  }, [selectedCategory, selectedTech])
+
+  const toggleTechnology = (tech: string) => {
+    setSelectedTech(prev => 
+      prev.includes(tech) 
+        ? prev.filter(t => t !== tech)
+        : [...prev, tech]
+    )
+  }
+
+  const clearFilters = () => {
+    setSelectedCategory("All")
+    setSelectedTech([])
+  }
 
   // Prepare card items for the Apple Cards Carousel
-  const cardItems = projects.map((project, index) => (
+  const cardItems = filteredProjects.map((project, index) => (
     <Card 
       key={project.id} 
       card={{
@@ -228,35 +256,95 @@ export default function ProjectsPage() {
     />
   ))
 
-  // Prepare items for the expandable card list
-  const expandableCardItems = projects.map(project => ({
-    id: project.id,
-    name: project.name,
-    designation: project.description,
-    image: project.image,
-    link: project.link,
-    technologies: project.technologies
-  }))
 
   return (
     <div className="max-w-6xl mx-auto py-12 px-4">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Projects</h1>
-        <ToggleGroup
-          type="single"
-          value={view}
-          onValueChange={(val) => val && setView(val as "cards" | "table")}
-        >
-          <ToggleGroupItem value="cards">Card View</ToggleGroupItem>
-          <ToggleGroupItem value="table">Table View</ToggleGroupItem>
-        </ToggleGroup>
+      <div className="text-center mb-12">
+        <h1 className="text-4xl md:text-6xl font-bold mb-4">Projects</h1>
+        <p className="text-lg text-muted-foreground">
+          Showing {filteredProjects.length} of {projects.length} projects
+        </p>
       </div>
 
-      {view === "cards" ? (
-        <Carousel items={cardItems} />
-      ) : (
-        <ExpandableCardDemo cards={expandableCardItems} />
-      )}
+      {/* Filters */}
+      <div className="mb-8">
+        {/* Category Filter */}
+        <div className="mb-4">
+          <h3 className="text-sm font-medium text-muted-foreground mb-3">Filter by Category</h3>
+          <div className="flex flex-wrap gap-2">
+            {categories.map(category => (
+              <button
+                key={category}
+                onClick={() => setSelectedCategory(category)}
+                className={`px-3 py-1 text-sm rounded-full transition-colors ${
+                  selectedCategory === category
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                }`}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Technology Filter */}
+        <div className="mb-4">
+          <h3 className="text-sm font-medium text-muted-foreground mb-3">Filter by Technology</h3>
+          <div className="flex flex-wrap gap-2">
+            {allTechnologies.map(tech => (
+              <button
+                key={tech}
+                onClick={() => toggleTechnology(tech)}
+                className={`px-3 py-1 text-sm rounded-full transition-colors ${
+                  selectedTech.includes(tech)
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                }`}
+              >
+                {tech}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Active Filters & Clear */}
+        {(selectedCategory !== "All" || selectedTech.length > 0) && (
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-sm font-medium text-muted-foreground">Active filters:</span>
+            {selectedCategory !== "All" && (
+              <Badge variant="secondary" className="gap-1">
+                {selectedCategory}
+                <button
+                  onClick={() => setSelectedCategory("All")}
+                  className="hover:bg-secondary-foreground/10 rounded-full p-0.5"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </Badge>
+            )}
+            {selectedTech.map(tech => (
+              <Badge key={tech} variant="secondary" className="gap-1">
+                {tech}
+                <button
+                  onClick={() => toggleTechnology(tech)}
+                  className="hover:bg-secondary-foreground/10 rounded-full p-0.5"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </Badge>
+            ))}
+            <button
+              onClick={clearFilters}
+              className="text-sm text-muted-foreground hover:text-foreground underline"
+            >
+              Clear all
+            </button>
+          </div>
+        )}
+      </div>
+
+      <Carousel items={cardItems} />
     </div>
   )
 }
