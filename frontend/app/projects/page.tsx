@@ -110,7 +110,7 @@ const projects: Project[] = [
     content: (
       <div className="space-y-4">
         <p className="text-neutral-600 dark:text-neutral-400">
-          A comprehensive data science project analyzing Spotify's top 100 tracks to identify 
+          A comprehensive data science project analyzing Spotify&apos;s top 100 tracks to identify
           patterns and predict song hit potential using machine learning techniques.
         </p>
         <div className="space-y-2">

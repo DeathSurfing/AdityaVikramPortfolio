@@ -277,7 +277,7 @@ export async function GET() {
       model: OLLAMA_MODEL,
       timestamp: new Date().toISOString()
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json({
       status: 'unhealthy',
       endpoint: OLLAMA_ENDPOINT,
