@@ -1,202 +1,100 @@
-# 🚀 FastAPI Ollama Proxy
+# 🚀 Ollama FastAPI Proxy - Docker Compose Deployment
 
-A CORS-enabled FastAPI proxy for Ollama that allows your portfolio website to communicate with your local Ollama instance through Cloudflare Tunnel.
+A simple Docker Compose deployment for Ollama integration with your portfolio website.
 
-## 🎯 Purpose
+## 🎯 What This Does
 
-Since Ollama doesn't natively support CORS, this FastAPI proxy server:
-- ✅ Provides CORS headers for web browser compatibility
-- 🔒 Handles secure communication between your frontend and Ollama
-- 🌐 Exposes Ollama through your Cloudflare tunnel on `/api/*` routes
-- 🎭 Uses the same system prompt as your Next.js API route
-- 🏃‍♂️ Supports both regular and streaming chat responses
+- 🐳 **Containerized**: Runs FastAPI proxy in Docker
+- 🤖 **gpt-oss:20b**: Uses your specified model
+- 🌐 **Cloudflare Ready**: Works with your tunnel on `/api/*`
+- ✅ **CORS Enabled**: Allows browser requests
+- 🗺️ **Python Ollama Library**: Direct connection (no HTTP proxy)
 
-## 📋 Prerequisites
-
-- Python 3.11+ installed
-- Ollama installed and running (`ollama serve`)
-- Your desired model pulled in Ollama (`ollama pull llama3.2`)
-- Cloudflare tunnel configured
-
-## 🚀 Quick Start
-
-### Option 1: Using the Startup Script (Recommended)
+## 🚀 Quick Deployment
 
 ```bash
-cd ollama-proxy
-./start.sh
+# 1. Ensure Ollama is running
+ollama serve
+ollama pull gpt-oss:20b
+
+# 2. Deploy
+./deploy.sh
 ```
 
-The script will:
-- Check if Ollama is accessible
-- Create a virtual environment
-- Install dependencies
-- Start the proxy server on port 5950
-
-### Option 2: Manual Setup
+## 🔧 Manual Deployment
 
 ```bash
-cd ollama-proxy
+# Start with Docker Compose
+docker compose up --build -d
 
-# Create virtual environment
-python3 -m venv venv
-source venv/bin/activate
+# Check status
+docker compose ps
 
-# Install dependencies
-pip install -r requirements.txt
+# View logs
+docker compose logs -f
 
-# Start the server
-uvicorn main:app --host 0.0.0.0 --port 5950 --reload
+# Stop
+docker compose down
 ```
-
-### Option 3: Using Docker
-
-```bash
-cd ollama-proxy
-
-# Build and run with Docker Compose
-docker-compose up --build
-
-# Or build and run manually
-docker build -t ollama-proxy .
-docker run -p 5950:5950 -e OLLAMA_ENDPOINT=http://host.docker.internal:11434 ollama-proxy
-```
-
-## 🛠 Configuration
-
-### Environment Variables
-
-- `OLLAMA_ENDPOINT`: Ollama server URL (default: `http://localhost:11434`)
-- `OLLAMA_MODEL`: Model to use (default: `llama3.2`)
-
-### CORS Configuration
-
-The proxy is configured to allow requests from:
-- `https://portfolio.adityavikram.dev`
-- `https://adityavikram.dev`
-- `http://localhost:3000` (for development)
-- `http://localhost:8594` (your frontend)
-
-## 🌐 Cloudflare Tunnel Setup
-
-Your `cloudflare-tunnel-config.yml` should include:
-
-```yaml
-ingress:
-  # 🎯 Proxy Ollama (via FastAPI proxy) on portfolio.adityavikram.dev/api/*
-  - hostname: portfolio.adityavikram.dev
-    path: /api/*
-    service: http://localhost:5950
-
-  # 🌐 Main portfolio site
-  - hostname: portfolio.adityavikram.dev
-    service: http://localhost:8594
-
-  # ... other routes
-```
-
-This routes all `/api/*` requests to your FastAPI proxy, which then communicates with Ollama.
-
-## 🔌 API Endpoints
-
-### `GET /`
-Basic API information
-
-### `GET /health`
-Health check endpoint - tests Ollama connectivity
-
-### `POST /api/chat`
-Main chat endpoint compatible with your Next.js API
-
-**Request:**
-```json
-{
-  "message": "Tell me about Aditya's experience",
-  "temperature": 0.7,
-  "top_p": 0.9,
-  "max_tokens": 1000
-}
-```
-
-**Response:**
-```json
-{
-  "message": "AI response content",
-  "model": "llama3.2",
-  "timestamp": "1642518000"
-}
-```
-
-### `POST /api/chat/stream`
-Streaming chat endpoint for real-time responses
-
-Returns Server-Sent Events (SSE) stream.
-
-### `/{method} /api/{path}`
-Generic proxy for other Ollama API endpoints
 
 ## 🧪 Testing
 
 ```bash
-# Test health check
+# Health check
 curl http://localhost:5950/health
 
-# Test basic chat
+# Chat test
 curl -X POST http://localhost:5950/api/chat \
   -H "Content-Type: application/json" \
-  -d '{"message": "Hello, tell me about Aditya"}'
-
-# Test from your frontend domain (with CORS)
-fetch('http://localhost:5950/api/chat', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ message: 'Hello!' })
-})
+  -d '{"message": "Hello! Tell me about Aditya"}'
 ```
 
-## 🔄 Integration with Your Portfolio
+## 🌐 Cloudflare Tunnel
 
-Your frontend can now call:
-```javascript
-// This will be proxied through Cloudflare tunnel to your FastAPI server
-fetch('https://portfolio.adityavikram.dev/api/chat', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ message: userMessage })
-})
+Your tunnel config routes `/api/*` to this container:
+
+```yaml
+ingress:
+  - hostname: portfolio.adityavikram.dev
+    path: /api/*
+    service: http://localhost:5950  # This container
 ```
 
-The request flow:
-1. Frontend → Cloudflare Tunnel → FastAPI Proxy → Ollama → Response back
+## 📁 Files
 
-## 📝 Logging
+- `docker-compose.yml` - Main deployment config
+- `Dockerfile` - Container definition  
+- `main.py` - FastAPI server with Ollama Python library
+- `requirements.txt` - Dependencies
+- `deploy.sh` - Simple deployment script
 
-The proxy provides comprehensive logging:
-- Request/response information
-- Ollama connectivity status
-- Error handling and debugging info
+## 🔄 CI/CD
+
+GitHub Actions workflow automatically:
+1. Checks Ollama is running
+2. Pulls model if needed
+3. Deploys with `docker compose up --build -d`
+4. Tests the deployment
 
 ## 🚨 Troubleshooting
 
-### "HTTP client not initialized"
-- Restart the FastAPI server
-- Check if the lifespan manager is working properly
+```bash
+# Check container status
+docker compose ps
 
-### "Failed to get response from AI model"
-- Ensure Ollama is running: `ollama serve`
-- Check if your model is available: `ollama list`
-- Verify the `OLLAMA_ENDPOINT` environment variable
+# View logs
+docker compose logs ollama-proxy
 
-### CORS Issues
-- Verify your domain is in the `allow_origins` list
-- Check browser developer console for CORS errors
+# Restart
+docker compose restart
 
-### Cloudflare Tunnel Issues
-- Verify tunnel configuration
-- Check if port 5950 is accessible locally
-- Ensure tunnel is running: `cloudflared tunnel run your-tunnel-name`
+# Rebuild
+docker compose up --build -d
+```
 
-## 🔧 Development
+---
+
+**Simple deployment**: Just run `./deploy.sh` and you're done!
 
 For development, you can modify:
 - `SYSTEM_PROMPT` - Update the AI assistant personality

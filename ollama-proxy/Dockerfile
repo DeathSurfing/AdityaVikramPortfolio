@@ -6,7 +6,7 @@ WORKDIR /app
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    OLLAMA_ENDPOINT=http://localhost:11434 \
+    OLLAMA_HOST=http://localhost:11434 \
     OLLAMA_MODEL=gpt-oss:20b
 
 # Install system dependencies

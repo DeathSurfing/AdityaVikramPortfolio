@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   ollama-proxy:
     build: .
@@ -7,8 +5,9 @@ services:
     ports:
       - "5950:5950"
     environment:
-      - OLLAMA_ENDPOINT=http://host.docker.internal:11434  # For Docker Desktop on macOS
+      - OLLAMA_HOST=http://host.docker.internal:11434
       - OLLAMA_MODEL=gpt-oss:20b
+      - PYTHONUNBUFFERED=1
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5950/health"]
@@ -16,9 +15,5 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
-    networks:
-      - ollama-network
-
-networks:
-  ollama-network:
-    driver: bridge
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

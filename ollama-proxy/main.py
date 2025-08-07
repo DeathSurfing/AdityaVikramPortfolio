@@ -2,11 +2,12 @@
 """
 FastAPI Proxy Server for Ollama
 Provides CORS support for Ollama API calls from the portfolio website.
+Uses the official Ollama Python library for direct communication.
 """
 
 import os
 import asyncio
-import httpx
+import ollama
 from typing import Any, Dict, Optional, Union
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -15,13 +16,14 @@ from pydantic import BaseModel
 import json
 import logging
 from contextlib import asynccontextmanager
+from datetime import datetime
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Configuration
-OLLAMA_ENDPOINT = os.getenv("OLLAMA_ENDPOINT", "http://localhost:11434")
+OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://localhost:11434")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "gpt-oss:20b")
 
 # Pydantic models for request/response validation
@@ -43,50 +45,77 @@ class ChatResponse(BaseModel):
 
 class HealthResponse(BaseModel):
     status: str
-    endpoint: str
+    host: str
     model: str
     timestamp: str
     error: Optional[str] = None
+    available_models: Optional[list] = None
 
-# Global HTTP client
-http_client: Optional[httpx.AsyncClient] = None
+# Global ollama client
+ollama_client: Optional[ollama.Client] = None
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Manage application lifespan - create and cleanup HTTP client"""
-    global http_client
-    http_client = httpx.AsyncClient(timeout=30.0)
-    logger.info("FastAPI Ollama Proxy started")
-    logger.info(f"Ollama endpoint: {OLLAMA_ENDPOINT}")
-    logger.info(f"Default model: {OLLAMA_MODEL}")
+    """Manage application lifespan - initialize Ollama client"""
+    global ollama_client
+    
+    try:
+        # Initialize Ollama client
+        ollama_client = ollama.Client(host=OLLAMA_HOST)
+        logger.info("FastAPI Ollama Proxy started")
+        logger.info(f"Ollama host: {OLLAMA_HOST}")
+        logger.info(f"Default model: {OLLAMA_MODEL}")
+        
+        # Test connection and log available models
+        try:
+            models = ollama_client.list()
+            if 'models' in models:
+                model_names = [model.get('name', model.get('model', 'unknown')) for model in models['models']]
+                logger.info(f"Available models: {model_names}")
+                if OLLAMA_MODEL not in model_names:
+                    logger.warning(f"Warning: Model '{OLLAMA_MODEL}' not found in available models")
+            else:
+                logger.warning("Unexpected response format from Ollama list API")
+        except Exception as e:
+            logger.warning(f"Could not list models: {e}")
+        
+    except Exception as e:
+        logger.error(f"Failed to initialize Ollama client: {e}")
+        ollama_client = None
     
     yield
     
-    # Cleanup
-    if http_client:
-        await http_client.aclose()
     logger.info("FastAPI Ollama Proxy stopped")
 
 # Create FastAPI app with lifespan management
 app = FastAPI(
     title="Ollama FastAPI Proxy",
-    description="CORS-enabled proxy for Ollama API",
-    version="1.0.0",
+    description="CORS-enabled proxy for Ollama API using Python library",
+    version="2.0.0",
     lifespan=lifespan
 )
 
-# Configure CORS
+# Configure CORS - Updated for portfolio domains
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://portfolio.adityavikram.dev",
-        "https://adityavikram.dev",
-        "http://localhost:3000",  # For local development
-        "http://localhost:8594",  # Your frontend port
+        "https://portfolio.adityavikram.dev",  # Main portfolio site
+        "https://adityavikram.dev",           # Root domain
+        "http://localhost:3000",              # Local Next.js development
+        "http://localhost:8594",              # Your frontend production port
+        "http://localhost:3001",              # Alternative local dev port
     ],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=["*"],
+    allow_headers=[
+        "Accept",
+        "Accept-Language",
+        "Content-Language", 
+        "Content-Type",
+        "Authorization",
+        "X-Requested-With",
+    ],
+    expose_headers=["*"],
 )
 
 # System prompt (same as your Next.js route)
@@ -266,9 +295,9 @@ async def root():
     """Root endpoint - basic API info"""
     return {
         "service": "Ollama FastAPI Proxy",
-        "version": "1.0.0",
+        "version": "2.0.0",
         "status": "running",
-        "ollama_endpoint": OLLAMA_ENDPOINT,
+        "ollama_host": OLLAMA_HOST,
         "default_model": OLLAMA_MODEL
     }
 
@@ -276,47 +305,50 @@ async def root():
 async def health_check():
     """Health check endpoint - tests connection to Ollama"""
     try:
-        if not http_client:
-            raise HTTPException(status_code=500, detail="HTTP client not initialized")
-            
-        response = await http_client.get(f"{OLLAMA_ENDPOINT}/api/tags")
+        if not ollama_client:
+            raise HTTPException(status_code=500, detail="Ollama client not initialized")
         
-        is_healthy = response.status_code == 200
+        # Test connection by listing models
+        models = ollama_client.list()
+        model_names = [model.get('name', model.get('model', 'unknown')) for model in models.get('models', [])]
         
         return HealthResponse(
-            status="healthy" if is_healthy else "unhealthy",
-            endpoint=OLLAMA_ENDPOINT,
+            status="healthy",
+            host=OLLAMA_HOST,
             model=OLLAMA_MODEL,
-            timestamp=asyncio.get_event_loop().time().__str__()
+            timestamp=datetime.now().isoformat(),
+            available_models=model_names
         )
         
     except Exception as e:
         logger.error(f"Health check failed: {str(e)}")
         return HealthResponse(
             status="unhealthy",
-            endpoint=OLLAMA_ENDPOINT,
+            host=OLLAMA_HOST,
             model=OLLAMA_MODEL,
             error=str(e),
-            timestamp=asyncio.get_event_loop().time().__str__()
+            timestamp=datetime.now().isoformat()
         )
 
 @app.post("/api/chat", response_model=ChatResponse)
 async def chat(chat_request: ChatRequest):
     """
-    Chat endpoint that proxies requests to Ollama
+    Chat endpoint that uses Ollama Python library
     Compatible with the existing Next.js API route format
     """
     try:
-        if not http_client:
-            raise HTTPException(status_code=500, detail="HTTP client not initialized")
+        if not ollama_client:
+            raise HTTPException(status_code=500, detail="Ollama client not initialized")
         
         if not chat_request.message or not chat_request.message.strip():
             raise HTTPException(status_code=400, detail="Message is required and cannot be empty")
         
-        # Prepare the request to Ollama
-        ollama_payload = {
-            "model": OLLAMA_MODEL,
-            "messages": [
+        logger.info(f"Sending chat request to Ollama using model: {OLLAMA_MODEL}")
+        
+        # Use Ollama Python library for chat
+        response = ollama_client.chat(
+            model=OLLAMA_MODEL,
+            messages=[
                 {
                     "role": "system",
                     "content": SYSTEM_PROMPT
@@ -326,39 +358,16 @@ async def chat(chat_request: ChatRequest):
                     "content": chat_request.message
                 }
             ],
-            "stream": chat_request.stream,
-            "options": {
+            stream=False,  # Non-streaming for this endpoint
+            options={
                 "temperature": chat_request.temperature,
                 "top_p": chat_request.top_p,
                 "num_predict": chat_request.max_tokens
             }
-        }
-        
-        logger.info(f"Sending request to Ollama: {OLLAMA_ENDPOINT}/api/chat")
-        
-        response = await http_client.post(
-            f"{OLLAMA_ENDPOINT}/api/chat",
-            json=ollama_payload,
-            headers={"Content-Type": "application/json"}
         )
         
-        if not response.is_success:
-            error_text = await response.aread() if hasattr(response, 'aread') else response.text
-            logger.error(f"Ollama API error: {response.status_code} - {error_text}")
-            
-            raise HTTPException(
-                status_code=500,
-                detail={
-                    "error": "Failed to get response from AI model",
-                    "details": f"Status: {response.status_code}",
-                    "fallback": True
-                }
-            )
-        
-        data = response.json()
-        
-        if not data.get("message") or not data["message"].get("content"):
-            logger.error(f"Invalid response format from Ollama: {data}")
+        if not response or not response.get("message") or not response["message"].get("content"):
+            logger.error(f"Invalid response format from Ollama: {response}")
             raise HTTPException(
                 status_code=500,
                 detail={
@@ -368,9 +377,9 @@ async def chat(chat_request: ChatRequest):
             )
         
         return ChatResponse(
-            message=data["message"]["content"].strip(),
+            message=response["message"]["content"].strip(),
             model=OLLAMA_MODEL,
-            timestamp=asyncio.get_event_loop().time().__str__()
+            timestamp=datetime.now().isoformat()
         )
         
     except HTTPException:
@@ -381,7 +390,7 @@ async def chat(chat_request: ChatRequest):
             status_code=500,
             detail={
                 "error": "Internal server error",
-                "message": "Failed to process chat request",
+                "message": f"Failed to process chat request: {str(e)}",
                 "fallback": True
             }
         )
@@ -389,64 +398,53 @@ async def chat(chat_request: ChatRequest):
 @app.post("/api/chat/stream")
 async def chat_stream(chat_request: ChatRequest):
     """
-    Streaming chat endpoint for real-time responses
+    Streaming chat endpoint for real-time responses using Ollama Python library
     """
     try:
-        if not http_client:
-            raise HTTPException(status_code=500, detail="HTTP client not initialized")
+        if not ollama_client:
+            raise HTTPException(status_code=500, detail="Ollama client not initialized")
         
         if not chat_request.message or not chat_request.message.strip():
             raise HTTPException(status_code=400, detail="Message is required and cannot be empty")
         
-        # Prepare the request to Ollama with streaming enabled
-        ollama_payload = {
-            "model": OLLAMA_MODEL,
-            "messages": [
-                {
-                    "role": "system",
-                    "content": SYSTEM_PROMPT
-                },
-                {
-                    "role": "user",
-                    "content": chat_request.message
-                }
-            ],
-            "stream": True,
-            "options": {
-                "temperature": chat_request.temperature,
-                "top_p": chat_request.top_p,
-                "num_predict": chat_request.max_tokens
-            }
-        }
+        logger.info(f"Sending streaming chat request to Ollama using model: {OLLAMA_MODEL}")
         
-        async def generate_stream():
-            """Generator function for streaming responses"""
+        def generate_stream():
+            """Generator function for streaming responses using Ollama library"""
             try:
-                async with http_client.stream(
-                    "POST",
-                    f"{OLLAMA_ENDPOINT}/api/chat",
-                    json=ollama_payload,
-                    headers={"Content-Type": "application/json"}
-                ) as response:
+                # Use Ollama Python library for streaming chat
+                response_stream = ollama_client.chat(
+                    model=OLLAMA_MODEL,
+                    messages=[
+                        {
+                            "role": "system",
+                            "content": SYSTEM_PROMPT
+                        },
+                        {
+                            "role": "user",
+                            "content": chat_request.message
+                        }
+                    ],
+                    stream=True,  # Enable streaming
+                    options={
+                        "temperature": chat_request.temperature,
+                        "top_p": chat_request.top_p,
+                        "num_predict": chat_request.max_tokens
+                    }
+                )
+                
+                for chunk in response_stream:
+                    if chunk.get("message") and chunk["message"].get("content"):
+                        content = chunk["message"]["content"]
+                        yield f"data: {json.dumps({'content': content})}\n\n"
                     
-                    if not response.is_success:
-                        yield f"data: {json.dumps({'error': 'Failed to connect to AI model'})}\n\n"
-                        return
-                    
-                    async for chunk in response.aiter_lines():
-                        if chunk:
-                            try:
-                                data = json.loads(chunk)
-                                if data.get("message") and data["message"].get("content"):
-                                    yield f"data: {json.dumps({'content': data['message']['content']})}\n\n"
-                                elif data.get("done"):
-                                    yield f"data: {json.dumps({'done': True})}\n\n"
-                            except json.JSONDecodeError:
-                                continue
-                                
+                    if chunk.get("done"):
+                        yield f"data: {json.dumps({'done': True})}\n\n"
+                        break
+                        
             except Exception as e:
                 logger.error(f"Streaming error: {str(e)}")
-                yield f"data: {json.dumps({'error': 'Streaming failed'})}\n\n"
+                yield f"data: {json.dumps({'error': f'Streaming failed: {str(e)}'})}\n\n"
         
         return StreamingResponse(
             generate_stream(),
@@ -466,39 +464,20 @@ async def chat_stream(chat_request: ChatRequest):
         logger.error(f"Stream API error: {str(e)}")
         raise HTTPException(status_code=500, detail="Failed to initialize streaming")
 
-# Proxy any other Ollama API endpoints
-@app.api_route("/api/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
-async def proxy_ollama(request: Request, path: str):
-    """
-    Generic proxy for other Ollama API endpoints
-    """
+# Optional: Add more Ollama-specific endpoints if needed
+@app.get("/api/models")
+async def list_models():
+    """List available Ollama models"""
     try:
-        if not http_client:
-            raise HTTPException(status_code=500, detail="HTTP client not initialized")
+        if not ollama_client:
+            raise HTTPException(status_code=500, detail="Ollama client not initialized")
         
-        # Get request body if it exists
-        body = None
-        if request.method in ["POST", "PUT"]:
-            body = await request.body()
-        
-        # Proxy the request to Ollama
-        response = await http_client.request(
-            method=request.method,
-            url=f"{OLLAMA_ENDPOINT}/api/{path}",
-            params=dict(request.query_params),
-            headers={k: v for k, v in request.headers.items() if k.lower() != "host"},
-            content=body
-        )
-        
-        return JSONResponse(
-            content=response.json() if response.headers.get("content-type", "").startswith("application/json") else response.text,
-            status_code=response.status_code,
-            headers=dict(response.headers)
-        )
+        models = ollama_client.list()
+        return {"models": models.get("models", [])}
         
     except Exception as e:
-        logger.error(f"Proxy error for /{path}: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Proxy request failed: {str(e)}")
+        logger.error(f"Failed to list models: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to list models: {str(e)}")
 
 if __name__ == "__main__":
     import uvicorn

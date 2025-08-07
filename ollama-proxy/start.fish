@@ -5,13 +5,13 @@
 echo "🚀 Starting FastAPI Ollama Proxy..."
 
 # Check if Ollama is running
-set OLLAMA_ENDPOINT (test -n "$OLLAMA_ENDPOINT"; and echo $OLLAMA_ENDPOINT; or echo "http://localhost:11434")
-echo "📡 Checking Ollama connection at $OLLAMA_ENDPOINT..."
+set OLLAMA_HOST (test -n "$OLLAMA_HOST"; and echo $OLLAMA_HOST; or echo "http://localhost:11434")
+echo "📡 Checking Ollama connection at $OLLAMA_HOST..."
 
-if curl -s "$OLLAMA_ENDPOINT/api/tags" > /dev/null 2>&1
+if curl -s "$OLLAMA_HOST/api/tags" > /dev/null 2>&1
     echo "✅ Ollama is running and accessible"
 else
-    echo "❌ Warning: Ollama is not accessible at $OLLAMA_ENDPOINT"
+    echo "❌ Warning: Ollama is not accessible at $OLLAMA_HOST"
     echo "   Make sure Ollama is running with: ollama serve"
 end
 
@@ -30,11 +30,11 @@ echo "📦 Installing requirements..."
 pip install -r requirements.txt
 
 # Set environment variables
-set -gx OLLAMA_ENDPOINT (test -n "$OLLAMA_ENDPOINT"; and echo $OLLAMA_ENDPOINT; or echo "http://localhost:11434")
-set -gx OLLAMA_MODEL (test -n "$OLLAMA_MODEL"; and echo $OLLAMA_MODEL; or echo "llama3.2")
+set -gx OLLAMA_HOST (test -n "$OLLAMA_HOST"; and echo $OLLAMA_HOST; or echo "http://localhost:11434")
+set -gx OLLAMA_MODEL (test -n "$OLLAMA_MODEL"; and echo $OLLAMA_MODEL; or echo "gpt-oss:20b")
 
 echo "🌍 Environment:"
-echo "  - Ollama Endpoint: $OLLAMA_ENDPOINT"
+echo "  - Ollama Host: $OLLAMA_HOST"
 echo "  - Ollama Model: $OLLAMA_MODEL"
 echo "  - Proxy Port: 5950"
 

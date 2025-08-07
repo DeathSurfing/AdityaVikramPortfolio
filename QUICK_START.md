@@ -1,79 +1,93 @@
-# ⚡ Quick Start: Ollama + FastAPI + Cloudflare Tunnel
+# ⚡ Quick Start: Ollama + Docker Compose + Cloudflare Tunnel
 
 ## 🎯 What We Built
 
-A complete CORS-enabled solution for your Ollama-powered portfolio chatbot:
+A simple Docker Compose deployment for your Ollama-powered portfolio chatbot:
 
 ```
-Browser → Cloudflare Tunnel → FastAPI Proxy → Ollama → AI Response
+Browser → Cloudflare Tunnel → Docker Container (FastAPI Proxy) → Ollama → AI Response
 ```
 
-## 🚀 Start Everything (Quick Commands)
+## 🚀 Quick Deployment
 
 ```bash
-# Terminal 1: Start Ollama
+# 1. Start Ollama
 ollama serve
 
-# Terminal 2: Start FastAPI Proxy
+# 2. Deploy with Docker Compose
 cd ollama-proxy
-./start.fish
+./deploy.sh
 
-# Terminal 3: Start Frontend (if not running)
-cd frontend
-npm run dev
-
-# Terminal 4: Start Cloudflare Tunnel
+# 3. Start Cloudflare Tunnel
 cloudflared tunnel --config cloudflare-tunnel-config.yml run
 ```
 
-## 🧪 Test Everything
+## 🔧 Manual Deployment
 
 ```bash
-# Run the comprehensive test
-./test_setup.sh
+# Ensure Ollama is running with gpt-oss:20b model
+ollama serve
+ollama pull gpt-oss:20b
+
+# Deploy with Docker Compose
+cd ollama-proxy
+docker compose up --build -d
+
+# Verify deployment
+curl http://localhost:5950/health
 ```
 
-## 🌐 Your Cloudflare Tunnel Config
+## 🌐 Cloudflare Tunnel Config
 
 ```yaml
 ingress:
-  # AI Chat API (FastAPI Proxy)
+  # 🤖 AI Chat API (Docker container)
   - hostname: portfolio.adityavikram.dev
     path: /api/*
     service: http://localhost:5950
 
-  # Portfolio Website
+  # 🌐 Portfolio Website
   - hostname: portfolio.adityavikram.dev
     service: http://localhost:8594
-    
-  # ... other routes
 ```
 
-## 📁 File Structure
+## 📁 Deployment Files
 
 ```
-AdityaVikramPortfolio/
-├── ollama-proxy/                # 🆕 FastAPI CORS proxy
-│   ├── main.py                  # Main FastAPI server
-│   ├── start.fish              # Fish shell startup
-│   └── requirements.txt        # Dependencies
-├── frontend/                   # Your existing Next.js app
-├── cloudflare-tunnel-config.yml # Tunnel configuration
-├── test_setup.sh              # Test script
-└── OLLAMA_SETUP.md            # Detailed documentation
+ollama-proxy/
+├── docker-compose.yml          # 🐳 Main deployment config
+├── Dockerfile                  # Container definition
+├── main.py                     # FastAPI server with Ollama library
+├── requirements.txt            # Python dependencies
+└── deploy.sh                   # Simple deployment script
 ```
 
-## ✅ What This Solves
+## ✅ Features
 
-1. **CORS Issues**: Ollama doesn't support CORS → FastAPI proxy adds CORS headers
-2. **Web Accessibility**: Local Ollama → Exposed via Cloudflare Tunnel
-3. **Same Experience**: Your existing frontend code works unchanged
-4. **Performance**: Async FastAPI with connection pooling
+1. **🐳 Containerized**: Runs in Docker for consistent deployment
+2. **🔄 CI/CD Ready**: GitHub Actions workflow included
+3. **🌐 Cloudflare Ready**: Works with your existing tunnel config
+4. **🤖 gpt-oss:20b**: Uses your specified model
+5. **⚡ Simple**: One command deployment
+
+## 🧪 Testing
+
+```bash
+# Health check
+curl http://localhost:5950/health
+
+# Chat test
+curl -X POST http://localhost:5950/api/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "Hello! Tell me about Aditya"}'
+```
 
 ## 🎉 Result
 
-Visit https://portfolio.adityavikram.dev, click "Try AI Assistant", and your Ollama-powered chatbot works perfectly from the web!
+Your AI assistant is now deployed and accessible at:
+- **Local**: http://localhost:5950/api/chat
+- **Public**: https://portfolio.adityavikram.dev/api/chat (via Cloudflare tunnel)
 
 ---
 
-**Need help?** Check `OLLAMA_SETUP.md` for detailed documentation.
+**Need help?** The deployment is now much simpler - just `docker compose up --build -d`!

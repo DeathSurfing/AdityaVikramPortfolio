@@ -1,13 +1,16 @@
-tunnel: your-tunnel-id  # Replace with your actual tunnel ID
-credentials-file: /path/to/your/tunnel/credentials.json  # Replace with your actual path
+# Cloudflare Tunnel Configuration
+# Replace 'your-tunnel-id' and credentials path with your actual values
+
+tunnel: your-tunnel-id
+credentials-file: /path/to/your/tunnel/credentials.json
 
 ingress:
-  # 🎯 Proxy Ollama (via FastAPI proxy) on portfolio.adityavikram.dev/api/*
+  # 🤖 Ollama AI Chat API - Docker Compose deployment
   - hostname: portfolio.adityavikram.dev
     path: /api/*
     service: http://localhost:5950
 
-  # 🌐 Main portfolio site
+  # 🌐 Main portfolio website
   - hostname: portfolio.adityavikram.dev
     service: http://localhost:8594
 
@@ -15,7 +18,7 @@ ingress:
   - hostname: adityavikram.dev
     service: http://localhost:8594
 
-  # 🧩 Tambola routes
+  # 🧩 Tambola game routes
   - hostname: tambola.adityavikram.dev
     path: /api/*
     service: http://localhost:8120
@@ -23,5 +26,5 @@ ingress:
   - hostname: tambola.adityavikram.dev
     service: http://localhost:8119
 
-  # ❌ Catch-all
+  # ❌ Catch-all for unmatched routes
   - service: http_status:404
