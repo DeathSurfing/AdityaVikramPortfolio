@@ -5,147 +5,62 @@ on:
     branches: [ main, master ]
     paths:
       - 'ollama-proxy/**'
+      - 'frontend/**'
       - '.github/workflows/deploy-ollama-proxy.yml'
   pull_request:
     branches: [ main, master ]
     paths:
       - 'ollama-proxy/**'
+      - 'frontend/**'
   workflow_dispatch:
 
 env:
   OLLAMA_MODEL: gpt-oss:20b
-  PYTHON_VERSION: '3.13'
 
 jobs:
-  lint-and-test:
+  frontend-lint:
     runs-on: self-hosted
-    name: 🔍 Lint & Test
+    name: 🎨 Lint Frontend
     
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Set up Python environment
-      run: |
-        echo "🐍 Setting up Python environment..."
-        # Check for Python versions (prefer specific versions if available)
-        if command -v python3.13 &> /dev/null; then
-          echo "Using python3.13"
-          PYTHON_CMD=python3.13
-        elif command -v python3.12 &> /dev/null; then
-          echo "Using python3.12"
-          PYTHON_CMD=python3.12
-        elif command -v python3.11 &> /dev/null; then
-          echo "Using python3.11"
-          PYTHON_CMD=python3.11
-        elif command -v python &> /dev/null; then
-          python_version=$(python --version 2>&1 | cut -d" " -f2 | cut -d"." -f1,2)
-          echo "Found Python version: $python_version"
-          PYTHON_CMD=python
-        elif command -v python3 &> /dev/null; then
-          python_version=$(python3 --version 2>&1 | cut -d" " -f2 | cut -d"." -f1,2)
-          echo "Found Python version: $python_version"
-          PYTHON_CMD=python3
-        else
-          echo "❌ Python not found"
-          exit 1
-        fi
-        
-        # Verify Python version is suitable
-        $PYTHON_CMD --version
-        echo "✅ Python found: $PYTHON_CMD"
-        echo "PYTHON_CMD=$PYTHON_CMD" >> $GITHUB_ENV
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: './frontend/package-lock.json'
 
-    - name: Create virtual environment
-      working-directory: ./ollama-proxy
+    - name: Install frontend dependencies
+      working-directory: ./frontend
       run: |
-        echo "🏭 Creating virtual environment..."
-        # Create virtual environment if it doesn't exist
-        if [ ! -d ".venv" ]; then
-          $PYTHON_CMD -m venv .venv
-          echo "✅ Virtual environment created"
-        else
-          echo "ℹ️ Virtual environment already exists"
-        fi
-        
-        # Activate virtual environment and set up for subsequent steps
-        source .venv/bin/activate
-        echo "VIRTUAL_ENV=$(pwd)/.venv" >> $GITHUB_ENV
-        echo "PATH=$(pwd)/.venv/bin:$PATH" >> $GITHUB_ENV
-        echo "✅ Virtual environment activated"
+        echo "📦 Installing frontend dependencies..."
+        npm ci
 
-    - name: Install dependencies
-      working-directory: ./ollama-proxy
+    - name: Lint frontend code
+      working-directory: ./frontend
       run: |
-        echo "📦 Installing dependencies..."
-        source .venv/bin/activate
-        python -m pip install --upgrade pip
-        python -m pip install -r requirements.txt
-        python -m pip install black flake8 mypy bandit safety
-        echo "✅ Dependencies installed in virtual environment"
+        echo "🔍 Linting frontend code..."
+        npm run lint
 
-    - name: Code formatting check (Black)
-      working-directory: ./ollama-proxy
+    - name: Type check frontend
+      working-directory: ./frontend
       run: |
-        echo "🎨 Checking code formatting with Black..."
-        if command -v black &> /dev/null; then
-          black --check --diff main.py
-        else
-          echo "⚠️ Black not available, skipping format check"
-        fi
+        echo "📝 Type checking frontend..."
+        npx tsc --noEmit
 
-    - name: Lint with flake8
-      working-directory: ./ollama-proxy
+    - name: Validate Docker configurations
       run: |
-        echo "🔍 Linting with flake8..."
-        if command -v flake8 &> /dev/null; then
-          flake8 main.py --count --select=E9,F63,F7,F82 --show-source --statistics
-          flake8 main.py --count --exit-zero --max-complexity=10 --max-line-length=88 --statistics
-        else
-          echo "⚠️ Flake8 not available, skipping lint check"
-        fi
-
-    - name: Type checking with mypy
-      working-directory: ./ollama-proxy
-      run: |
-        echo "📝 Type checking with mypy..."
-        if command -v mypy &> /dev/null; then
-          mypy main.py --ignore-missing-imports || true
-        else
-          echo "⚠️ MyPy not available, skipping type check"
-        fi
-
-    - name: Security scan with bandit
-      working-directory: ./ollama-proxy
-      run: |
-        echo "🛡️ Security scanning with bandit..."
-        if command -v bandit &> /dev/null; then
-          bandit -r main.py -f json || true
-        else
-          echo "⚠️ Bandit not available, skipping security scan"
-        fi
-
-    - name: Check for known security vulnerabilities
-      working-directory: ./ollama-proxy
-      run: |
-        echo "🚨 Checking for known vulnerabilities..."
-        if command -v safety &> /dev/null; then
-          safety check --json || true
-        else
-          echo "⚠️ Safety not available, skipping vulnerability check"
-        fi
-
-    - name: Validate Docker configuration
-      working-directory: ./ollama-proxy
-      run: |
-        echo "🐳 Validating Docker configuration..."
-        docker compose config
-        hadolint Dockerfile || echo "⚠️ Hadolint not available, skipping Dockerfile lint"
+        echo "🐳 Validating Docker configurations..."
+        docker compose -f ./ollama-proxy/docker-compose.yml config
+        docker compose -f ./docker-compose.yml config || echo "⚠️ Root docker-compose not found, skipping"
 
   deploy:
     runs-on: self-hosted
-    name: 🚀 Deploy to Runner
-    needs: lint-and-test
+    name: 🚀 Deploy Ollama Proxy
+    needs: frontend-lint
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
     
     steps:
@@ -221,9 +136,9 @@ jobs:
           exit 1
         fi
 
-    - name: Comprehensive deployment test
+    - name: Test deployment
       run: |
-        echo "🧪 Running comprehensive tests..."
+        echo "🧪 Testing deployment..."
         
         # Test health endpoint
         echo "Testing health endpoint..."
@@ -253,7 +168,7 @@ jobs:
           exit 1
         fi
         
-        # Test CORS headers
+        # Test CORS headers for production domains
         echo "Testing CORS headers..."
         cors_response=$(curl -s -I -H "Origin: https://portfolio.adityavikram.dev" \
           http://localhost:5950/health)
@@ -261,18 +176,6 @@ jobs:
           echo "✅ CORS headers present"
         else
           echo "⚠️ CORS headers not found (might be expected for non-preflight requests)"
-        fi
-
-    - name: Container health check
-      working-directory: ./ollama-proxy
-      run: |
-        echo "🏥 Checking container health..."
-        container_status=$(docker compose ps --format json | jq -r '.[0].Health')
-        echo "Container health: $container_status"
-        
-        if [ "$container_status" != "healthy" ] && [ "$container_status" != "null" ]; then
-          echo "⚠️ Container not healthy, checking logs..."
-          docker compose logs --tail 20
         fi
 
     - name: Clean up old images

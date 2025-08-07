@@ -71,10 +71,21 @@ ingress:
 ## 🔄 CI/CD
 
 GitHub Actions workflow automatically:
-1. Checks Ollama is running
-2. Pulls model if needed
-3. Deploys with `docker compose up --build -d`
-4. Tests the deployment
+1. **Frontend Linting**: ESLint + TypeScript checks
+2. **Docker Validation**: Validates all Docker configurations
+3. **Ollama Check**: Ensures Ollama is running and model is available
+4. **Deploy**: Uses `docker compose up --build -d`
+5. **Test**: Comprehensive endpoint testing
+
+## 🎨 Local Development
+
+```bash
+# Run linting (frontend + docker validation)
+./lint.sh
+
+# Deploy locally
+./deploy.sh
+```
 
 ## 🚨 Troubleshooting
 

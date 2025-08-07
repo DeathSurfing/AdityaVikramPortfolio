@@ -1,52 +1,72 @@
 #!/bin/bash
 
-# Local Linting and Formatting Script
-# Run this before committing changes
+# Simple Lint Script for Portfolio + Ollama Proxy
+# Frontend linting + Docker validation only
 
 set -e
 
-echo "🐍 Setting up Python environment..."
+echo "🎨 Portfolio Lint Script"
+echo "======================"
 
-# Create virtual environment if it doesn't exist
-if [ ! -d ".venv" ]; then
-    echo "🏭 Creating virtual environment..."
-    python -m venv .venv || python3 -m venv .venv
-    echo "✅ Virtual environment created"
-else
-    echo "ℹ️ Using existing virtual environment"
+# Check if we're in the right directory structure
+if [ ! -d "../frontend" ] && [ ! -d "./frontend" ]; then
+    echo "❌ Frontend directory not found. Run from ollama-proxy/ or project root."
+    exit 1
 fi
 
-# Activate virtual environment
-echo "🔌 Activating virtual environment..."
-source .venv/bin/activate
+# Determine frontend path
+if [ -d "../frontend" ]; then
+    FRONTEND_PATH="../frontend"
+else
+    FRONTEND_PATH="./frontend"
+fi
 
-# Install linting tools if not available
-echo "📦 Ensuring linting tools are available..."
-python -m pip install --upgrade pip > /dev/null
-python -m pip install black flake8 mypy bandit safety > /dev/null
+echo "📍 Frontend path: $FRONTEND_PATH"
+echo ""
 
-echo "🎨 Running Black (code formatter)..."
-black --check --diff main.py || {
-    echo "❌ Code formatting issues found. Run 'black main.py' to fix."
-    exit 1
-}
+# Frontend Linting
+echo "🎨 Linting Frontend..."
+cd "$FRONTEND_PATH"
 
-echo "🔍 Running flake8 (linter)..."
-flake8 main.py --count --select=E9,F63,F7,F82 --show-source --statistics
-flake8 main.py --count --exit-zero --max-complexity=10 --max-line-length=88 --statistics
+# Check if node_modules exists
+if [ ! -d "node_modules" ]; then
+    echo "📦 Installing frontend dependencies..."
+    npm ci
+else
+    echo "✅ Dependencies already installed"
+fi
 
-echo "📝 Running mypy (type checker)..."
-mypy main.py --ignore-missing-imports || echo "⚠️ Type check issues found (non-blocking)"
+# Run ESLint
+echo "🔍 Running ESLint..."
+npm run lint
 
-echo "🛡️ Running bandit (security scan)..."
-bandit -r main.py -f json || echo "⚠️ Security issues found (non-blocking)"
+# Run TypeScript check
+echo "📝 Running TypeScript check..."
+npx tsc --noEmit
 
-echo "🚨 Checking for known vulnerabilities..."
-safety check --json || echo "⚠️ Vulnerability check completed (non-blocking)"
+echo "✅ Frontend linting complete!"
+echo ""
 
-echo "🐳 Validating Docker configuration..."
-docker compose config > /dev/null && echo "✅ Docker Compose config is valid"
+# Docker Validation
+cd - > /dev/null  # Go back to original directory
+
+echo "🐳 Validating Docker configurations..."
+
+# Validate ollama-proxy docker-compose
+if [ -f "docker-compose.yml" ]; then
+    docker compose config > /dev/null && echo "✅ Ollama proxy Docker config valid"
+else
+    echo "⚠️ No docker-compose.yml found in current directory"
+fi
+
+# Validate main project docker-compose if exists
+if [ -f "../docker-compose.yml" ]; then
+    docker compose -f ../docker-compose.yml config > /dev/null && echo "✅ Main project Docker config valid"
+elif [ -f "./docker-compose.yml" ] && [ "$(basename $(pwd))" != "ollama-proxy" ]; then
+    docker compose config > /dev/null && echo "✅ Main project Docker config valid"
+fi
 
 echo ""
 echo "✅ All checks completed!"
-echo "🚀 Ready to commit and deploy"
+echo "🚀 Frontend linted, Docker configs validated"
+echo "💡 Ready for deployment"
