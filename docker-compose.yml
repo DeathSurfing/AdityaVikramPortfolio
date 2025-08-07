@@ -33,13 +33,11 @@ services:
     ports:
       - "5950:5950"
     environment:
-      # For production server, change this to your Ollama server endpoint
-      - OLLAMA_ENDPOINT=http://host.docker.internal:11434  # For Docker Desktop
-      # - OLLAMA_ENDPOINT=http://your-server-ip:11434      # For production server
+      # Use localhost since we're on host network
+      - OLLAMA_ENDPOINT=http://localhost:11434
       - OLLAMA_MODEL=gpt-oss:20b
     restart: unless-stopped
-    networks:
-      - portfolio-network
+    network_mode: host  # Use host networking to access local Ollama
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5950/health"]
       interval: 30s
