@@ -1,6 +1,7 @@
 "use client";
 import { motion } from "motion/react";
 import { useEffect, useState } from "react";
+import { Github, Linkedin, Youtube, Mail } from "lucide-react";
 
 export function TextEffectFlipper({ 
   texts, 
@@ -53,22 +54,26 @@ export function SocialSection() {
     {
       name: "GitHub",
       href: "https://github.com/DeathSurfing",
-      icon: "🐱"
+      icon: Github,
+      color: "hover:text-gray-900 dark:hover:text-white"
     },
     {
       name: "LinkedIn", 
       href: "https://www.linkedin.com/in/aditya-vikram-mahendru/",
-      icon: "💼"
+      icon: Linkedin,
+      color: "hover:text-blue-600"
     },
     {
       name: "YouTube",
       href: "https://www.youtube.com/@VikramMahendru", 
-      icon: "📺"
+      icon: Youtube,
+      color: "hover:text-red-600"
     },
     {
       name: "Email",
       href: "mailto:jobs.aditya.vikram.mahendru@gmail.com",
-      icon: "📧"
+      icon: Mail,
+      color: "hover:text-green-600"
     }
   ];
 
@@ -105,7 +110,7 @@ export function SocialSection() {
               href={link.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="group p-6 bg-card border border-border rounded-2xl hover:border-primary/50 transition-all duration-300"
+              className={`group p-6 bg-card border border-border rounded-2xl hover:border-primary/50 transition-all duration-300 ${link.color}`}
               whileHover={{ scale: 1.05, y: -5 }}
               whileTap={{ scale: 0.95 }}
               initial={{ opacity: 0, y: 60 }}
@@ -117,10 +122,10 @@ export function SocialSection() {
                 ease: [0.23, 1, 0.32, 1]
               }}
             >
-              <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">
-                {link.icon}
+              <div className="flex justify-center mb-4">
+                <link.icon className="h-12 w-12 text-muted-foreground group-hover:scale-110 transition-all duration-300 group-hover:text-current" />
               </div>
-              <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
+              <h3 className="font-semibold text-foreground group-hover:text-current transition-colors">
                 {link.name}
               </h3>
             </motion.a>
