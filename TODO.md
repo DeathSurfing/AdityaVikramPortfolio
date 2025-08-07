@@ -11,8 +11,8 @@ ___
 - ✅ Added project filtering by technology/category with interactive filter system
 - ✅ Enhanced mobile experience with hamburger menu navigation replacing floating dock
 - ✅ Added loading animations components (spinner, dots, pulse) for better UX
+- ✅ Dark/light mode animations and transitions with smooth View Transitions API
 
 ## 🔄 Future Improvements
-- [ ] Dark/light mode animations and transitions
-- [ ] Add a guided tour at the home page at the beginning
+_All current tasks completed! 🎉_
 

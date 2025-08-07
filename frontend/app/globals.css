@@ -183,8 +183,22 @@
   * {
     @apply border-border outline-ring/50;
   }
+  
+  html {
+    --expo-out: cubic-bezier(0.19, 1, 0.22, 1);
+  }
+  
   body {
     @apply bg-background text-foreground;
     letter-spacing: var(--tracking-normal);
+    transition: background-color var(--transition-duration, 0.3s) ease-in-out,
+                color var(--transition-duration, 0.3s) ease-in-out;
+  }
+  
+  /* Enhanced theme transition support */
+  * {
+    transition-property: background-color, border-color, color, fill, stroke;
+    transition-duration: var(--transition-duration, 0.3s);
+    transition-timing-function: ease-in-out;
   }
 }

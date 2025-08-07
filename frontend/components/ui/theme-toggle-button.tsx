@@ -64,19 +64,23 @@ export default function ThemeToggleButton({
       return
     }
 
-    document.startViewTransition(switchTheme)
-  }, [theme, setTheme])
+    // Add extra smooth transition for enhanced UX
+    document.documentElement.style.setProperty('--transition-duration', '0.7s')
+    document.startViewTransition(switchTheme).finished.then(() => {
+      document.documentElement.style.removeProperty('--transition-duration')
+    })
+  }, [theme, setTheme, variant, start, url, updateStyles])
 
   return (
     <Button
       onClick={toggleTheme}
       variant="ghost"
       size="icon"
-      className="w-9 p-0 h-9 relative group"
+      className="w-9 p-0 h-9 relative group hover:bg-primary/10 hover:border-primary/20 transition-all duration-300 hover:scale-110"
       name="Theme Toggle Button"
     >
-      <SunIcon className="size-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-      <MoonIcon className="absolute size-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+      <SunIcon className="size-[1.2rem] rotate-0 scale-100 transition-all duration-300 ease-in-out dark:-rotate-90 dark:scale-0 text-primary" />
+      <MoonIcon className="absolute size-[1.2rem] rotate-90 scale-0 transition-all duration-300 ease-in-out dark:rotate-0 dark:scale-100 text-primary" />
       <span className="sr-only">Theme Toggle </span>
       {showLabel && (
         <>
