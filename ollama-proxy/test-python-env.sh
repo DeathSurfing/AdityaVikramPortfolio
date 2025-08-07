@@ -38,19 +38,25 @@ $PYTHON_CMD -c "import sys; print(f'Python {sys.version_info.major}.{sys.version
 $PYTHON_CMD -c "import sys; print(f'Platform: {sys.platform}')"
 
 echo ""
-echo "📦 Installing development dependencies..."
-# Check if we're in a virtual environment
-if [[ "$VIRTUAL_ENV" != "" ]]; then
-    echo "ℹ️ Running in virtual environment: $VIRTUAL_ENV"
-    $PYTHON_CMD -m pip install --upgrade pip
-    $PYTHON_CMD -m pip install -r requirements.txt
-    $PYTHON_CMD -m pip install black flake8 mypy bandit safety
+echo "🏭 Creating virtual environment..."
+# Create virtual environment if it doesn't exist
+if [ ! -d ".venv" ]; then
+    $PYTHON_CMD -m venv .venv
+    echo "✅ Virtual environment created"
 else
-    echo "ℹ️ Installing to user site-packages"
-    $PYTHON_CMD -m pip install --upgrade pip --user
-    $PYTHON_CMD -m pip install -r requirements.txt --user
-    $PYTHON_CMD -m pip install black flake8 mypy bandit safety --user
+    echo "ℹ️ Virtual environment already exists"
 fi
+
+# Activate virtual environment
+echo "ℹ️ Activating virtual environment..."
+source .venv/bin/activate
+echo "VIRTUAL_ENV: $VIRTUAL_ENV"
+
+echo ""
+echo "📦 Installing dependencies in virtual environment..."
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+python -m pip install black flake8 mypy bandit safety
 
 echo ""
 echo "🎨 Testing Black (code formatter)..."

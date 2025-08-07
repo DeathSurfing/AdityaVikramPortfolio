@@ -50,28 +50,39 @@ jobs:
           echo "❌ Python not found"
           exit 1
         fi
-        echo "PYTHON_CMD=$PYTHON_CMD" >> $GITHUB_ENV
         
         # Verify Python version is suitable
         $PYTHON_CMD --version
-        echo "✅ Python environment ready"
+        echo "✅ Python found: $PYTHON_CMD"
+        echo "PYTHON_CMD=$PYTHON_CMD" >> $GITHUB_ENV
+
+    - name: Create virtual environment
+      working-directory: ./ollama-proxy
+      run: |
+        echo "🏭 Creating virtual environment..."
+        # Create virtual environment if it doesn't exist
+        if [ ! -d ".venv" ]; then
+          $PYTHON_CMD -m venv .venv
+          echo "✅ Virtual environment created"
+        else
+          echo "ℹ️ Virtual environment already exists"
+        fi
+        
+        # Activate virtual environment and set up for subsequent steps
+        source .venv/bin/activate
+        echo "VIRTUAL_ENV=$(pwd)/.venv" >> $GITHUB_ENV
+        echo "PATH=$(pwd)/.venv/bin:$PATH" >> $GITHUB_ENV
+        echo "✅ Virtual environment activated"
 
     - name: Install dependencies
       working-directory: ./ollama-proxy
       run: |
         echo "📦 Installing dependencies..."
-        # Check if we're in a virtual environment or should use --user
-        if [[ "$VIRTUAL_ENV" != "" ]] || [[ "$CONDA_DEFAULT_ENV" != "" ]]; then
-            echo "ℹ️ Using virtual environment for package installation"
-            $PYTHON_CMD -m pip install --upgrade pip
-            $PYTHON_CMD -m pip install -r requirements.txt
-            $PYTHON_CMD -m pip install black flake8 mypy bandit safety
-        else
-            echo "ℹ️ Installing to user site-packages"
-            $PYTHON_CMD -m pip install --upgrade pip --user
-            $PYTHON_CMD -m pip install -r requirements.txt --user
-            $PYTHON_CMD -m pip install black flake8 mypy bandit safety --user
-        fi
+        source .venv/bin/activate
+        python -m pip install --upgrade pip
+        python -m pip install -r requirements.txt
+        python -m pip install black flake8 mypy bandit safety
+        echo "✅ Dependencies installed in virtual environment"
 
     - name: Code formatting check (Black)
       working-directory: ./ollama-proxy

@@ -5,6 +5,26 @@
 
 set -e
 
+echo "🐍 Setting up Python environment..."
+
+# Create virtual environment if it doesn't exist
+if [ ! -d ".venv" ]; then
+    echo "🏭 Creating virtual environment..."
+    python -m venv .venv || python3 -m venv .venv
+    echo "✅ Virtual environment created"
+else
+    echo "ℹ️ Using existing virtual environment"
+fi
+
+# Activate virtual environment
+echo "🔌 Activating virtual environment..."
+source .venv/bin/activate
+
+# Install linting tools if not available
+echo "📦 Ensuring linting tools are available..."
+python -m pip install --upgrade pip > /dev/null
+python -m pip install black flake8 mypy bandit safety > /dev/null
+
 echo "🎨 Running Black (code formatter)..."
 black --check --diff main.py || {
     echo "❌ Code formatting issues found. Run 'black main.py' to fix."
