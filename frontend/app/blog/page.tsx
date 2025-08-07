@@ -6,7 +6,7 @@ import { Azeret_Mono } from 'next/font/google';
 import { cn } from '@/lib/utils';
 import { Calendar, Clock, ArrowRight, Tag, PenTool, BookOpen } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { blogPosts, getFeaturedPosts, getRegularPosts } from '@/lib/blog-data';
+import { blogPosts } from '@/lib/blog-data';
 
 const azeretMono = Azeret_Mono({
   subsets: ['latin'],

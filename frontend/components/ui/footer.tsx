@@ -1,7 +1,7 @@
 'use client';
 import { motion } from 'framer-motion';
 import { useTheme } from 'next-themes';
-import { Home, User, FolderOpen, FileText, Sun, Moon, Monitor, Github, Linkedin, Twitter, Mail, Users, Youtube, Briefcase, Menu, X, BookOpen } from 'lucide-react';
+import { Home, User, FolderOpen, FileText, Sun, Moon, Monitor, Github, Linkedin, Mail, Users, Youtube, Briefcase, Menu, X, BookOpen } from 'lucide-react';
 import { FloatingDock } from '@/components/ui/floating-dock';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useState, useEffect } from 'react';

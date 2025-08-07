@@ -3,9 +3,22 @@
 import { useEffect, useState } from 'react';
 import { motion, useMotionValue, useSpring } from 'framer-motion';
 
+// Enhanced mobile/touch device detection
+function isTouchDevice() {
+  return (
+    'ontouchstart' in window ||
+    navigator.maxTouchPoints > 0 ||
+    // @ts-expect-error - msMaxTouchPoints is not in the standard types but exists on IE/Edge
+    navigator.msMaxTouchPoints > 0 ||
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+    window.innerWidth < 768 // Also hide on small screens
+  );
+}
+
 export default function MouseFollower() {
   const [isVisible, setIsVisible] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
+  const [isMobile, setIsMobile] = useState(true); // Start with true to prevent flashing
 
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -24,6 +37,9 @@ export default function MouseFollower() {
   });
 
   useEffect(() => {
+    // Don't add mouse listeners on mobile
+    if (isMobile) return;
+    
     const handleMouseMove = (e: MouseEvent) => {
       mouseX.set(e.clientX);
       mouseY.set(e.clientY);
@@ -71,21 +87,33 @@ export default function MouseFollower() {
       document.removeEventListener('mouseleave', handleMouseLeave);
       document.removeEventListener('mouseover', handleMouseOver);
     };
-  }, [mouseX, mouseY, isVisible]);
+  }, [mouseX, mouseY, isVisible, isMobile]);
 
-  // Don't render on mobile devices
+  // Enhanced mobile/touch device detection
   useEffect(() => {
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-      navigator.userAgent
-    );
+    const checkIsMobile = () => {
+      const isTouchDev = isTouchDevice();
+      setIsMobile(isTouchDev);
+      
+      if (isTouchDev) {
+        setIsVisible(false);
+        document.body.style.cursor = 'auto'; // Restore cursor on mobile
+      }
+    };
 
-    if (isMobile) {
-      setIsVisible(false);
-      document.body.style.cursor = 'auto'; // Restore cursor on mobile
-    }
+    // Check immediately
+    checkIsMobile();
+    
+    // Also check on resize in case of orientation change
+    window.addEventListener('resize', checkIsMobile);
+    
+    return () => {
+      window.removeEventListener('resize', checkIsMobile);
+    };
   }, []);
 
-  if (!isVisible) return null;
+  // Don't render anything on mobile/touch devices
+  if (isMobile || !isVisible) return null;
 
   return (
     <>
