@@ -1,7 +1,7 @@
 'use client';
 import { motion } from 'framer-motion';
 import { useTheme } from 'next-themes';
-import { Home, User, FolderOpen, FileText, Sun, Moon, Monitor, Github, Linkedin, Mail, Users, Youtube, Briefcase, Menu, X, BookOpen } from 'lucide-react';
+import { Home, User, FolderOpen, FileText, Sun, Moon, Monitor, Github, Linkedin, Mail, Users, Youtube, Briefcase, Menu, X, BookOpen, ChevronUp } from 'lucide-react';
 import { FloatingDock } from '@/components/ui/floating-dock';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useState, useEffect } from 'react';
@@ -14,11 +14,32 @@ const Footer = () => {
   const [themePopoverOpen, setThemePopoverOpen] = useState(false);
   const [socialPopoverOpen, setSocialPopoverOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isNearBottom, setIsNearBottom] = useState(false);
 
   // Ensure component is mounted to avoid hydration issues
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Scroll detection to show up arrow when near bottom
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      const scrollHeight = document.documentElement.scrollHeight;
+      const clientHeight = document.documentElement.clientHeight;
+      
+      // Check if we're within 200px of the bottom
+      const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
+      setIsNearBottom(distanceFromBottom <= 200);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const getThemeIcon = () => {
     if (!mounted) return <Monitor className="h-4 w-4" />;
@@ -211,13 +232,28 @@ const Footer = () => {
         className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-40"
       >
         <div className="flex items-center gap-4">
-          {/* Desktop Floating Dock */}
+          {/* Desktop Floating Dock / Up Arrow */}
           <div className="hidden md:block">
-            <FloatingDock
-              items={dockItems}
-              desktopClassName="bg-background/80 backdrop-blur-md border border-border/50 shadow-lg"
-              mobileClassName="bg-background/80 backdrop-blur-md border border-border/50 shadow-lg"
-            />
+            {isNearBottom ? (
+              <motion.button
+                onClick={scrollToTop}
+                className="h-12 w-12 flex items-center justify-center rounded-full bg-background/80 backdrop-blur-md border border-border/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                title="Back to top"
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.3 }}
+              >
+                <ChevronUp className="h-5 w-5" />
+              </motion.button>
+            ) : (
+              <FloatingDock
+                items={dockItems}
+                desktopClassName="bg-background/80 backdrop-blur-md border border-border/50 shadow-lg"
+                mobileClassName="bg-background/80 backdrop-blur-md border border-border/50 shadow-lg"
+              />
+            )}
           </div>
 
           {/* Mobile Hamburger Button */}
