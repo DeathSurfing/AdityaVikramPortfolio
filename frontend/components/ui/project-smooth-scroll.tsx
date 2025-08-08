@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import Lenis from "lenis";
 import { ChevronUp, ChevronDown, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -18,18 +18,41 @@ export default function ProjectSmoothScroll({
   const [currentCard, setCurrentCard] = useState(0);
   const [isScrolling, setIsScrolling] = useState(false);
 
+  const scrollToCard = useCallback((cardIndex: number) => {
+    if (!lenisRef.current || isScrolling) return;
+    
+    const clampedIndex = Math.max(0, Math.min(cardIndex, cardCount - 1));
+    const progress = clampedIndex / Math.max(cardCount - 1, 1);
+    const targetScroll = progress * (document.documentElement.scrollHeight - window.innerHeight);
+    
+    setIsScrolling(true);
+    lenisRef.current.scrollTo(targetScroll, {
+      duration: 1.5,
+      onComplete: () => setIsScrolling(false)
+    });
+    setCurrentCard(clampedIndex);
+  }, [cardCount, isScrolling]);
+
+  const scrollToNextCard = useCallback(() => {
+    if (currentCard < cardCount - 1) {
+      scrollToCard(currentCard + 1);
+    }
+  }, [currentCard, cardCount, scrollToCard]);
+
+  const scrollToPrevCard = useCallback(() => {
+    if (currentCard > 0) {
+      scrollToCard(currentCard - 1);
+    }
+  }, [currentCard, scrollToCard]);
+
+  const scrollToTop = useCallback(() => {
+    scrollToCard(0);
+  }, [scrollToCard]);
+
   useEffect(() => {
     const lenis = new Lenis({
       duration: 1.5,
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      direction: "vertical",
-      gestureDirection: "vertical",
-      smooth: true,
-      mouseMultiplier: 1,
-      smoothTouch: false,
-      touchMultiplier: 2,
-      infinite: false,
-      normalizeWheel: true,
     });
 
     lenisRef.current = lenis;
@@ -79,38 +102,7 @@ export default function ProjectSmoothScroll({
       window.removeEventListener("keydown", handleKeyDown);
       lenis.destroy();
     };
-  }, [cardCount, isScrolling]);
-
-  const scrollToCard = (cardIndex: number) => {
-    if (!lenisRef.current || isScrolling) return;
-    
-    const clampedIndex = Math.max(0, Math.min(cardIndex, cardCount - 1));
-    const progress = clampedIndex / Math.max(cardCount - 1, 1);
-    const targetScroll = progress * (document.documentElement.scrollHeight - window.innerHeight);
-    
-    setIsScrolling(true);
-    lenisRef.current.scrollTo(targetScroll, {
-      duration: 1.5,
-      onComplete: () => setIsScrolling(false)
-    });
-    setCurrentCard(clampedIndex);
-  };
-
-  const scrollToNextCard = () => {
-    if (currentCard < cardCount - 1) {
-      scrollToCard(currentCard + 1);
-    }
-  };
-
-  const scrollToPrevCard = () => {
-    if (currentCard > 0) {
-      scrollToCard(currentCard - 1);
-    }
-  };
-
-  const scrollToTop = () => {
-    scrollToCard(0);
-  };
+  }, [cardCount, isScrolling, scrollToCard, scrollToNextCard, scrollToPrevCard]);
 
   return (
     <div className="relative">
