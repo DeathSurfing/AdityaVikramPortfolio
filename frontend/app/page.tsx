@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { Inter, Geist_Mono } from 'next/font/google';
 import { cn } from '@/lib/utils';
-import { Calendar, MapPin, Code2, Zap, Users, Download, Github, Linkedin, Mail } from 'lucide-react';
+import { Calendar, MapPin, Code2, Users, Download, Github, Linkedin, Mail } from 'lucide-react';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -267,37 +267,46 @@ export default function HomePage() {
             </div>
           </motion.div>
 
-          {/* Key Stats */}
+          {/* Current Status & Featured Projects */}
           <motion.div
             custom={1}
             variants={fadeUpVariants}
             initial="hidden"
             animate="visible"
-            className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto"
+            className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto"
           >
-            <div className="bg-card/40 backdrop-blur-sm border border-border/50 rounded-xl p-4 text-center">
-              <Zap className="h-6 w-6 text-primary mx-auto mb-2" />
-              <div className="text-xl font-bold">100%</div>
-              <div className="text-sm text-muted-foreground">Faster Deployment</div>
-            </div>
-            
-            <div className="bg-card/40 backdrop-blur-sm border border-border/50 rounded-xl p-4 text-center">
-              <Users className="h-6 w-6 text-primary mx-auto mb-2" />
-              <div className="text-xl font-bold">6,000+</div>
-              <div className="text-sm text-muted-foreground">Users Served</div>
-            </div>
-            
-            <div className="bg-card/40 backdrop-blur-sm border border-border/50 rounded-xl p-4 text-center">
-              <Code2 className="h-6 w-6 text-primary mx-auto mb-2" />
-              <div className="text-xl font-bold">55%</div>
-              <div className="text-sm text-muted-foreground">Cost Reduction</div>
-            </div>
-            
-            <div className="bg-card/40 backdrop-blur-sm border border-border/50 rounded-xl p-4 text-center">
-              <Calendar className="h-6 w-6 text-primary mx-auto mb-2" />
-              <div className="text-xl font-bold">6mo</div>
+            {/* Current Internship */}
+            <a 
+              href="/experience" 
+              className="bg-card/40 backdrop-blur-sm border border-border/50 rounded-xl p-6 text-center group hover:bg-card/60 transition-colors cursor-pointer block hover:scale-105 hover:shadow-lg"
+            >
+              <Calendar className="h-8 w-8 text-primary mx-auto mb-3 group-hover:scale-110 transition-transform" />
+              <div className="text-2xl font-bold">6mo</div>
               <div className="text-sm text-muted-foreground">Current Internship</div>
-            </div>
+              <div className="text-xs text-muted-foreground mt-1">Woxsen AI Research Center</div>
+            </a>
+            
+            {/* Featured Project 1 - Student Council */}
+            <a 
+              href="/projects" 
+              className="bg-card/40 backdrop-blur-sm border border-border/50 rounded-xl p-6 text-center group hover:bg-card/60 transition-colors cursor-pointer block hover:scale-105 hover:shadow-lg"
+            >
+              <Users className="h-8 w-8 text-primary mx-auto mb-3 group-hover:scale-110 transition-transform" />
+              <div className="text-2xl font-bold">600+</div>
+              <div className="text-sm text-muted-foreground">Students Platform</div>
+              <div className="text-xs text-muted-foreground mt-1">Woxsen Student Council</div>
+            </a>
+            
+            {/* Featured Project 2 - Total Projects */}
+            <a 
+              href="/projects" 
+              className="bg-card/40 backdrop-blur-sm border border-border/50 rounded-xl p-6 text-center group hover:bg-card/60 transition-colors cursor-pointer block hover:scale-105 hover:shadow-lg"
+            >
+              <Code2 className="h-8 w-8 text-primary mx-auto mb-3 group-hover:scale-110 transition-transform" />
+              <div className="text-2xl font-bold">7</div>
+              <div className="text-sm text-muted-foreground">Featured Projects</div>
+              <div className="text-xs text-muted-foreground mt-1">Full-Stack & AI/ML</div>
+            </a>
           </motion.div>
 
           {/* Tech Stack */}

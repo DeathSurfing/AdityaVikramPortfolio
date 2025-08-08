@@ -17,5 +17,5 @@ ___
 - ✅ Add accessibility in the carousel to be able to click outside the view port to close the carousel
 - ✅ Add a button to visit the website in the projects page when carousel is expanded
 - [] Improve overall UX
-- [] Remove 100% Faster Deployment 6,000+ Users Served 55% Cost Reduction 6mo Keep only Current Internship and featured projects 
+- ✅ Remove 100% Faster Deployment 6,000+ Users Served 55% Cost Reduction 6mo Keep only Current Internship and featured projects
 
