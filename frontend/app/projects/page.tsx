@@ -249,7 +249,8 @@ export default function ProjectsPage() {
         src: project.image,
         title: project.name,
         category: project.category,
-        content: project.content
+        content: project.content,
+        link: project.link
       }}
       index={index}
       layout={true}

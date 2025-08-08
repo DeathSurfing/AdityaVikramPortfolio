@@ -10,6 +10,7 @@ import {
   IconArrowNarrowLeft,
   IconArrowNarrowRight,
   IconX,
+  IconExternalLink,
 } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "motion/react";
@@ -26,6 +27,7 @@ type Card = {
   title: string;
   category: string;
   content: React.ReactNode;
+  link?: string;
 };
 
 export const CarouselContext = createContext<{
@@ -277,6 +279,22 @@ export const Card = ({
                 {card.title}
               </motion.p>
               <div className="py-10" id={`modal-description-${index}`}>{card.content}</div>
+              
+              {/* Visit Website Button */}
+              {card.link && (
+                <div className="flex justify-center mt-6">
+                  <a
+                    href={card.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <IconExternalLink className="h-4 w-4" />
+                    Visit Website
+                  </a>
+                </div>
+              )}
             </motion.div>
           </div>
         )}
