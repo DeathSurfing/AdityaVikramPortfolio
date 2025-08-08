@@ -129,9 +129,9 @@ const Footer = () => {
         initial={{ x: "-100%" }}
         animate={{ x: mobileMenuOpen ? 0 : "-100%" }}
         transition={{ type: "spring", damping: 25, stiffness: 200 }}
-        className="fixed left-0 top-0 h-full w-80 bg-background/95 backdrop-blur-md border-r border-border/50 shadow-xl z-50 md:hidden"
+        className="fixed left-0 top-0 h-full w-80 bg-background/95 backdrop-blur-md border-r border-border/50 shadow-xl z-50 md:hidden flex flex-col"
       >
-        <div className="p-6">
+        <div className="flex-1 overflow-y-auto p-6">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-xl font-bold text-foreground">Navigation</h2>
             <button
