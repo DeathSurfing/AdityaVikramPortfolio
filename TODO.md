@@ -13,8 +13,8 @@ ___
 - ✅ Added loading animations components (spinner, dots, pulse) for better UX
 - ✅ Dark/light mode animations and transitions with smooth View Transitions API
 - ✅ Fix padding at the top of the home page to be more cleaner
-- [] Fix mobile navigation scrolling users cant scroll in the left side hamburger menu
-- [] Add accessibility in the carousel to be able to click outside the view port to close the carousel 
+- ✅ Fix mobile navigation scrolling users cant scroll in the left side hamburger menu
+- ✅ Add accessibility in the carousel to be able to click outside the view port to close the carousel
 - [] When carousel is opened stop the ability to drag around the carousel
 - [] Add a button to visit the website in the projects page when carousel is expanded
 - [] Improve overall UX 
