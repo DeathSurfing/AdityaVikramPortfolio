@@ -237,7 +237,7 @@ export default function HomePage() {
       </div>
 
       {/* Main Content */}
-      <div className="relative z-10 container mx-auto max-w-5xl px-6">
+      <div className="relative z-10 container mx-auto max-w-5xl px-6 pt-16 md:pt-20 lg:pt-24">
         <div className="text-center space-y-8">
           {/* Header */}
           <motion.div
