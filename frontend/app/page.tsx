@@ -1,9 +1,9 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Inter, Geist_Mono } from 'next/font/google';
+import { Inter, Geist_Mono, Playfair_Display } from 'next/font/google';
 import { cn } from '@/lib/utils';
-import { Calendar, MapPin, Code2, Users, Download, Github, Linkedin, Mail } from 'lucide-react';
+import { Calendar, MapPin, Code2, Users, Download, Github, Linkedin, Mail, ArrowRight, ExternalLink, Briefcase, User } from 'lucide-react';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -17,6 +17,11 @@ const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
 });
 
+const playfair = Playfair_Display({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-playfair',
+});
 
 function StarShape({
   size = 100,
@@ -185,7 +190,7 @@ export default function HomePage() {
   };
 
   return (
-    <div className={cn("bg-background relative flex min-h-screen w-full items-center justify-center overflow-hidden", inter.variable)}>
+    <div className={cn("bg-background relative flex min-h-screen w-full items-center justify-center overflow-hidden", inter.variable, playfair.variable)}>
       <div className="from-primary/20 dark:from-primary/30 absolute inset-0 bg-gradient-to-br via-transparent to-rose-500/20 blur-3xl dark:to-rose-500/30" />
 
       {/* Animated Stars Background */}
@@ -237,25 +242,25 @@ export default function HomePage() {
       </div>
 
       {/* Main Content */}
-      <div className="relative z-10 container mx-auto max-w-5xl px-6 pt-16 md:pt-20 lg:pt-24">
-        <div className="text-center space-y-8">
+      <div className="relative z-10 container mx-auto max-w-6xl px-6 pt-16 md:pt-20 lg:pt-24">
+        <div className="text-center space-y-12">
           {/* Header */}
           <motion.div
             custom={0}
             variants={fadeUpVariants}
             initial="hidden"
             animate="visible"
-            className="space-y-4"
+            className="space-y-6"
           >
-            <h1 className="text-5xl md:text-7xl font-bold tracking-tight">
-              <span className="bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
+            <h1 className="text-5xl md:text-7xl font-semibold tracking-tight font-playfair">
+              <span className="bg-gradient-to-r from-foreground via-foreground/95 to-foreground/85 bg-clip-text text-transparent">
                 Aditya Vikram Mahendru
               </span>
             </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground font-medium">
-              Software Engineering Intern | AI & ML Enthusiast
+            <p className="text-xl md:text-2xl text-muted-foreground font-medium max-w-3xl mx-auto">
+              Software Engineering Intern | Building scalable systems for 6,000+ users
             </p>
-            <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground">
+            <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground flex-wrap">
               <div className="flex items-center gap-1">
                 <MapPin className="h-4 w-4" />
                 <span>Hyderabad, India</span>
@@ -264,118 +269,16 @@ export default function HomePage() {
                 <Calendar className="h-4 w-4" />
                 <span>B.Tech CSE (AI & ML), 2028</span>
               </div>
+              <div className="flex items-center gap-1">
+                <Briefcase className="h-4 w-4" />
+                <span>Available for Internships</span>
+              </div>
             </div>
           </motion.div>
 
-          {/* Current Status & Featured Projects */}
+          {/* Primary CTAs */}
           <motion.div
             custom={1}
-            variants={fadeUpVariants}
-            initial="hidden"
-            animate="visible"
-            className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto"
-          >
-            {/* Current Internship */}
-            <a 
-              href="/experience" 
-              className="bg-card/40 backdrop-blur-sm border border-border/50 rounded-xl p-6 text-center group hover:bg-card/60 transition-colors cursor-pointer block hover:scale-105 hover:shadow-lg"
-            >
-              <Calendar className="h-8 w-8 text-primary mx-auto mb-3 group-hover:scale-110 transition-transform" />
-              <div className="text-2xl font-bold">6mo</div>
-              <div className="text-sm text-muted-foreground">Current Internship</div>
-              <div className="text-xs text-muted-foreground mt-1">Woxsen AI Research Center</div>
-            </a>
-            
-            {/* Featured Project 1 - Student Council */}
-            <a 
-              href="/projects" 
-              className="bg-card/40 backdrop-blur-sm border border-border/50 rounded-xl p-6 text-center group hover:bg-card/60 transition-colors cursor-pointer block hover:scale-105 hover:shadow-lg"
-            >
-              <Users className="h-8 w-8 text-primary mx-auto mb-3 group-hover:scale-110 transition-transform" />
-              <div className="text-2xl font-bold">600+</div>
-              <div className="text-sm text-muted-foreground">Students Platform</div>
-              <div className="text-xs text-muted-foreground mt-1">Woxsen Student Council</div>
-            </a>
-            
-            {/* Featured Project 2 - Total Projects */}
-            <a 
-              href="/projects" 
-              className="bg-card/40 backdrop-blur-sm border border-border/50 rounded-xl p-6 text-center group hover:bg-card/60 transition-colors cursor-pointer block hover:scale-105 hover:shadow-lg"
-            >
-              <Code2 className="h-8 w-8 text-primary mx-auto mb-3 group-hover:scale-110 transition-transform" />
-              <div className="text-2xl font-bold">7</div>
-              <div className="text-sm text-muted-foreground">Featured Projects</div>
-              <div className="text-xs text-muted-foreground mt-1">Full-Stack & AI/ML</div>
-            </a>
-          </motion.div>
-
-          {/* Tech Stack */}
-          <motion.div
-            custom={2}
-            variants={fadeUpVariants}
-            initial="hidden"
-            animate="visible"
-            className="space-y-4"
-          >
-            <h3 className="text-lg font-semibold text-foreground">Tech Stack</h3>
-            <div className={cn("flex flex-wrap justify-center gap-3 max-w-3xl mx-auto", geistMono.className)}>
-              {[
-                'Python (CUDA)', 'JavaScript', 'Rust', 'Next.js', 'FastAPI', 'Flask', 
-                'Docker', 'PostgreSQL', 'GitHub Actions', 'Tailwind CSS'
-              ].map((tech) => (
-                <span
-                  key={tech}
-                  className="px-3 py-1 text-sm bg-primary/10 text-primary rounded-full border border-primary/20 font-medium"
-                >
-                  {tech}
-                </span>
-              ))}
-            </div>
-          </motion.div>
-
-          {/* No-BS Look Into Me */}
-          <motion.div
-            custom={3}
-            variants={fadeUpVariants}
-            initial="hidden"
-            animate="visible"
-            className="space-y-6 max-w-3xl mx-auto"
-          >
-            <h3 className="text-lg font-semibold text-foreground">No-BS Look Into Me</h3>
-            <div className="grid md:grid-cols-2 gap-4 text-left">
-              <div className="bg-card/30 backdrop-blur-sm border border-border/40 rounded-xl p-4 space-y-3">
-                <h4 className="font-semibold text-foreground">🚀 What Drives Me</h4>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  I love solving complex problems with simple, elegant code. Whether it's optimizing deployment times or building systems for thousands of users, I get excited about making things work better and faster.
-                </p>
-              </div>
-              
-              <div className="bg-card/30 backdrop-blur-sm border border-border/40 rounded-xl p-4 space-y-3">
-                <h4 className="font-semibold text-foreground">💡 My Approach</h4>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  I believe in learning by building. That's why I built a CNN from scratch in Rust instead of just using TensorFlow. I want to understand how things work under the hood.
-                </p>
-              </div>
-              
-              <div className="bg-card/30 backdrop-blur-sm border border-border/40 rounded-xl p-4 space-y-3">
-                <h4 className="font-semibold text-foreground">🔧 What I'm Good At</h4>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Taking ideas from concept to production. I don't just write code - I think about scalability, cost optimization, and user experience. My internship showed me how to balance technical excellence with business needs.
-                </p>
-              </div>
-              
-              <div className="bg-card/30 backdrop-blur-sm border border-border/40 rounded-xl p-4 space-y-3">
-                <h4 className="font-semibold text-foreground">🎯 What's Next</h4>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Looking for opportunities where I can contribute to meaningful projects, learn from experienced teams, and continue growing as a software engineer. I'm particularly interested in backend systems and AI applications.
-                </p>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* CTAs */}
-          <motion.div
-            custom={4}
             variants={fadeUpVariants}
             initial="hidden"
             animate="visible"
@@ -385,53 +288,235 @@ export default function HomePage() {
               href="/uploads/Resume.pdf"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors"
+              className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-4 rounded-xl font-semibold hover:bg-primary/90 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl"
             >
-              <Download className="h-4 w-4" />
+              <Download className="h-5 w-5" />
               Download Resume
             </a>
             
-            <div className="flex gap-3">
+            <a
+              href="/whoami"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-violet-500/10 to-indigo-500/10 border border-violet-500/30 text-foreground px-8 py-4 rounded-xl font-semibold hover:from-violet-500/20 hover:to-indigo-500/20 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl group"
+            >
+              <User className="h-5 w-5 text-violet-600 dark:text-violet-400" />
+              Who Am I?
+              <ArrowRight className="h-4 w-4 ml-1 text-violet-600 dark:text-violet-400 group-hover:translate-x-1 transition-transform" />
+            </a>
+            
+            <a
+              href="mailto:jobs.aditya.vikram.mahendru@gmail.com"
+              className="inline-flex items-center gap-2 bg-card/60 backdrop-blur-sm border border-border/50 text-foreground px-8 py-4 rounded-xl font-semibold hover:bg-card/80 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl"
+            >
+              <Mail className="h-5 w-5" />
+              Let's Talk
+              <ArrowRight className="h-4 w-4 ml-1" />
+            </a>
+          </motion.div>
+
+          {/* Quick Stats */}
+          <motion.div
+            custom={2}
+            variants={fadeUpVariants}
+            initial="hidden"
+            animate="visible"
+            className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto"
+          >
+            {/* Current Internship */}
+            <div className="bg-gradient-to-br from-blue-500/10 via-indigo-500/10 to-purple-500/10 backdrop-blur-sm border border-border/50 rounded-2xl p-6 text-center group hover:scale-105 transition-all duration-300">
+              <Calendar className="h-10 w-10 text-blue-500 mx-auto mb-4 group-hover:scale-110 transition-transform" />
+              <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">6mo+</div>
+              <div className="text-sm font-medium text-foreground">Current Internship</div>
+              <div className="text-xs text-muted-foreground mt-2">Woxsen AI Research Center</div>
+            </div>
+            
+            {/* Featured Projects */}
+            <div className="bg-gradient-to-br from-orange-500/10 via-red-500/10 to-pink-500/10 backdrop-blur-sm border border-border/50 rounded-2xl p-6 text-center group hover:scale-105 transition-all duration-300">
+              <Code2 className="h-10 w-10 text-orange-500 mx-auto mb-4 group-hover:scale-110 transition-transform" />
+              <div className="text-3xl font-bold text-orange-600 dark:text-orange-400">7+</div>
+              <div className="text-sm font-medium text-foreground">Projects Built</div>
+              <div className="text-xs text-muted-foreground mt-2">Full-Stack & AI/ML</div>
+            </div>
+          </motion.div>
+
+          {/* Value Proposition */}
+          <motion.div
+            custom={3}
+            variants={fadeUpVariants}
+            initial="hidden"
+            animate="visible"
+            className="max-w-4xl mx-auto"
+          >
+            <h2 className="text-2xl md:text-3xl font-bold mb-8 text-center">What I Bring to Your Team</h2>
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="bg-card/30 backdrop-blur-sm border border-border/40 rounded-2xl p-6 text-left group hover:bg-card/50 transition-colors">
+                <div className="flex items-start gap-4">
+                  <div className="bg-blue-500/10 p-3 rounded-xl">
+                    <Code2 className="h-6 w-6 text-blue-500" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-lg mb-2">Production-Ready Code</h3>
+                    <p className="text-muted-foreground leading-relaxed">
+                      Experience building scalable systems handling thousands of users. I write clean, maintainable code with proper testing and documentation.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-card/30 backdrop-blur-sm border border-border/40 rounded-2xl p-6 text-left group hover:bg-card/50 transition-colors">
+                <div className="flex items-start gap-4">
+                  <div className="bg-green-500/10 p-3 rounded-xl">
+                    <Users className="h-6 w-6 text-green-500" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-lg mb-2">Team Collaboration</h3>
+                    <p className="text-muted-foreground leading-relaxed">
+                      Led development teams and collaborated with stakeholders. Strong communication skills and experience with agile workflows.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-card/30 backdrop-blur-sm border border-border/40 rounded-2xl p-6 text-left group hover:bg-card/50 transition-colors">
+                <div className="flex items-start gap-4">
+                  <div className="bg-purple-500/10 p-3 rounded-xl">
+                    <Briefcase className="h-6 w-6 text-purple-500" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-lg mb-2">Business Impact</h3>
+                    <p className="text-muted-foreground leading-relaxed">
+                      Optimized deployment times by 60%, reduced infrastructure costs, and improved user experience through performance enhancements.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-card/30 backdrop-blur-sm border border-border/40 rounded-2xl p-6 text-left group hover:bg-card/50 transition-colors">
+                <div className="flex items-start gap-4">
+                  <div className="bg-orange-500/10 p-3 rounded-xl">
+                    <ArrowRight className="h-6 w-6 text-orange-500" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-lg mb-2">Continuous Learning</h3>
+                    <p className="text-muted-foreground leading-relaxed">
+                      Built CNN from scratch in Rust, implemented custom algorithms, and always diving deep to understand how things work.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Tech Stack */}
+          <motion.div
+            custom={4}
+            variants={fadeUpVariants}
+            initial="hidden"
+            animate="visible"
+            className="space-y-6"
+          >
+            <h3 className="text-xl font-semibold">My Tech Arsenal</h3>
+            <div className={cn("flex flex-wrap justify-center gap-3 max-w-4xl mx-auto", geistMono.className)}>
+              {[
+                { name: 'Python (CUDA)', color: 'bg-yellow-500/10 text-yellow-600 border-yellow-500/20' },
+                { name: 'JavaScript', color: 'bg-yellow-500/10 text-yellow-600 border-yellow-500/20' },
+                { name: 'Rust', color: 'bg-orange-500/10 text-orange-600 border-orange-500/20' },
+                { name: 'Next.js', color: 'bg-gray-500/10 text-gray-600 border-gray-500/20' },
+                { name: 'FastAPI', color: 'bg-green-500/10 text-green-600 border-green-500/20' },
+                { name: 'Flask', color: 'bg-blue-500/10 text-blue-600 border-blue-500/20' },
+                { name: 'Docker', color: 'bg-blue-500/10 text-blue-600 border-blue-500/20' },
+                { name: 'PostgreSQL', color: 'bg-blue-500/10 text-blue-600 border-blue-500/20' },
+                { name: 'GitHub Actions', color: 'bg-gray-500/10 text-gray-600 border-gray-500/20' },
+                { name: 'Tailwind CSS', color: 'bg-cyan-500/10 text-cyan-600 border-cyan-500/20' }
+              ].map((tech) => (
+                <span
+                  key={tech.name}
+                  className={cn(
+                    "px-4 py-2 text-sm rounded-full border font-medium transition-all hover:scale-105",
+                    tech.color
+                  )}
+                >
+                  {tech.name}
+                </span>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Secondary CTAs */}
+          <motion.div
+            custom={5}
+            variants={fadeUpVariants}
+            initial="hidden"
+            animate="visible"
+            className="space-y-6"
+          >
+            <div className="flex flex-wrap justify-center gap-4">
+              <a
+                href="/projects"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 text-foreground px-6 py-3 rounded-xl font-medium hover:from-indigo-500/20 hover:to-purple-500/20 transition-all duration-300 group"
+              >
+                View My Projects
+                <ExternalLink className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+              </a>
+              
+              <a
+                href="/experience"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/20 text-foreground px-6 py-3 rounded-xl font-medium hover:from-green-500/20 hover:to-emerald-500/20 transition-all duration-300 group"
+              >
+                See Experience
+                <ExternalLink className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+              </a>
+            </div>
+            
+            {/* Social Links */}
+            <div className="flex justify-center gap-4">
               <a
                 href="https://github.com/DeathSurfing"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center w-12 h-12 bg-card/60 backdrop-blur-sm border border-border/50 rounded-lg hover:bg-card/80 transition-colors"
+                className="inline-flex items-center justify-center w-14 h-14 bg-card/60 backdrop-blur-sm border border-border/50 rounded-xl hover:bg-card/80 transition-all duration-300 hover:scale-110 group"
               >
-                <Github className="h-5 w-5" />
+                <Github className="h-6 w-6 group-hover:scale-110 transition-transform" />
               </a>
               
               <a
                 href="https://www.linkedin.com/in/aditya-vikram-mahendru/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center w-12 h-12 bg-card/60 backdrop-blur-sm border border-border/50 rounded-lg hover:bg-card/80 transition-colors"
+                className="inline-flex items-center justify-center w-14 h-14 bg-card/60 backdrop-blur-sm border border-border/50 rounded-xl hover:bg-card/80 transition-all duration-300 hover:scale-110 group"
               >
-                <Linkedin className="h-5 w-5" />
+                <Linkedin className="h-6 w-6 group-hover:scale-110 transition-transform" />
               </a>
               
               <a
                 href="mailto:jobs.aditya.vikram.mahendru@gmail.com"
-                className="inline-flex items-center justify-center w-12 h-12 bg-card/60 backdrop-blur-sm border border-border/50 rounded-lg hover:bg-card/80 transition-colors"
+                className="inline-flex items-center justify-center w-14 h-14 bg-card/60 backdrop-blur-sm border border-border/50 rounded-xl hover:bg-card/80 transition-all duration-300 hover:scale-110 group"
               >
-                <Mail className="h-5 w-5" />
+                <Mail className="h-6 w-6 group-hover:scale-110 transition-transform" />
               </a>
             </div>
           </motion.div>
 
-          {/* Quick Summary */}
+          {/* Final Summary */}
           <motion.div
-            custom={5}
+            custom={6}
             variants={fadeUpVariants}
             initial="hidden"
             animate="visible"
-            className="max-w-2xl mx-auto text-center"
+            className="max-w-3xl mx-auto"
           >
-            <p className="text-muted-foreground leading-relaxed">
-              Currently interning at <span className="text-foreground font-semibold">Woxsen AI Research Center</span>, 
-              building scalable systems for 6,000+ users. Passionate about backend development, DevOps, 
-              and AI/ML with hands-on experience in production environments.
-            </p>
+            <div className="bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 border border-primary/20 rounded-2xl p-8">
+              <p className="text-muted-foreground leading-relaxed text-lg">
+                <span className="text-foreground font-semibold">Ready to contribute</span> to your next big project. 
+                I bring <span className="text-primary font-medium">hands-on experience</span>, 
+                <span className="text-primary font-medium"> production-ready skills</span>, and a 
+                <span className="text-primary font-medium"> passion for building great software</span>.
+              </p>
+              <div className="mt-6 pt-4 border-t border-border/30">
+                <p className="text-sm text-muted-foreground">
+                  🚀 Open to: Full-time roles, internships, and exciting projects
+                </p>
+              </div>
+            </div>
           </motion.div>
         </div>
       </div>
