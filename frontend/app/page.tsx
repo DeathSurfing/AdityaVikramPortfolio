@@ -258,7 +258,7 @@ export default function HomePage() {
               </span>
             </h1>
             <p className="text-xl md:text-2xl text-muted-foreground font-medium max-w-3xl mx-auto">
-              Software Engineering Intern | Building scalable systems for 6,000+ users
+              Build Fast. Build Scaleable
             </p>
             <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground flex-wrap">
               <div className="flex items-center gap-1">
