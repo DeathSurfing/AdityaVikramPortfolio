@@ -45,60 +45,60 @@ const projects: Project[] = [
       </div>
     )
   },
-  {
-    id: 2,
-    name: "Woxsen MUN Website",
-    description: "Event platform handling 300+ registrations with 100% uptime and payment gateway integration",
-    image: "/card/munreg.png",
-    link: "https://mun.woxsenstudentcouncil.com",
-    category: "Event Management",
-    technologies: ["FastAPI", "Next.js", "Tailwind CSS", "PostgreSQL", "ShadCN UI"],
-    content: (
-      <div className="space-y-4">
-        <p className="text-neutral-600 dark:text-neutral-400">
-          Comprehensive event management platform for Model United Nations with scalable backend 
-          and integrated payment processing.
-        </p>
-        <div className="space-y-2">
-          <h3 className="font-semibold">Key Achievements:</h3>
-          <ul className="list-disc list-inside space-y-1 text-sm">
-            <li>Handled 300+ registrations with 100% uptime via scalable backend</li>
-            <li>Saved 21% in payment processing fees by switching to Cashfree</li>
-            <li>Deployed platform for end-to-end event ops within INR 9,000 budget</li>
-            <li>Delivered complete solution in under 2 months</li>
-            <li>UPI gateway integration for seamless payments</li>
-          </ul>
-        </div>
-      </div>
-    )
-  },
-  {
-    id: 3,
-    name: "Laundry System",
-    description: "Woxsen laundry management with QR-based bag drop",
-    image: "/card/laundry.png",
-    link: "https://laundry.woxsen.in",
-    category: "IoT Solution",
-    technologies: ["QR Codes", "Management System", "Real-time Tracking"],
-    content: (
-      <div className="space-y-4">
-        <p className="text-neutral-600 dark:text-neutral-400">
-          An innovative laundry management system for Woxsen University using QR codes 
-          for efficient bag tracking and management.
-        </p>
-        <div className="space-y-2">
-          <h3 className="font-semibold">Innovation:</h3>
-          <ul className="list-disc list-inside space-y-1 text-sm">
-            <li>QR code-based bag identification</li>
-            <li>Real-time status tracking</li>
-            <li>Automated notifications</li>
-            <li>Efficient workflow management</li>
-            <li>Student-friendly interface</li>
-          </ul>
-        </div>
-      </div>
-    )
-  },
+  // {
+  //   id: 2,
+  //   name: "Woxsen MUN Website",
+  //   description: "Event platform handling 300+ registrations with 100% uptime and payment gateway integration",
+  //   image: "/card/munreg.png",
+  //   link: "https://mun.woxsenstudentcouncil.com",
+  //   category: "Event Management",
+  //   technologies: ["FastAPI", "Next.js", "Tailwind CSS", "PostgreSQL", "ShadCN UI"],
+  //   content: (
+  //     <div className="space-y-4">
+  //       <p className="text-neutral-600 dark:text-neutral-400">
+  //         Comprehensive event management platform for Model United Nations with scalable backend 
+  //         and integrated payment processing.
+  //       </p>
+  //       <div className="space-y-2">
+  //         <h3 className="font-semibold">Key Achievements:</h3>
+  //         <ul className="list-disc list-inside space-y-1 text-sm">
+  //           <li>Handled 300+ registrations with 100% uptime via scalable backend</li>
+  //           <li>Saved 21% in payment processing fees by switching to Cashfree</li>
+  //           <li>Deployed platform for end-to-end event ops within INR 9,000 budget</li>
+  //           <li>Delivered complete solution in under 2 months</li>
+  //           <li>UPI gateway integration for seamless payments</li>
+  //         </ul>
+  //       </div>
+  //     </div>
+  //   )
+  // },
+  // {
+  //   id: 3,
+  //   name: "Laundry System",
+  //   description: "Woxsen laundry management with QR-based bag drop",
+  //   image: "/card/laundry.png",
+  //   link: "https://laundry.woxsen.in",
+  //   category: "IoT Solution",
+  //   technologies: ["QR Codes", "Management System", "Real-time Tracking"],
+  //   content: (
+  //     <div className="space-y-4">
+  //       <p className="text-neutral-600 dark:text-neutral-400">
+  //         An innovative laundry management system for Woxsen University using QR codes 
+  //         for efficient bag tracking and management.
+  //       </p>
+  //       <div className="space-y-2">
+  //         <h3 className="font-semibold">Innovation:</h3>
+  //         <ul className="list-disc list-inside space-y-1 text-sm">
+  //           <li>QR code-based bag identification</li>
+  //           <li>Real-time status tracking</li>
+  //           <li>Automated notifications</li>
+  //           <li>Efficient workflow management</li>
+  //           <li>Student-friendly interface</li>
+  //         </ul>
+  //       </div>
+  //     </div>
+  //   )
+  // },
   {
     id: 4,
     name: "Spotify Top 100 Analysis",
