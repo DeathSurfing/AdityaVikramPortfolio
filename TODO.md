@@ -19,3 +19,4 @@ ___
 - [] Improve overall UX
 - ✅ Remove 100% Faster Deployment 6,000+ Users Served 55% Cost Reduction 6mo Keep only Current Internship and featured projects
 
+- [] Test issues
