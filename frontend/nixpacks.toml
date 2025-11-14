@@ -1,11 +1,17 @@
 # nixpacks.toml
 
+# Use stable Node.js
 [phases.setup]
-nixPkgs = ["nodejs_22"]
+nixPkgs = ["nodejs_20"]
 
+# Use ci for deterministic builds
+[phases.install]
+cmds = ["npm ci"]
+
+# Next.js build
 [phases.build]
-cmds = ["npm install", "npm run build"]
+cmds = ["npm run build"]
 
+# Start next with production env
 [phases.start]
 cmd = "npm start"
-
