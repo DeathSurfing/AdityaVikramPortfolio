@@ -12,9 +12,9 @@ jobs:
       - name: Checkout latest code
         uses: actions/checkout@v3
 
-      - name: Stop existing containers
+      - name: Stop existing container (if running)
         run: |
-          docker ps -a --filter "ancestor=adityavikram-portfolio" --format "{{.ID}}" | xargs -r docker rm -f || true
+          docker rm -f adityavikram-portfolio || true
 
       - name: Pull latest changes
         run: |
@@ -23,7 +23,7 @@ jobs:
 
       - name: Build app with Nixpacks
         run: |
-          cd frontend  # Change this if your frontend folder has a different name
+          cd frontend
           nixpacks build . -t adityavikram-portfolio
 
       - name: Start new container on port 8594
