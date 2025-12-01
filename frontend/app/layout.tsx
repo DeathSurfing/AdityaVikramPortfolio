@@ -4,12 +4,13 @@ import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import MouseFollower from "@/components/ui/mouse-follower";
 import Footer from "@/components/ui/footer";
+import Script from "next/script";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
 });
-//
+
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
@@ -17,8 +18,10 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Aditya Vikram Mahendru - Software Engineer & AI/ML Enthusiast",
-  description: "Software Engineering Intern at Woxsen AI Research Center. Full-stack developer with expertise in Python, JavaScript, Rust, Next.js, and AI/ML. Building scalable systems for 600+ users.",
-  keywords: "Software Engineer, Full Stack Developer, AI ML, Next.js, Python, Rust, JavaScript, React, Portfolio, Aditya Vikram Mahendru",
+  description:
+    "Software Engineering Intern at Woxsen AI Research Center. Full-stack developer with expertise in Python, JavaScript, Rust, Next.js, and AI/ML. Building scalable systems for 600+ users.",
+  keywords:
+    "Software Engineer, Full Stack Developer, AI ML, Next.js, Python, Rust, JavaScript, React, Portfolio, Aditya Vikram Mahendru",
   authors: [{ name: "Aditya Vikram Mahendru" }],
   creator: "Aditya Vikram Mahendru",
   openGraph: {
@@ -26,13 +29,15 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://adityavikram.dev",
     title: "Aditya Vikram Mahendru - Software Engineer & AI/ML Enthusiast",
-    description: "Software Engineering Intern at Woxsen AI Research Center. Full-stack developer with expertise in Python, JavaScript, Rust, Next.js, and AI/ML.",
+    description:
+      "Software Engineering Intern at Woxsen AI Research Center. Full-stack developer with expertise in Python, JavaScript, Rust, Next.js, and AI/ML.",
     siteName: "Aditya Vikram Portfolio",
   },
   twitter: {
     card: "summary_large_image",
     title: "Aditya Vikram Mahendru - Software Engineer & AI/ML Enthusiast",
-    description: "Software Engineering Intern at Woxsen AI Research Center. Full-stack developer with expertise in Python, JavaScript, Rust, Next.js, and AI/ML.",
+    description:
+      "Software Engineering Intern at Woxsen AI Research Center. Full-stack developer with expertise in Python, JavaScript, Rust, Next.js, and AI/ML.",
     creator: "@adityavikram",
   },
   robots: {
@@ -53,14 +58,22 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="icon" href="/AFavicon.ico" />
+
+        {/* ✅ Umami Analytics */}
+        <Script
+          defer
+          src="https://analytics.adityavikram.dev/script.js"
+          data-website-id="2cab5db9-c5ca-4020-944c-e6c7c00a6950"
+        />
       </head>
+
       <body
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased pb-16`}
       >
@@ -73,4 +86,3 @@ export default function RootLayout({
     </html>
   );
 }
-
