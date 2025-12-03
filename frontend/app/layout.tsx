@@ -79,13 +79,11 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased pb-16`}
       >
         
-        <LenisSmoothScroll>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <MouseFollower />
             {children}
             <Footer />
           </ThemeProvider>
-        </LenisSmoothScroll>
       </body>
     </html>
   );

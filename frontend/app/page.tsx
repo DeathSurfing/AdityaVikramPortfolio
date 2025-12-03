@@ -1,4 +1,6 @@
+"use client";
 // app/page.tsx
+import LenisSmoothScroll from "@/components/ui/lenis-smooth-scroll";
 import AnimatedShapesWrapper from "@/components/AnimatedShapesWrapper";
 import React from "react";
 import dynamic from "next/dynamic";
@@ -28,6 +30,7 @@ function cn(...classes: Array<string | false | null | undefined>) {
 // Minimal CSS-animation-friendly "fade-up" helper: uses utility class names added in globals.css
 export default function HomePage() {
   return (
+    <LenisSmoothScroll>
     <div className={cn("bg-background relative w-full overflow-hidden", inter.variable, playfair.variable)}>
       {/* Hero Section */}
       <section className="relative flex min-h-screen w-full items-center justify-center">
@@ -283,5 +286,6 @@ export default function HomePage() {
       </section>
 
     </div>
+    </LenisSmoothScroll>
   );
 }
