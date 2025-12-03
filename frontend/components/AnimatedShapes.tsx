@@ -7,8 +7,8 @@ export default function AnimatedShapes() {
   const starRefs = useRef<Array<HTMLDivElement | null>>([]);
 
   useEffect(() => {
-    const speeds = [0.25, 0.45, 0.18, 0.35]; // parallax depth speeds
-    const drift = [0.4, 0.6, 0.25, 0.5];     // horizontal drifting factor
+    const speeds = [0.25, 0.45, 0.18, 0.35]; // falling/parallax speed
+    const drift = [0.4, 0.6, 0.25, 0.5];     // horizontal drift factor
     const wobble = [0.0015, 0.002, 0.001, 0.0018]; // float wobble frequency
 
     let lastScroll = 0;
@@ -25,30 +25,30 @@ export default function AnimatedShapes() {
         const wobbleFreq = wobble[i];
         const driftAmount = drift[i];
 
-        // Falling motion
+        // falling
         const y = scrollY * depthSpeed;
 
-        // Horizontal drift + wobble
+        // horizontal drift + wobble
         const time = performance.now() * wobbleFreq;
         const x =
-          Math.sin(time) * 20 * driftAmount + // gentle wave
-          scrollY * 0.02 * (i % 2 === 0 ? 1 : -1); // slight scroll-based drift
+          Math.sin(time) * 20 * driftAmount + // warm floating motion
+          scrollY * 0.02 * (i % 2 === 0 ? 1 : -1); // slight scroll-based sideways drift
 
-        // Stretch / streak effect when scrolling fast
-        const streakScale = Math.min(1.6, 1 + Math.abs(scrollDelta) * 0.015);
+        // cinematic streak scaling
+        const streakScale = Math.min(1.5, 1 + Math.abs(scrollDelta) * 0.02);
 
         el.style.transform = `
           translate3d(${x}px, ${y}px, 0)
           scaleY(${streakScale})
         `;
-        el.style.opacity = `${Math.max(0.3, 1 - depthSpeed * 0.6)}`;
       });
     }
 
     window.addEventListener("lenis-scroll", handleScroll as any);
 
-    return () =>
+    return () => {
       window.removeEventListener("lenis-scroll", handleScroll as any);
+    };
   }, []);
 
   return (
@@ -58,7 +58,9 @@ export default function AnimatedShapes() {
     >
       {/* ⭐ STAR 1 */}
       <div
-        ref={(el) => (starRefs.current[0] = el)}
+        ref={(el) => {
+          starRefs.current[0] = el;
+        }}
         className="absolute top-[10%] left-[-6%] will-change-transform"
       >
         <StarShape size={150} gradient="from-indigo-500/40" />
@@ -66,7 +68,9 @@ export default function AnimatedShapes() {
 
       {/* ⭐ STAR 2 */}
       <div
-        ref={(el) => (starRefs.current[1] = el)}
+        ref={(el) => {
+          starRefs.current[1] = el;
+        }}
         className="absolute top-[60%] right-[-4%] will-change-transform"
       >
         <StarShape size={110} gradient="from-rose-400/30" />
@@ -74,7 +78,9 @@ export default function AnimatedShapes() {
 
       {/* ⭐ STAR 3 */}
       <div
-        ref={(el) => (starRefs.current[2] = el)}
+        ref={(el) => {
+          starRefs.current[2] = el;
+        }}
         className="absolute bottom-[5%] left-[12%] will-change-transform"
       >
         <StarShape size={80} gradient="from-violet-400/30" />
@@ -82,7 +88,9 @@ export default function AnimatedShapes() {
 
       {/* ⭐ STAR 4 */}
       <div
-        ref={(el) => (starRefs.current[3] = el)}
+        ref={(el) => {
+          starRefs.current[3] = el;
+        }}
         className="absolute top-[18%] right-[18%] will-change-transform"
       >
         <StarShape size={60} gradient="from-amber-400/30" />

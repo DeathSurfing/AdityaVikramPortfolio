@@ -44,11 +44,12 @@ export default function LenisSmoothScroll({
     window.lenis = lenis;
 
     // ⭐ Relay scroll events into a globally usable hook
-    lenis.on("scroll", (e) => {
+    lenis.on("scroll", (e: { scroll: number }) => {
       window.dispatchEvent(
         new CustomEvent("lenis-scroll", { detail: e.scroll })
       );
     });
+
 
     function raf(time: number) {
       lenis.raf(time);
