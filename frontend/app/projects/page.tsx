@@ -19,93 +19,65 @@ type Project = {
 
 const projects: Project[] = [
   {
-    id: 1,
-    name: "Woxsen Student Council Website",
-    description: "Platform for 600+ students with centralized payment system and responsive design",
-    image: "/card/woxsenstudentcouncil.png",
-    link: "https://woxsenstudentcouncil.com",
-    category: "Web Development",
-    technologies: ["Next.js", "Tailwind CSS", "Google APIs"],
+    id: 6,
+    name: "Self-Hosted Bare-Metal Kubernetes Cluster",
+    description: "High-availability compute cluster using Raspberry Pi's and recycled hardware with K3s orchestration",
+    image: "/card/kubernetes.png",
+    category: "DevOps & Infrastructure Engineering",
+    technologies: ["Kubernetes", "K3s", "MetalLB", "Docker", "Raspberry Pi", "Proxmox", "Nginx"],
     content: (
       <div className="space-y-4">
         <p className="text-neutral-600 dark:text-neutral-400">
-          Built platform for 600+ students with centralized payment system and responsive design.
-          Achieved significant cost optimization and operational efficiency.
+          Built a production-grade high-availability compute cluster using sustainable hardware 
+          with automated GitOps workflows and optimized for low-power operations.
         </p>
         <div className="space-y-2">
           <h3 className="font-semibold">Key Achievements:</h3>
           <ul className="list-disc list-inside space-y-1 text-sm">
-            <li>Reduced hosting costs by 55% (INR 20,000 → INR 9,000) via in-house KVM migration</li>
-            <li>Built platform for 600+ students with centralized payment system</li>
-            <li>Deployed 36 Google Forms to automate student org operations</li>
-            <li>Eliminated vendor dependency with student-built solutions</li>
-            <li>Responsive design with modern UI/UX principles</li>
+            <li>Increased deployment reliability via multi-node K3s orchestration</li>
+            <li>Reduced deployment overhead by 60% with GitOps-driven CI/CD pipelines</li>
+            <li>Improved routing performance with MetalLB + Nginx for load balancing and SSL termination</li>
+            <li>Enabled 15+ microservices on low-power hardware through optimized resource limits and autoscaling</li>
+            <li>Built sustainable infrastructure using Raspberry Pi's and recycled hardware</li>
           </ul>
         </div>
       </div>
     )
   },
-  // {
-  //   id: 2,
-  //   name: "Woxsen MUN Website",
-  //   description: "Event platform handling 300+ registrations with 100% uptime and payment gateway integration",
-  //   image: "/card/munreg.png",
-  //   link: "https://mun.woxsenstudentcouncil.com",
-  //   category: "Event Management",
-  //   technologies: ["FastAPI", "Next.js", "Tailwind CSS", "PostgreSQL", "ShadCN UI"],
-  //   content: (
-  //     <div className="space-y-4">
-  //       <p className="text-neutral-600 dark:text-neutral-400">
-  //         Comprehensive event management platform for Model United Nations with scalable backend 
-  //         and integrated payment processing.
-  //       </p>
-  //       <div className="space-y-2">
-  //         <h3 className="font-semibold">Key Achievements:</h3>
-  //         <ul className="list-disc list-inside space-y-1 text-sm">
-  //           <li>Handled 300+ registrations with 100% uptime via scalable backend</li>
-  //           <li>Saved 21% in payment processing fees by switching to Cashfree</li>
-  //           <li>Deployed platform for end-to-end event ops within INR 9,000 budget</li>
-  //           <li>Delivered complete solution in under 2 months</li>
-  //           <li>UPI gateway integration for seamless payments</li>
-  //         </ul>
-  //       </div>
-  //     </div>
-  //   )
-  // },
-  // {
-  //   id: 3,
-  //   name: "Laundry System",
-  //   description: "Woxsen laundry management with QR-based bag drop",
-  //   image: "/card/laundry.png",
-  //   link: "https://laundry.woxsen.in",
-  //   category: "IoT Solution",
-  //   technologies: ["QR Codes", "Management System", "Real-time Tracking"],
-  //   content: (
-  //     <div className="space-y-4">
-  //       <p className="text-neutral-600 dark:text-neutral-400">
-  //         An innovative laundry management system for Woxsen University using QR codes 
-  //         for efficient bag tracking and management.
-  //       </p>
-  //       <div className="space-y-2">
-  //         <h3 className="font-semibold">Innovation:</h3>
-  //         <ul className="list-disc list-inside space-y-1 text-sm">
-  //           <li>QR code-based bag identification</li>
-  //           <li>Real-time status tracking</li>
-  //           <li>Automated notifications</li>
-  //           <li>Efficient workflow management</li>
-  //           <li>Student-friendly interface</li>
-  //         </ul>
-  //       </div>
-  //     </div>
-  //   )
-  // },
+  {
+    id: 5,
+    name: "Woxsen Student Council Website",
+    description: "Full-stack platform serving 600+ students with CRM dashboard and real-time analytics",
+    image: "/card/woxsenstudentcouncil.png",
+    link: "https://woxsenstudentcouncil.com",
+    category: "Software & Web Development",
+    technologies: ["Next.js", "Tailwind CSS", "MongoDB", "Redis", "Umami Analytics"],
+    content: (
+      <div className="space-y-4">
+        <p className="text-neutral-600 dark:text-neutral-400">
+          Enterprise-grade student platform with admin dashboard consolidating payments, forms, 
+          and operational insights. Achieved massive cost savings through technical optimization.
+        </p>
+        <div className="space-y-2">
+          <h3 className="font-semibold">Key Achievements:</h3>
+          <ul className="list-disc list-inside space-y-1 text-sm">
+            <li>Cut hosting and development expenses by 225% (INR 40k → 9k) via self-hosted KVM stack</li>
+            <li>Improved API performance by 40% using MongoDB + Redis caching</li>
+            <li>Built comprehensive admin CRM for payments, forms, and content management</li>
+            <li>Deployed Umami analytics tracking 10k+ monthly interactions</li>
+            <li>Real-time updates for 600+ students with optimized data pipeline</li>
+          </ul>
+        </div>
+      </div>
+    )
+  },
   {
     id: 4,
     name: "Spotify Top 100 Analysis",
     description: "Segmenting Spotify music data to predict song hit potential",
     image: "https://opengraph.githubassets.com/1/DeathSurfing/Spotify-Top-100-Analysis",
     link: "https://github.com/DeathSurfing/Spotify-Top-100-Analysis",
-    category: "Data Science",
+    category: "AI & Machine Learning",
     technologies: ["Python", "Pandas", "Machine Learning", "Data Analysis", "Spotify API"],
     content: (
       <div className="space-y-4">
@@ -127,12 +99,12 @@ const projects: Project[] = [
     )
   },
   {
-    id: 5,
+    id: 3,
     name: "Slang Translator",
     description: "AI-powered slang translator using LLaMA 3.1",
     image: "https://opengraph.githubassets.com/1/DeathSurfing/Slang-Translator",
     link: "https://github.com/DeathSurfing/Slang-Translator",
-    category: "AI/ML Project",
+    category: "AI & Machine Learning",
     technologies: ["LLaMA 3.1", "Natural Language Processing", "Python", "AI"],
     content: (
       <div className="space-y-4">
@@ -154,12 +126,12 @@ const projects: Project[] = [
     )
   },
   {
-    id: 6,
+    id: 2,
     name: "CNN From Scratch",
     description: "A convolutional neural network built from scratch in Rust",
     image: "https://opengraph.githubassets.com/1/DeathSurfing/CNN-From-Scratch",
     link: "https://github.com/DeathSurfing/CNN-From-Scratch",
-    category: "Deep Learning",
+    category: "AI & Machine Learning",
     technologies: ["Rust", "Neural Networks", "Deep Learning", "Linear Algebra"],
     content: (
       <div className="space-y-4">
@@ -181,12 +153,12 @@ const projects: Project[] = [
     )
   },
   {
-    id: 7,
+    id: 1,
     name: "NoteRefactor",
     description: "Interactive notebook tool for cleaning and refactoring text data",
     image: "https://opengraph.githubassets.com/1/DeathSurfing/NoteRefactor",
     link: "https://github.com/DeathSurfing/NoteRefactor",
-    category: "Development Tool",
+    category: "Software & Web Development",
     technologies: ["Text Processing", "Data Cleaning", "Interactive UI", "Python"],
     content: (
       <div className="space-y-4">
@@ -207,8 +179,8 @@ const projects: Project[] = [
       </div>
     )
   }
-
 ]
+
 
 export default function ProjectsPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>("All")

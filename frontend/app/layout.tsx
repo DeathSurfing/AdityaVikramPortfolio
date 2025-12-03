@@ -5,6 +5,7 @@ import { ThemeProvider } from "next-themes";
 import MouseFollower from "@/components/ui/mouse-follower";
 import Footer from "@/components/ui/footer";
 import Script from "next/script";
+import LenisSmoothScroll from "@/components/ui/lenis-smooth-scroll";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -77,11 +78,14 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased pb-16`}
       >
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <MouseFollower />
-          {children}
-          <Footer />
-        </ThemeProvider>
+        
+        <LenisSmoothScroll>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <MouseFollower />
+            {children}
+            <Footer />
+          </ThemeProvider>
+        </LenisSmoothScroll>
       </body>
     </html>
   );
