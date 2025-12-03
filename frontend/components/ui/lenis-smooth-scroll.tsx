@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { useEffect, useRef } from 'react';
-import Lenis from '@studio-freight/lenis';
+import { useEffect, useRef } from "react";
+import Lenis from "@studio-freight/lenis";
 
 interface LenisSmoothScrollProps {
   children: React.ReactNode;
   options?: {
     duration?: number;
     easing?: (t: number) => number;
-    direction?: 'vertical' | 'horizontal';
-    gestureDirection?: 'vertical' | 'horizontal' | 'both';
+    direction?: "vertical" | "horizontal";
+    gestureDirection?: "vertical" | "horizontal" | "both";
     smooth?: boolean;
     mouseMultiplier?: number;
     smoothTouch?: boolean;
@@ -20,17 +20,16 @@ interface LenisSmoothScrollProps {
 
 export default function LenisSmoothScroll({
   children,
-  options = {}
+  options = {},
 }: LenisSmoothScrollProps) {
   const lenisRef = useRef<Lenis | null>(null);
 
   useEffect(() => {
-    // Initialize Lenis
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      direction: 'vertical',
-      gestureDirection: 'vertical',
+      direction: "vertical",
+      gestureDirection: "vertical",
       smooth: true,
       mouseMultiplier: 1,
       smoothTouch: false,
@@ -41,7 +40,16 @@ export default function LenisSmoothScroll({
 
     lenisRef.current = lenis;
 
-    // Animation frame function
+    // ⭐ Make Lenis accessible globally
+    window.lenis = lenis;
+
+    // ⭐ Relay scroll events into a globally usable hook
+    lenis.on("scroll", (e) => {
+      window.dispatchEvent(
+        new CustomEvent("lenis-scroll", { detail: e.scroll })
+      );
+    });
+
     function raf(time: number) {
       lenis.raf(time);
       requestAnimationFrame(raf);
@@ -49,7 +57,6 @@ export default function LenisSmoothScroll({
 
     requestAnimationFrame(raf);
 
-    // Cleanup
     return () => {
       lenis.destroy();
     };
