@@ -41,84 +41,95 @@ export default function HomePage() {
           inter.variable
         )}
       >
-        {/* Hero Section */}
-        <section className="relative flex min-h-screen w-full items-center justify-center">
-          {/* subtle background gradient (reduced blur/cost) */}
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-rose-500/8 pointer-events-none" />
+      {/* Hero Section */}
+      <section className="relative flex min-h-screen w-full items-center justify-center">
+        {/* Subtle gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/15 via-transparent to-rose-500/10 pointer-events-none" />
 
-          <div className="relative z-10 container mx-auto max-w-6xl px-6 py-20">
-            <div className="text-center space-y-12">
-              {/* Header — NO animation on h1 to avoid delaying LCP */}
-              <div className="space-y-6">
-                <h1 className="text-5xl md:text-7xl lg:text-8xl font-semibold tracking-tight font-serif">
-                  <span className="bg-gradient-to-r from-foreground via-foreground/95 to-foreground/85 bg-clip-text text-transparent">
-                    Aditya Vikram Mahendru
-                  </span>
-                </h1>
+        {/* Animated background (lazy, hydrates AFTER hero paint) */}
+        <AnimatedShapesWrapper />
 
-                <p className="text-xl md:text-2xl lg:text-3xl text-muted-foreground font-medium max-w-3xl mx-auto">
-                  Build Fast. Build Scaleable
-                </p>
+        <div className="relative z-10 container mx-auto max-w-6xl px-6 py-20">
+          <div className="text-center space-y-12">
 
-                <div className="flex items-center justify-center gap-6 text-sm md:text-base text-muted-foreground flex-wrap">
-                  <div className="flex items-center gap-1">
-                    <MapPin className="h-4 w-4" />
-                    <span>Hyderabad, India</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Calendar className="h-4 w-4" />
-                    <span>B.Tech CSE (AI & ML), 2028</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Briefcase className="h-4 w-4" />
-                    <span>Available for Internships</span>
-                  </div>
+            {/* HEADER - No animation on h1 (LCP must be static), fade allowed on wrapper */}
+            <div className="space-y-6 animate-fade-up" style={{ animationDelay: "0.15s" }}>
+              <h1 className="text-5xl md:text-7xl lg:text-8xl font-semibold tracking-tight font-serif">
+                <span className="bg-gradient-to-r from-foreground via-foreground/95 to-foreground/85 bg-clip-text text-transparent">
+                  Aditya Vikram Mahendru
+                </span>
+              </h1>
+
+              <p className="text-xl md:text-2xl lg:text-3xl text-muted-foreground font-medium max-w-3xl mx-auto">
+                Build Fast. Build Scaleable
+              </p>
+
+              <div className="flex items-center justify-center gap-6 text-sm md:text-base text-muted-foreground flex-wrap">
+                <div className="flex items-center gap-1">
+                  <MapPin className="h-4 w-4" />
+                  <span>Hyderabad, India</span>
                 </div>
-              </div>
-
-              {/* Primary CTAs (kept simple, small animations on hover only) */}
-              <div className="flex flex-wrap justify-center gap-4 md:gap-6" style={{ animationDelay: "0.35s" }}>
-                <a
-                  href="/whoami"
-                  className="inline-flex items-center gap-2 bg-gradient-to-r from-marron-600 to-red-600 text-white px-8 py-4 rounded-xl font-semibold hover:scale-105 shadow-md text-lg group"
-                >
-                  <User className="h-5 w-5" />
-                  Who Am I?
-                  <ArrowRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
-                </a>
-
-                <a
-                  href="/experience"
-                  className="inline-flex items-center gap-2 bg-green-600 text-primary-foreground px-8 py-4 rounded-xl font-semibold hover:scale-105 shadow-md text-lg group"
-                >
-                  <Briefcase className="h-5 w-5" />
-                  Experience
-                  <ArrowRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
-                </a>
-
-                <a
-                  href="/projects"
-                  className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-blue-600 text-white px-8 py-4 rounded-xl font-semibold hover:scale-105 shadow-md text-lg group"
-                >
-                  <Code2 className="h-5 w-5" />
-                  Projects
-                  <ArrowRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
-                </a>
-              </div>
-
-              {/* Scroll indicator (tiny, non-blocking) */}
-              <div className="pt-8">
-                <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                  <span className="text-sm font-medium">Scroll to explore</span>
-                  <ArrowRight className="h-5 w-5 rotate-90" />
+                <div className="flex items-center gap-1">
+                  <Calendar className="h-4 w-4" />
+                  <span>B.Tech CSE (AI & ML), 2028</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Briefcase className="h-4 w-4" />
+                  <span>Available for Internships</span>
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* subtle top overlay to unify look */}
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t via-transparent dark:from-black dark:to-black/80" />
-        </section>
+            {/* CTAs – fade up AFTER hero text */}
+            <div
+              className="flex flex-wrap justify-center gap-4 md:gap-6 animate-fade-up"
+              style={{ animationDelay: "0.28s" }}
+            >
+              <a
+                href="/whoami"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-marron-600 to-red-600 text-white px-8 py-4 rounded-xl font-semibold hover:scale-105 shadow-md text-lg group"
+              >
+                <User className="h-5 w-5" />
+                Who Am I?
+                <ArrowRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
+              </a>
+
+              <a
+                href="/experience"
+                className="inline-flex items-center gap-2 bg-green-600 text-primary-foreground px-8 py-4 rounded-xl font-semibold hover:scale-105 shadow-md text-lg group"
+              >
+                <Briefcase className="h-5 w-5" />
+                Experience
+                <ArrowRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
+              </a>
+
+              <a
+                href="/projects"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-blue-600 text-white px-8 py-4 rounded-xl font-semibold hover:scale-105 shadow-md text-lg group"
+              >
+                <Code2 className="h-5 w-5" />
+                Projects
+                <ArrowRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
+              </a>
+            </div>
+
+            {/* Scroll to explore – with CLEAN bobbing animation */}
+            <div
+              className="pt-8 animate-fade-up"
+              style={{ animationDelay: "0.45s" }}
+            >
+              <div className="flex flex-col items-center gap-2 text-muted-foreground animate-bob">
+                <span className="text-sm font-medium">Scroll to explore</span>
+                <ArrowRight className="h-5 w-5 rotate-90" />
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        {/* Top fade overlay */}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t via-transparent dark:from-black/80" />
+      </section>
 
         {/* Value Proposition Section */}
         <section id="bring-to-team" className="relative min-h-screen flex items-center py-24">
@@ -292,8 +303,6 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Animated shapes are intentionally mounted after the core hero/content so they hydrate later */}
-        <AnimatedShapesWrapper />
       </div>
     </LenisSmoothScroll>
   );

@@ -1,38 +1,39 @@
-@import "tailwindcss";
-@import "tw-animate-css";
-
-@custom-variant dark (&:is(.dark *));
-/* globals.css */
-
-/* simple fade-up (used for text/cards) */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(18px); }
-  to { opacity: 1; transform: translateY(0); }
+/* Efficient fade animation */
+@keyframes fade-up {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
+
 .animate-fade-up {
   opacity: 0;
-  animation: fadeUp .6s cubic-bezier(.22,1,.36,1) forwards;
+  animation: fade-up 0.65s ease-out forwards;
 }
 
-/* gentle bobbing for scroll indicator */
+/* Bobbing animation (efficient because transform-only) */
 @keyframes bob {
-  0% { transform: translateY(0); }
-  50% { transform: translateY(10px); }
-  100% { transform: translateY(0); }
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(10px);
+  }
 }
+
 .animate-bob {
   animation: bob 2s ease-in-out infinite;
 }
 
-/* slow pulse for small star center */
-@keyframes pulseSlow {
-  0% { opacity: .9; transform: scale(1); }
-  50% { opacity: .6; transform: scale(1.05); }
-  100% { opacity: .9; transform: scale(1); }
-}
-.animate-pulse-slow {
-  animation: pulseSlow 2.8s ease-in-out infinite;
-}
+
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
