@@ -1,25 +1,13 @@
 // app/page.tsx
 // SERVER COMPONENT (no "use client" here) — Page paints fast, client-only pieces hydrate later.
 
-import React from "react";
-import LenisSmoothScroll from "@/components/ui/lenis-smooth-scroll"; // client component
-import AnimatedShapesWrapper from "@/components/AnimatedShapesWrapper"; // client component (wraps the heavy shapes)
-import { Inter } from "next/font/google";
-import {
-  Calendar,
-  MapPin,
-  Code2,
-  Users,
-  Download,
-  Github,
-  Linkedin,
-  Mail,
-  ArrowRight,
-  Briefcase,
-  User,
-  Sparkles,
-} from "lucide-react";
+"use client";
 
+import React, { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
+import { Inter } from "next/font/google";
+
+// ⭐ Optimized Google font (fast, display: swap)
 const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "700"],
@@ -27,6 +15,61 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
+// ⭐ Lazy-load heavy components AFTER paint
+const LenisSmoothScroll = dynamic(
+  () => import("@/components/ui/lenis-smooth-scroll"),
+  { ssr: false }
+);
+
+const AnimatedShapesWrapper = dynamic(
+  () => import("@/components/AnimatedShapesWrapper"),
+  { ssr: false, loading: () => null }
+);
+
+const MouseFollower = dynamic(
+  () => import("@/components/ui/mouse-follower"),
+  { ssr: false }
+);
+
+// ⭐ Lazy-load lucide-react icons (prevents 30–45 kB of JS on first load)
+const Calendar = dynamic(() =>
+  import("lucide-react").then((mod) => mod.Calendar)
+);
+const MapPin = dynamic(() =>
+  import("lucide-react").then((mod) => mod.MapPin)
+);
+const Code2 = dynamic(() =>
+  import("lucide-react").then((mod) => mod.Code2)
+);
+const Users = dynamic(() =>
+  import("lucide-react").then((mod) => mod.Users)
+);
+const Download = dynamic(() =>
+  import("lucide-react").then((mod) => mod.Download)
+);
+const Github = dynamic(() =>
+  import("lucide-react").then((mod) => mod.Github)
+);
+const Linkedin = dynamic(() =>
+  import("lucide-react").then((mod) => mod.Linkedin)
+);
+const Mail = dynamic(() =>
+  import("lucide-react").then((mod) => mod.Mail)
+);
+const ArrowRight = dynamic(() =>
+  import("lucide-react").then((mod) => mod.ArrowRight)
+);
+const Briefcase = dynamic(() =>
+  import("lucide-react").then((mod) => mod.Briefcase)
+);
+const User = dynamic(() =>
+  import("lucide-react").then((mod) => mod.User)
+);
+const Sparkles = dynamic(() =>
+  import("lucide-react").then((mod) => mod.Sparkles)
+);
+
+// Helper
 function cn(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");
 }
