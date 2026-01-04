@@ -260,39 +260,31 @@ export default function HomePage() {
               </div>
 
               <div className="flex flex-wrap justify-center gap-4 max-w-5xl mx-auto">
-                {[
-                  { name: "Kubernetes", color: "border-blue-500/30 hover:border-blue-500" },
-                  { name: "K3s", color: "border-blue-400/30 hover:border-blue-400" },
-                  { name: "MetalLB", color: "border-sky-500/30 hover:border-sky-500" },
-                  { name: "Docker", color: "border-sky-400/30 hover:border-sky-400" },
-                  { name: "Raspberry Pi", color: "border-red-400/30 hover:border-red-400" },
-                  { name: "Proxmox", color: "border-orange-500/30 hover:border-orange-500" },
-                  { name: "Nginx", color: "border-green-500/30 hover:border-green-500" },
+                  {[
+                    // Core Stack
+                    { name: "TypeScript", color: "border-blue-500/30 hover:border-blue-500" },
+                    { name: "Next.js", color: "border-neutral-500/30 hover:border-neutral-500" },
+                    { name: "Tailwind CSS", color: "border-cyan-500/30 hover:border-cyan-500" },
+                    { name: "Python", color: "border-blue-400/30 hover:border-blue-400" },
+                    { name: "FastAPI", color: "border-emerald-500/30 hover:border-emerald-500" },
 
-                  { name: "Next.js", color: "border-neutral-500/30 hover:border-neutral-500" },
-                  { name: "Tailwind CSS", color: "border-cyan-500/30 hover:border-cyan-500" },
-                  { name: "MongoDB", color: "border-emerald-500/30 hover:border-emerald-500" },
-                  { name: "Redis", color: "border-red-500/30 hover:border-red-500" },
-                  { name: "Umami Analytics", color: "border-purple-500/30 hover:border-purple-500" },
+                    // Databases & Caching
+                    { name: "PostgreSQL", color: "border-indigo-500/30 hover:border-indigo-500" },
+                    { name: "Redis", color: "border-red-500/30 hover:border-red-500" },
+                    { name: "MongoDB", color: "border-green-500/30 hover:border-green-500" },
+                    // Cloud & DevOps
+                    { name: "AWS", color: "border-orange-500/30 hover:border-orange-500" },
+                    { name: "GitHub Actions", color: "border-purple-500/30 hover:border-purple-500" },
+                    { name: "MetalLB", color: "border-sky-600/30 hover:border-sky-600" },
+                    { name: "Kubernetes", color: "border-sky-600/30 hover:border-sky-600" },
 
-                  { name: "Python", color: "border-blue-500/30 hover:border-blue-500" },
-                  { name: "Pandas", color: "border-yellow-500/30 hover:border-yellow-500" },
-                  { name: "Machine Learning", color: "border-indigo-500/30 hover:border-indigo-500" },
-                  { name: "Data Analysis", color: "border-indigo-400/30 hover:border-indigo-400" },
-                  { name: "Spotify API", color: "border-green-400/30 hover:border-green-400" },
 
-                  { name: "LLaMA 3.1", color: "border-pink-500/30 hover:border-pink-500" },
-                  { name: "Natural Language Processing", color: "border-fuchsia-500/30 hover:border-fuchsia-500" },
-                  { name: "AI", color: "border-violet-500/30 hover:border-violet-500" },
+                    // Infrastructure (used, not just known)
+                    { name: "Docker", color: "border-sky-400/30 hover:border-sky-400" },
+                    { name: "Nginx", color: "border-green-500/30 hover:border-green-500" },
+                    { name: "Proxmox", color: "border-orange-500/30 hover:border-orange-500" },
+                    { name: "Linux", color: "border-zinc-400/30 hover:border-zinc-400" },
 
-                  { name: "Rust", color: "border-orange-500/30 hover:border-orange-500" },
-                  { name: "Neural Networks", color: "border-yellow-400/30 hover:border-yellow-400" },
-                  { name: "Deep Learning", color: "border-purple-400/30 hover:border-purple-400" },
-                  { name: "Linear Algebra", color: "border-zinc-400/30 hover:border-zinc-400" },
-
-                  { name: "Text Processing", color: "border-gray-400/30 hover:border-gray-400" },
-                  { name: "Data Cleaning", color: "border-gray-300/30 hover:border-gray-300" },
-                  { name: "Interactive UI", color: "border-blue-300/30 hover:border-blue-300" }
                 ].map((tech, i) => (
                   <span
                     key={tech.name}
