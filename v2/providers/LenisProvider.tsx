@@ -2,6 +2,7 @@
 
 import { ReactNode, useEffect, useRef } from "react";
 import Lenis from "@studio-freight/lenis";
+import { lenisStore } from "@/lib/lenis-store";
 
 type Props = {
   children: ReactNode;
@@ -9,17 +10,16 @@ type Props = {
 
 export default function LenisProvider({ children }: Props) {
   const lenisRef = useRef<Lenis | null>(null);
-  const rafIdRef = useRef<number | null>(null);
 
   useEffect(() => {
     const isTouch =
       "ontouchstart" in window || navigator.maxTouchPoints > 0;
 
-    // ❌ No Lenis on touch devices (good call)
+    // ❌ Disable Lenis on touch devices
     if (isTouch) return;
 
-    let ScrollTrigger: any;
     let gsap: any;
+    let ScrollTrigger: any;
 
     const init = async () => {
       gsap = (await import("gsap")).gsap;
@@ -34,20 +34,22 @@ export default function LenisProvider({ children }: Props) {
         smoothWheel: true,
       });
 
+      // 🔗 Store references
       lenisRef.current = lenis;
+      lenisStore.lenis = lenis;
 
-      // 🧠 Tell ScrollTrigger every time Lenis scrolls
+      // 🔁 Sync Lenis → ScrollTrigger
       lenis.on("scroll", ScrollTrigger.update);
 
-      // 🧠 Use GSAP ticker instead of raw RAF
+      // 🧠 Use GSAP ticker instead of RAF
       gsap.ticker.add((time: number) => {
         lenis.raf(time * 1000);
       });
 
-      // ❌ Disable GSAP lag smoothing (required)
+      // ❌ Disable GSAP lag smoothing
       gsap.ticker.lagSmoothing(0);
 
-      // ✅ VERY IMPORTANT — sync initial state
+      // ✅ Initial refresh
       ScrollTrigger.refresh();
     };
 
@@ -58,10 +60,7 @@ export default function LenisProvider({ children }: Props) {
         lenisRef.current.destroy();
         lenisRef.current = null;
       }
-
-      if (gsap) {
-        gsap.ticker.remove(() => {});
-      }
+      lenisStore.lenis = null;
     };
   }, []);
 

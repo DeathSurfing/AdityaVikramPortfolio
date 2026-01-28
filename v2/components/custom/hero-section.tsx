@@ -149,6 +149,7 @@ export default function HeroNeoBrutalist() {
     <section
       ref={containerRef}
       className="relative min-h-screen overflow-hidden bg-background text-foreground"
+      id="#"
     >
       {/* Animated grid background */}
       <div
@@ -186,12 +187,9 @@ export default function HeroNeoBrutalist() {
         ref={stampRef}
         className="absolute top-12 right-2 sm:top-20 sm:right-6 rotate-[-12deg] border-2 sm:border-4 border-border bg-primary px-3 py-1 sm:px-5 sm:py-2 text-[10px] sm:text-sm font-extrabold tracking-widest text-primary-foreground shadow-[2px_2px_0px_0px_var(--border)] sm:shadow-[4px_4px_0px_0px_var(--border)]"
       >
-        PORTFOLIO 2026
+        Full Stack Developer
       </div>
 
-      <div className="absolute bottom-16 left-2 sm:bottom-24 sm:left-8 rotate-[8deg] border-2 sm:border-4 border-border bg-secondary px-2 py-1 sm:px-4 sm:py-2 text-[9px] sm:text-xs font-bold tracking-wider text-secondary-foreground hidden sm:block">
-        AVAILABLE FOR WORK
-      </div>
 
       {/* Content */}
       <div
@@ -241,17 +239,14 @@ export default function HeroNeoBrutalist() {
             <span className="text-primary text-xl sm:text-2xl font-black">15+</span> PROJECTS
           </div>
           <div className="border border-border sm:border-2 bg-background px-3 py-1.5 sm:px-4 sm:py-2">
-            <span className="text-primary text-xl sm:text-2xl font-black">3</span> YEARS
-          </div>
-          <div className="border border-border sm:border-2 bg-background px-3 py-1.5 sm:px-4 sm:py-2">
-            <span className="text-primary text-xl sm:text-2xl font-black">100%</span> BOLD
+            <span className="text-primary text-xl sm:text-2xl font-black">2</span> YEARS
           </div>
         </div>
 
         {/* CTA - responsive layout */}
         <div ref={ctaRef} className="mt-8 sm:mt-12 flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 w-full sm:w-auto">
           <Link
-            href="/projects"
+            href="#projects"
             className="group relative border-2 sm:border-4 border-border bg-foreground px-6 py-3 sm:px-8 sm:py-4 text-xs sm:text-sm font-extrabold uppercase tracking-wider text-background shadow-[4px_4px_0px_0px_var(--border)] sm:shadow-[8px_8px_0px_0px_var(--border)] transition-all hover:shadow-[2px_2px_0px_0px_var(--border)] sm:hover:shadow-[4px_4px_0px_0px_var(--border)] hover:translate-x-0.5 hover:translate-y-0.5 sm:hover:translate-x-1 sm:hover:translate-y-1 active:shadow-none active:translate-x-1 active:translate-y-1 sm:active:translate-x-2 sm:active:translate-y-2 text-center"
           >
             <span className="relative z-10">View Work</span>
@@ -261,7 +256,7 @@ export default function HeroNeoBrutalist() {
           </Link>
           
           <Link
-            href="/contact"
+            href="#contact"
             className="group relative border-2 sm:border-4 border-border bg-primary px-6 py-3 sm:px-8 sm:py-4 text-xs sm:text-sm font-extrabold uppercase tracking-wider text-primary-foreground shadow-[4px_4px_0px_0px_var(--border)] sm:shadow-[8px_8px_0px_0px_var(--border)] transition-all hover:shadow-[2px_2px_0px_0px_var(--border)] sm:hover:shadow-[4px_4px_0px_0px_var(--border)] hover:translate-x-0.5 hover:translate-y-0.5 sm:hover:translate-x-1 sm:hover:translate-y-1 active:shadow-none active:translate-x-1 active:translate-y-1 sm:active:translate-x-2 sm:active:translate-y-2 text-center"
           >
             Contact

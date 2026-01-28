@@ -41,9 +41,9 @@ const itemVariants = {
 
 // Define a single source of truth for links and icons
 const navLinks = [
-  { href: '/project', icon: <CubeIcon className="h-4 w-4" />, label: 'Projects' },
-  { href: '/impact', icon: <BarChartIcon className="h-4 w-4" />, label: 'Impacts' },
-  { href: '/about', icon: <QuestionMarkCircledIcon className="h-4 w-4" />, label: 'WhoAmI?' },
+  { href: '#project', icon: <CubeIcon className="h-4 w-4" />, label: 'Projects' },
+  { href: '#impact', icon: <BarChartIcon className="h-4 w-4" />, label: 'Impacts' },
+  { href: '#about', icon: <QuestionMarkCircledIcon className="h-4 w-4" />, label: 'WhoAmI?' },
 ];
 
 export default function Header() {
@@ -86,7 +86,7 @@ export default function Header() {
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 md:px-5">
           {/* LOGO */}
           <Link
-            href="/"
+            href="/#"
             className="
               flex items-center gap-2.5
               font-mono text-xl md:text-2xl font-black tracking-widest
