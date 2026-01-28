@@ -10,7 +10,7 @@ import "./globals.css";
 import Header from "@/components/custom/header";
 import { ThemeProvider } from "@/components/theme-provider";
 import LenisProvider from "@/providers/LenisProvider";
-import Footer from "@/components/custom/Footer";
+import LenisHashHandler from "@/providers/LenisHashHandler";
 
 
 /* ───────────────────────── Fonts ───────────────────────── */
@@ -113,6 +113,7 @@ export default function RootLayout({
       <body className="bg-background text-foreground antialiased">
           <ThemeProvider>
             <LenisProvider>
+              <LenisHashHandler />
                   <Header />
                   {children}
             </LenisProvider>

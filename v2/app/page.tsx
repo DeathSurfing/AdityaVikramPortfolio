@@ -1,4 +1,6 @@
+import CredibilitySection from "@/components/custom/CredibilitySection"
 import HeroNeoBrutalist from "@/components/custom/hero-section"
+
 import ProjectsNeoBrutalist from "@/components/custom/projectssection"
 
 
@@ -8,6 +10,7 @@ return(
   <>
     <HeroNeoBrutalist />
     <ProjectsNeoBrutalist />
+    <CredibilitySection />
   </>
 )
 }

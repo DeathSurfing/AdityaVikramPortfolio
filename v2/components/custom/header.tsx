@@ -42,7 +42,7 @@ const itemVariants = {
 // Define a single source of truth for links and icons
 const navLinks = [
   { href: '#project', icon: <CubeIcon className="h-4 w-4" />, label: 'Projects' },
-  { href: '#impact', icon: <BarChartIcon className="h-4 w-4" />, label: 'Impacts' },
+  { href: '#opinions', icon: <BarChartIcon className="h-4 w-4" />, label: 'Opinions' },
   { href: '#about', icon: <QuestionMarkCircledIcon className="h-4 w-4" />, label: 'WhoAmI?' },
 ];
 

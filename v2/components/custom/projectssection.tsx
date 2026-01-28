@@ -293,7 +293,7 @@ export default function ProjectsNeoBrutalist() {
             href="#contact"
             className="inline-block border-4 border-border bg-primary px-8 py-4 text-sm font-extrabold uppercase tracking-wider text-primary-foreground shadow-[8px_8px_0px_0px_var(--border)] transition-all hover:shadow-[4px_4px_0px_0px_var(--border)] hover:translate-x-1 hover:translate-y-1"
           >
-            Let's Build Something Loud →
+            Let's Build Something →
           </Link>
         </div>
       </div>

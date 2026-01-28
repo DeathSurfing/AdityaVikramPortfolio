@@ -204,17 +204,17 @@ export default function HeroNeoBrutalist() {
           className="max-w-5xl text-[2.5rem] sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black leading-[0.9] tracking-tighter"
         >
           <div className="overflow-hidden">
-            <div>{splitText("BUILDING")}</div>
+            <div>{splitText("ADITYA")}</div>
           </div>
           <div className="overflow-hidden mt-1 sm:mt-2">
             <span className="relative inline-block">
               <span className="underline decoration-border decoration-[4px] sm:decoration-[6px] lg:decoration-[8px] underline-offset-[6px] sm:underline-offset-[10px] lg:underline-offset-[12px]">
-                {splitText("LOUD")}
+                {splitText("VIKRAM")}
               </span>
             </span>
           </div>
           <div className="overflow-hidden mt-1 sm:mt-2">
-            <div>{splitText("IDEAS")}</div>
+            <div>{splitText("MAHENDRU")}</div>
           </div>
         </h1>
 
@@ -225,9 +225,9 @@ export default function HeroNeoBrutalist() {
             ref={subtitleRef}
             className="border-l-2 sm:border-l-4 border-border pl-3 sm:pl-6 text-base sm:text-lg lg:text-xl font-bold leading-relaxed"
           >
-            I design and engineer bold digital systems that don't whisper — they{" "}
+            I design and engineer <span className="text-black bg-primary-hover">SCALEABLE</span> digital systems that don't die in prod — they{" "}
             <span className="relative inline-block bg-foreground text-background px-1.5 py-0.5 sm:px-2 rotate-[-1deg]">
-              confront
+              WORK
             </span>
             .
           </p>
