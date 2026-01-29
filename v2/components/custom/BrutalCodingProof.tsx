@@ -114,7 +114,7 @@ export default function BrutalCodingProof() {
         <div className="mt-16 md:mt-20 pt-8 border-t border-border">
           <p className="text-sm md:text-base font-mono text-muted-foreground tracking-wide">
             <span className="font-bold text-foreground">CONSISTENCY BEATS TALENT.</span>{" "}
-            These charts update themselves. I don't.
+            These charts update themselves.
           </p>
         </div>
       </div>
