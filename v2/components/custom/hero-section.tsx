@@ -148,8 +148,7 @@ export default function HeroNeoBrutalist() {
   return (
     <section
       ref={containerRef}
-      className="relative min-h-screen overflow-hidden bg-background text-foreground"
-      id="#"
+      className="relative min-h-screen overflow-hidden text-foreground bg-background"
     >
       {/* Animated grid background */}
       <div

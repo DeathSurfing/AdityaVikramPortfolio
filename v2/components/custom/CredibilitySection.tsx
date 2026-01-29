@@ -69,53 +69,20 @@ export default function CredibilitySection() {
   const sectionRef = useRef<HTMLElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
 
-  const [counters, setCounters] = useState<Record<string, number>>(() => {
+  const [counters] = useState<Record<string, number>>(() => {
     const initial: Record<string, number> = {};
     metrics.forEach((metric) => {
-      initial[metric.label] = 0;
+      initial[metric.label] = parseFloat(metric.value);
     });
     return initial;
   });
 
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
 
-  const countersStarted = useRef(false);
-  const timersRef = useRef<NodeJS.Timeout[]>([]);
-
-  /* ============ COUNTER LOGIC ============ */
-
-  const startCounters = () => {
-    if (countersStarted.current) return;
-    countersStarted.current = true;
-
-    metrics.forEach((metric) => {
-      const target = parseFloat(metric.value);
-      let current = 0;
-      const step = Math.max(target / 40, 1);
-
-      const timer = setInterval(() => {
-        current += step;
-        if (current >= target) {
-          current = target;
-          clearInterval(timer);
-        }
-
-        setCounters((prev) => ({
-          ...prev,
-          [metric.label]: Math.floor(current),
-        }));
-      }, 24);
-
-      timersRef.current.push(timer);
-    });
-  };
-
   /* ============ GSAP EFFECTS ============ */
 
   useLayoutEffect(() => {
     if (!sectionRef.current) return;
-
-    startCounters();
 
     const ctx = gsap.context(() => {
       const heroChars =
@@ -150,7 +117,6 @@ export default function CredibilitySection() {
 
     return () => {
       ctx.revert();
-      timersRef.current.forEach(clearInterval);
     };
   }, []);
 
