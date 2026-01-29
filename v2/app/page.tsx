@@ -41,6 +41,7 @@ export default function HomePage() {
         <ProjectsNeoBrutalist />
 
         <CredibilitySection />
+        
         <BrutalCodingProof/>
     </main>
   )
