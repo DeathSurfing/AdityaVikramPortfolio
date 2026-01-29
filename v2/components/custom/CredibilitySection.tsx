@@ -77,6 +77,8 @@ export default function CredibilitySection() {
     return initial;
   });
 
+  const [hoveredCard, setHoveredCard] = useState<number | null>(null);
+
   const countersStarted = useRef(false);
   const timersRef = useRef<NodeJS.Timeout[]>([]);
 
@@ -128,16 +130,19 @@ export default function CredibilitySection() {
         ease: "back.out(1.5)",
       });
 
-      gsap.utils.toArray<HTMLElement>(".impact-row").forEach((el) => {
-        gsap.from(el, {
-          x: -80,
-          opacity: 0,
-          duration: 0.7,
-          scrollTrigger: {
-            trigger: el,
-            start: "top 85%",
-          },
-        });
+      // Animate cards in with stagger
+      gsap.from(".tech-card", {
+        y: 60,
+        opacity: 0,
+        scale: 0.9,
+        rotateX: -15,
+        duration: 0.6,
+        stagger: 0.08,
+        ease: "back.out(1.2)",
+        scrollTrigger: {
+          trigger: ".tech-grid",
+          start: "top 80%",
+        },
       });
     }, sectionRef);
 
@@ -186,12 +191,12 @@ export default function CredibilitySection() {
               {splitText("OPINIONS")}
             </h1>
             <p className="mt-6 text-xl font-bold border-l-4 border-border pl-6 max-w-xl">
-              No trendy tools. Only things I’d defend in production.
+              No trendy tools. Only things I'd defend in production.
             </p>
           </div>
 
           {/* METRICS */}
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mt-16">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-16">
             {metrics.map((metric, i) => (
               <div
                 key={metric.label}
@@ -211,29 +216,103 @@ export default function CredibilitySection() {
         </div>
       </div>
 
-      {/* OPINIONATED STACK */}
+      {/* OPINIONATED STACK - INTERACTIVE CARDS */}
       <div className="relative z-10 px-6 lg:px-20 pb-32">
-        <div className="max-w-6xl mx-auto">
-          <p className="font-bold text-lg mb-8 max-w-2xl">
+        <div className="max-w-7xl mx-auto">
+          <p className="font-bold text-2xl">
+            My <span className="bg-accent-foreground text-accent font-mono">Personal</span> Choice for a Perfect <span className="font-extrabold bg-primary-hover text-black">Tech Stack</span></p>
+          <p className="font-bold text-lg mb-12 max-w-2xl">
             Every choice below exists because something else failed under real
             load.
           </p>
 
-          <div className="border-4 border-border shadow-[8px_8px_0px_0px_var(--border)]">
-            {techMappings.map((m) => (
+          <div className="tech-grid grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {techMappings.map((m, i) => (
               <div
                 key={m.tech}
-                className="impact-row grid md:grid-cols-2 border-b-4 border-border last:border-b-0 hover:bg-primary/5"
+                className="tech-card group relative"
+                onMouseEnter={() => setHoveredCard(i)}
+                onMouseLeave={() => setHoveredCard(null)}
               >
-                <div className="p-6 font-mono font-bold">
-                  {m.tech}
-                </div>
-                <div className="p-6 font-bold flex gap-4">
-                  <span className="text-primary text-2xl">→</span>
-                  {m.outcome}
+                {/* Card Background with Perspective */}
+                <div className="relative h-full">
+                  {/* Glowing effect on hover */}
+                  <div
+                    className={`absolute inset-0 bg-primary/20 blur-xl transition-opacity duration-300 ${
+                      hoveredCard === i ? "opacity-100" : "opacity-0"
+                    }`}
+                  />
+
+                  {/* Main Card */}
+                  <div
+                    className={`relative h-full border-4 border-border bg-background p-6 transition-all duration-300 ${
+                      hoveredCard === i
+                        ? "shadow-[12px_12px_0px_0px_var(--primary)] -translate-y-2"
+                        : "shadow-[6px_6px_0px_0px_var(--border)]"
+                    }`}
+                  >
+                    {/* Tech Name Badge */}
+                    <div className="flex items-start justify-between mb-4">
+                      <div
+                        className={`inline-block px-4 py-2 font-mono font-black text-lg border-2 border-border transition-all duration-300 ${
+                          hoveredCard === i
+                            ? "bg-primary text-background scale-105"
+                            : "bg-background"
+                        }`}
+                      >
+                        {m.tech}
+                      </div>
+
+                      {/* Decorative Corner */}
+                      <div
+                        className={`w-3 h-3 border-4 border-border transition-all duration-300 ${
+                          hoveredCard === i
+                            ? "bg-primary rotate-45 scale-125"
+                            : "bg-background"
+                        }`}
+                      />
+                    </div>
+
+                    {/* Arrow Divider */}
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="flex-1 h-1 bg-border" />
+                      <div
+                        className={`text-3xl font-black transition-all duration-300 ${
+                          hoveredCard === i
+                            ? "text-black scale-125 translate-x-2 bg-primary-hover"
+                            : "text-foreground/30 "
+                        }`}
+                      >
+                        Why?
+                      </div>
+                      <div className="flex-1 h-1 bg-border" />
+                    </div>
+
+                    {/* Outcome Text */}
+                    <p
+                      className={`font-bold text-base leading-relaxed transition-all duration-300 ${
+                        hoveredCard === i ? "text-foreground" : "text-foreground/70"
+                      }`}
+                    >
+                      {m.outcome}
+                    </p>
+
+                    {/* Bottom Accent Line */}
+                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-border">
+                      <div
+                        className={`h-full bg-primary transition-all duration-500 ${
+                          hoveredCard === i ? "w-full" : "w-0"
+                        }`}
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* Bottom Note */}
+          <div className="mt-16 border-l-4 border-primary pl-6">
           </div>
         </div>
       </div>

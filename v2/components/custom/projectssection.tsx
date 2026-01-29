@@ -289,12 +289,12 @@ export default function ProjectsNeoBrutalist() {
 
         {/* Bottom CTA */}
         <div className="mt-16 sm:mt-24 text-center">
-          <Link
+            <Link
             href="#contact"
-            className="inline-block border-4 border-border bg-primary px-8 py-4 text-sm font-extrabold uppercase tracking-wider text-primary-foreground shadow-[8px_8px_0px_0px_var(--border)] transition-all hover:shadow-[4px_4px_0px_0px_var(--border)] hover:translate-x-1 hover:translate-y-1"
-          >
+            className="inline-block border-4 border-border bg-primary-hover px-8 py-4 text-sm font-extrabold uppercase tracking-wider text-black shadow-[8px_8px_0px_0px_var(--border)] transition-all hover:shadow-[4px_4px_0px_0px_var(--border)] hover:translate-x-1 hover:translate-y-1"
+            >
             Let's Build Something →
-          </Link>
+            </Link>
         </div>
       </div>
 
