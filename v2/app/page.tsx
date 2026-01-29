@@ -8,6 +8,7 @@ import ProjectsNeoBrutalist from "@/components/custom/projectssection"
 import WhoAmIHero from "@/components/custom/WhoAmIHero"
 import WhoAmIAbout from "@/components/custom/WhoAmIAbout"
 import WhoAmITestimonials from "@/components/custom/WhoAmITestimonials"
+import BrutalCodingProof from "@/components/custom/BrutalCodingProof"
 
 export default function HomePage() {
 
@@ -40,6 +41,7 @@ export default function HomePage() {
         <ProjectsNeoBrutalist />
 
         <CredibilitySection />
+        <BrutalCodingProof/>
     </main>
   )
 }
