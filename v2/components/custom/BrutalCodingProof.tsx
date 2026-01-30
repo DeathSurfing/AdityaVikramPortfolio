@@ -133,9 +133,10 @@ export default function BrutalCodingProof() {
             <div className="bg-pink-400 border-4 border-black p-6 rotate-[-0.5deg] shadow-lg">
               <div className="space-y-3">
                 {[
-                  ["DATA STRUCTURES", "MASTERED"],
-                  ["ALGORITHMS", "OPTIMIZED"],
-                  ["TIME COMPLEXITY", "O(1) MINDSET"],
+                  ["RUST", "LEARNING"],
+                  ["PYTHON", "INTERMEDIATE"],
+                  ["JAVASCRIPT", "INTERMEDIATE"],
+                  ["C++", "INTERMEDIATE"],
                 ].map(([label, value]) => (
                   <div
                     key={label}
