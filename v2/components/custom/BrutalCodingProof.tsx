@@ -38,7 +38,7 @@ export default function BrutalCodingProof() {
 
         {/* ================= TITLE ================= */}
         <div className="mb-16">
-          <div className="inline-block bg-foreground p-1 mb-4 rotate-[-1deg]">
+          <div className="inline-block bg-foreground p-1 mb-4 -rotate-1">
             <h2 className="text-5xl md:text-7xl lg:text-8xl font-black text-background px-6 py-3 tracking-tight">
               PROOF OF WORK
             </h2>
@@ -160,7 +160,7 @@ export default function BrutalCodingProof() {
           <div className="bg-primary text-primary-foreground border-4 border-black p-6 md:p-8 shadow-2xl rotate-[0.5deg]">
             <p className="text-2xl md:text-4xl lg:text-5xl font-black text-center leading-tight">
               CONSISTENCY BEATS TALENT.{" "}
-              <span className="bg-accent text-accent-foreground px-3 py-1 inline-block rotate-[-1deg]">
+              <span className="bg-accent text-accent-foreground px-3 py-1 inline-block -rotate-1">
                 These charts update themselves.
               </span>
             </p>

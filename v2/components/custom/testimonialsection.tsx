@@ -168,7 +168,7 @@ export default function TestimonialSection() {
       ref={sectionRef}
       className={cn(
         "relative px-6 md:px-20 py-32",
-        "border-t-[8px] border-border",
+        "border-t-8 border-border",
         "bg-background text-foreground",
         "overflow-hidden"
       )}
@@ -176,7 +176,7 @@ export default function TestimonialSection() {
       {/* Background decorative elements with parallax */}
       <div 
         ref={shape1Ref}
-        className="absolute right-[-5%] top-[10%] h-[200px] w-[200px] bg-primary/10 rotate-[25deg] border-4 border-border/20 will-change-transform" 
+        className="absolute right-[-5%] top-[10%] h-[200px] w-[200px] bg-primary/10 rotate-25 border-4 border-border/20 will-change-transform" 
       />
       <div 
         ref={shape2Ref}
@@ -187,14 +187,14 @@ export default function TestimonialSection() {
         {/* Heading with parallax */}
         <div ref={headingRef} className="mb-20 will-change-transform">
           <div className="inline-block mb-6">
-            <div className="px-6 py-3 bg-foreground text-background border-4 border-border rotate-[-1deg] shadow-[6px_6px_0_hsl(var(--border))]">
+            <div className="px-6 py-3 bg-foreground text-background border-4 border-border -rotate-1 shadow-[6px_6px_0_hsl(var(--border))]">
               <p className="font-black text-sm md:text-base tracking-widest">
                 TESTIMONIALS
               </p>
             </div>
           </div>
           
-          <h2 className="font-head font-black text-5xl md:text-7xl leading-tight tracking-tight [text-shadow:_6px_6px_0_hsl(var(--border))]">
+          <h2 className="font-head font-black text-5xl md:text-7xl leading-tight tracking-tight [text-shadow:6px_6px_0_hsl(var(--border))]">
             WHAT PEOPLE
             <br />
             <span className="text-primary">SAY</span>
@@ -225,7 +225,7 @@ export default function TestimonialSection() {
                   "hover:-translate-y-[2px]",
                   "transition-all",
                   "relative",
-                  i === 0 && "rotate-[-1deg]",
+                  i === 0 && "-rotate-1",
                   i === 1 && "md:translate-y-8 rotate-[0.5deg]",
                   i === 2 && "rotate-[-0.5deg]"
                 )}
@@ -250,7 +250,7 @@ export default function TestimonialSection() {
                   <div className="h-[3px] w-full bg-border mb-6" />
 
                   <div className="flex items-center gap-4">
-                    <Avatar className="h-14 w-14 border-[4px] border-border rounded-none bg-muted shadow-[4px_4px_0_hsl(var(--border))]">
+                    <Avatar className="h-14 w-14 border-4 border-border rounded-none bg-muted shadow-[4px_4px_0_hsl(var(--border))]">
                       <Avatar.Image src={t.avatar} alt={t.name} />
                       <Avatar.Fallback className="font-black text-xl">
                         {t.name.slice(0, 1)}
@@ -274,7 +274,7 @@ export default function TestimonialSection() {
 
         {/* Bottom CTA with entrance animation */}
         <div ref={ctaRef} className="mt-20 text-center will-change-transform">
-          <div className="inline-block px-8 py-4 bg-secondary border-5 border-border rotate-[-1deg] shadow-[8px_8px_0_hsl(var(--border))]">
+          <div className="inline-block px-8 py-4 bg-secondary border-5 border-border -rotate-1 shadow-[8px_8px_0_hsl(var(--border))]">
             <p className="font-black text-lg md:text-xl tracking-wide text-secondary-foreground">
               Become the best in 5 minutes
             </p>

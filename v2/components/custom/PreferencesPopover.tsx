@@ -54,8 +54,8 @@ export function PreferencesPopover() {
           className="
             border-3 border-border
             shadow-[3px_3px_0_hsl(var(--border))]
-            hover:-translate-x-[1px]
-            hover:-translate-y-[1px]
+            hover:-translate-x-px
+            hover:-translate-y-px
             hover:shadow-[5px_5px_0_hsl(var(--border))]
             transition-all
           "
@@ -68,7 +68,7 @@ export function PreferencesPopover() {
       <Popover.Content
         align="end"
         sideOffset={8}
-        className="z-[200] w-80 p-0 border-4 border-border bg-background shadow-[6px_6px_0_hsl(var(--border))]"
+        className="z-200 w-80 p-0 border-4 border-border bg-background shadow-[6px_6px_0_hsl(var(--border))]"
       >
         {/* COMMAND LIST */}
         <Command className="border-0">

@@ -196,7 +196,7 @@ export default function ProjectsNeoBrutalist() {
         <div className="mb-20 sm:mb-28">
           <div className="flex items-start gap-6 sm:gap-8 mb-8">
             {/* Aggressive dot */}
-            <div className="flex-shrink-0 w-6 h-6 sm:w-8 sm:h-8 bg-foreground border-4 border-foreground rotate-45 mt-6 sm:mt-10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)]" />
+            <div className="shrink-0 w-6 h-6 sm:w-8 sm:h-8 bg-foreground border-4 border-foreground rotate-45 mt-6 sm:mt-10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)]" />
             
             <div className="relative">
               {/* Background text shadow */}
@@ -226,7 +226,7 @@ export default function ProjectsNeoBrutalist() {
           
           <div className="ml-8 sm:ml-16 max-w-2xl">
             <div className="relative">
-              <p className="text-lg sm:text-xl lg:text-2xl font-black border-l-[6px] border-foreground pl-6 sm:pl-8 bg-primary py-4 pr-6 border-y-[4px] border-r-[4px] shadow-[8px_8px_0px_0px_var(--foreground)] text-primary-foreground">
+              <p className="text-lg sm:text-xl lg:text-2xl font-black border-l-[6px] border-foreground pl-6 sm:pl-8 bg-primary py-4 pr-6 border-y-4 border-r-4 shadow-[8px_8px_0px_0px_var(--foreground)] text-primary-foreground">
                 REAL WORK. REAL IMPACT. ZERO BS.
               </p>
             </div>
@@ -253,7 +253,7 @@ export default function ProjectsNeoBrutalist() {
                       {/* Status Badge - Aggressive */}
                       <div className="absolute -top-4 -right-4 z-20">
                         <div
-                          className={`border-[4px] border-foreground px-4 py-2 text-xs font-black tracking-[0.15em] shadow-[6px_6px_0px_0px_var(--foreground)] rotate-3 ${
+                          className={`border-4 border-foreground px-4 py-2 text-xs font-black tracking-[0.15em] shadow-[6px_6px_0px_0px_var(--foreground)] rotate-3 ${
                             project.status === "Live"
                               ? "bg-primary text-primary-foreground"
                               : project.status === "In Progress"
@@ -266,14 +266,14 @@ export default function ProjectsNeoBrutalist() {
                       </div>
 
                       {/* Project number badge */}
-                      <div className="absolute -top-4 -left-4 z-20 w-12 h-12 sm:w-14 sm:h-14 border-[4px] border-foreground bg-foreground flex items-center justify-center rotate-[-5deg] shadow-[4px_4px_0px_0px_var(--foreground)]">
+                      <div className="absolute -top-4 -left-4 z-20 w-12 h-12 sm:w-14 sm:h-14 border-4 border-foreground bg-foreground flex items-center justify-center rotate-[-5deg] shadow-[4px_4px_0px_0px_var(--foreground)]">
                         <span className="text-xl sm:text-2xl font-black text-background">
                           {project.id.toString().padStart(2, "0")}
                         </span>
                       </div>
 
                       {/* Image area - Bold gradient */}
-                      <div className="relative h-56 sm:h-64 bg-gradient-to-br from-muted via-background to-secondary overflow-hidden border-b-[5px] border-foreground">
+                      <div className="relative h-56 sm:h-64 bg-linear-to-br from-muted via-background to-secondary overflow-hidden border-b-[5px] border-foreground">
                         {/* Diagonal stripes overlay */}
                         <div
                           className="absolute inset-0 opacity-10"
@@ -332,7 +332,7 @@ export default function ProjectsNeoBrutalist() {
                           {project.tags.map((tag, idx) => (
                             <span
                               key={idx}
-                              className="border-[2px] border-foreground bg-background px-3 py-1.5 text-[11px] font-black uppercase tracking-wide hover:bg-primary hover:text-primary-foreground transition-colors shadow-[2px_2px_0px_0px_var(--foreground)]"
+                              className="border-2 border-foreground bg-background px-3 py-1.5 text-[11px] font-black uppercase tracking-wide hover:bg-primary hover:text-primary-foreground transition-colors shadow-[2px_2px_0px_0px_var(--foreground)]"
                             >
                               {tag}
                             </span>
@@ -356,7 +356,7 @@ export default function ProjectsNeoBrutalist() {
             <div className="flex items-center justify-center gap-6 mt-16">
               <CarouselPrevious className="static translate-y-0 border-[5px] border-foreground bg-primary hover:bg-foreground h-16 w-16 shadow-[8px_8px_0px_0px_var(--foreground)] hover:shadow-[4px_4px_0px_0px_var(--foreground)] hover:translate-x-1 hover:translate-y-1 transition-all text-primary-foreground hover:text-background" />
               
-              <div className="border-[4px] border-foreground bg-foreground px-6 py-3 text-background font-black text-sm uppercase tracking-[0.2em] shadow-[6px_6px_0px_0px_rgba(0,0,0,0.2)]">
+              <div className="border-4 border-foreground bg-foreground px-6 py-3 text-background font-black text-sm uppercase tracking-[0.2em] shadow-[6px_6px_0px_0px_rgba(0,0,0,0.2)]">
                 ← DRAG OR NAV →
               </div>
               
@@ -380,9 +380,9 @@ export default function ProjectsNeoBrutalist() {
 
           {/* Decorative arrows */}
           <div className="flex justify-center gap-4 mt-8">
-            <div className="w-0 h-0 border-l-[15px] border-l-transparent border-r-[15px] border-r-transparent border-b-[20px] border-b-foreground opacity-30" />
-            <div className="w-0 h-0 border-l-[15px] border-l-transparent border-r-[15px] border-r-transparent border-b-[20px] border-b-foreground opacity-50" />
-            <div className="w-0 h-0 border-l-[15px] border-l-transparent border-r-[15px] border-r-transparent border-b-[20px] border-b-foreground opacity-70" />
+            <div className="w-0 h-0 border-l-15 border-l-transparent border-r-15 border-r-transparent border-b-20 border-b-foreground opacity-30" />
+            <div className="w-0 h-0 border-l-15 border-l-transparent border-r-15 border-r-transparent border-b-20 border-b-foreground opacity-50" />
+            <div className="w-0 h-0 border-l-15 border-l-transparent border-r-15 border-r-transparent border-b-20 border-b-foreground opacity-70" />
           </div>
         </div>
       </div>

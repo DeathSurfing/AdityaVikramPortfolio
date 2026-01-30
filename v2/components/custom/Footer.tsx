@@ -3,9 +3,9 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="mt-32 border-t-[8px] border-border bg-background relative overflow-hidden">
+    <footer className="mt-32 border-t-8 border-border bg-background relative overflow-hidden">
       {/* Background accent shapes */}
-      <div className="absolute right-[-5%] top-[20%] h-[200px] w-[200px] bg-primary/10 rotate-[20deg] border-4 border-border/20" />
+      <div className="absolute right-[-5%] top-[20%] h-[200px] w-[200px] bg-primary/10 rotate-20 border-4 border-border/20" />
       <div className="absolute left-[-3%] bottom-[10%] h-[150px] w-[150px] bg-secondary/10 rotate-[-15deg] border-4 border-border/20" />
 
       {/* Top accent strip */}
@@ -20,7 +20,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {/* Brand */}
           <div className="space-y-6">
-            <div className="inline-block px-6 py-3 bg-foreground text-background border-4 border-border rotate-[-1deg] shadow-[6px_6px_0_hsl(var(--border))]">
+            <div className="inline-block px-6 py-3 bg-foreground text-background border-4 border-border -rotate-1 shadow-[6px_6px_0_hsl(var(--border))]">
               <p className="font-mono font-black text-2xl tracking-widest">
                 adityavikram.dev
               </p>
@@ -101,8 +101,8 @@ export default function Footer() {
                   border-4 border-border
                   shadow-[4px_4px_0_hsl(var(--border))]
                   hover:shadow-[6px_6px_0_hsl(var(--border))]
-                  hover:-translate-x-[1px]
-                  hover:-translate-y-[1px]
+                  hover:-translate-x-px
+                  hover:-translate-y-px
                   transition-all
                   font-black
                   uppercase

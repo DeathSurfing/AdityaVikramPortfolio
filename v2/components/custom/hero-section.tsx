@@ -184,7 +184,7 @@ export default function HeroNeoBrutalist() {
       {/* Stamps - responsive */}
       <div
         ref={stampRef}
-        className="absolute top-12 right-2 sm:top-20 sm:right-6 rotate-[-12deg] border-2 sm:border-4 border-border bg-primary px-3 py-1 sm:px-5 sm:py-2 text-[10px] sm:text-sm font-extrabold tracking-widest text-primary-foreground shadow-[2px_2px_0px_0px_var(--border)] sm:shadow-[4px_4px_0px_0px_var(--border)]"
+        className="absolute top-12 right-2 sm:top-20 sm:right-6 -rotate-12 border-2 sm:border-4 border-border bg-primary px-3 py-1 sm:px-5 sm:py-2 text-[10px] sm:text-sm font-extrabold tracking-widest text-primary-foreground shadow-[2px_2px_0px_0px_var(--border)] sm:shadow-[4px_4px_0px_0px_var(--border)]"
       >
         Full Stack Developer
       </div>
@@ -207,7 +207,7 @@ export default function HeroNeoBrutalist() {
           </div>
           <div className="overflow-hidden mt-1 sm:mt-2">
             <span className="relative inline-block">
-              <span className="underline decoration-border decoration-[4px] sm:decoration-[6px] lg:decoration-[8px] underline-offset-[6px] sm:underline-offset-[10px] lg:underline-offset-[12px]">
+              <span className="underline decoration-border decoration-[4px] sm:decoration-[6px] lg:decoration-[8px] underline-offset-[6px] sm:underline-offset-10 lg:underline-offset-12">
                 {splitText("VIKRAM")}
               </span>
             </span>
@@ -225,7 +225,7 @@ export default function HeroNeoBrutalist() {
             className="border-l-2 sm:border-l-4 border-border pl-3 sm:pl-6 text-base sm:text-lg lg:text-xl font-bold leading-relaxed"
           >
             I design and engineer <span className="text-black bg-primary-hover">SCALEABLE</span> digital systems that don't die in prod — they{" "}
-            <span className="relative inline-block bg-foreground text-background px-1.5 py-0.5 sm:px-2 rotate-[-1deg]">
+            <span className="relative inline-block bg-foreground text-background px-1.5 py-0.5 sm:px-2 -rotate-1">
               WORK
             </span>
             .
