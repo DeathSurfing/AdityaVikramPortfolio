@@ -8,6 +8,7 @@ import ProjectsNeoBrutalist from "@/components/custom/projectssection"
 import WhoAmIHero from "@/components/custom/WhoAmIHero"
 import WhoAmIAbout from "@/components/custom/WhoAmIAbout"
 import WhoAmITestimonials from "@/components/custom/WhoAmITestimonials"
+import SkillsInterestsSection from "@/components/custom/SkillsInterestsSection"
 import BrutalCodingProof from "@/components/custom/BrutalCodingProof"
 import ContactSection from "@/components/custom/ContactSection"
 import Footer from "@/components/custom/Footer"
@@ -49,7 +50,10 @@ export default function HomePage() {
       <ProjectsNeoBrutalist />
 
       <CredibilitySection />
-      
+
+      <div id="skillset"></div>
+      <SkillsInterestsSection />
+
       <BrutalCodingProof/>
 
       <ContactSection />
