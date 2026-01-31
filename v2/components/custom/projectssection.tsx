@@ -248,11 +248,6 @@ export default function ProjectsNeoBrutalist() {
                             </span>
                           )}
                         </div>
-
-                        {/* Tech count badge - Corner stamp */}
-                        <div className="absolute bottom-4 left-4 border-[3px] border-foreground bg-background px-3 py-2 text-sm font-black shadow-[4px_4px_0px_0px_var(--foreground)] -rotate-2">
-                          {project.technologies.length} TECH
-                        </div>
                       </div>
 
                       {/* Content */}
