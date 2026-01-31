@@ -11,6 +11,7 @@ import WhoAmITestimonials from "@/components/custom/WhoAmITestimonials"
 import BrutalCodingProof from "@/components/custom/BrutalCodingProof"
 import ContactSection from "@/components/custom/ContactSection"
 import Footer from "@/components/custom/Footer"
+import ExperienceSection from "@/components/custom/ExperienceSection"
 
 export default function HomePage() {
 
@@ -40,18 +41,20 @@ export default function HomePage() {
         <WhoAmIAbout />
       </section>
 
-        <WhoAmITestimonials />
+      <div id="experience"></div>
+      <ExperienceSection />
 
+      <WhoAmITestimonials />
 
-        <ProjectsNeoBrutalist />
+      <ProjectsNeoBrutalist />
 
-        <CredibilitySection />
-        
-        <BrutalCodingProof/>
+      <CredibilitySection />
+      
+      <BrutalCodingProof/>
 
-        <ContactSection />
-        
-        <Footer />
+      <ContactSection />
+      
+      <Footer />
     </main>
   )
 }

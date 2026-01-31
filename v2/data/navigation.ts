@@ -3,6 +3,7 @@ import {
   IconChartBar,
   IconHelpSquare,
   IconMail,
+  IconBriefcase,
 } from '@tabler/icons-react';
 
 export interface NavLink {
@@ -13,6 +14,7 @@ export interface NavLink {
 
 export const navLinks: NavLink[] = [
   { href: '#project', icon: IconBox, label: 'Projects' },
+  { href: '#experience', icon: IconBriefcase, label: 'Experience' },
   { href: '#opinions', icon: IconChartBar, label: 'Opinions' },
   { href: '#about', icon: IconHelpSquare, label: 'WhoAmI?' },
   { href: '#contact', icon: IconMail, label: 'Contact' },
@@ -21,6 +23,7 @@ export const navLinks: NavLink[] = [
 export const quickLinks = [
   { href: '#', label: 'Home' },
   { href: '#about', label: 'About' },
+  { href: '#experience', label: 'Experience' },
   { href: '#project', label: 'Projects' },
   { href: '#opinions', label: 'Opinions' },
   { href: '#contact', label: 'Contact' },

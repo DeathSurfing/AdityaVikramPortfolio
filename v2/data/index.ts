@@ -24,5 +24,8 @@ export * from './themes';
 // Contact
 export * from './contact';
 
+// Experience
+export * from './experiences';
+
 // Site Configuration
 export * from './site';
