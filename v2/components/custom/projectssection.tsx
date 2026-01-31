@@ -168,6 +168,10 @@ export default function ProjectsNeoBrutalist() {
     triggersRef.current.forEach(trigger => trigger.kill());
     triggersRef.current = [];
 
+    // Check for reduced motion preference
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReducedMotion) return;
+
     const ctx = gsap.context(() => {
       // Simplified heading animation
       const headingChars = headingRef.current?.querySelectorAll(".heading-char");
@@ -273,7 +277,7 @@ export default function ProjectsNeoBrutalist() {
         <div ref={carouselRef}>
           {projects.length === 0 ? (
             <div className="flex items-center justify-center h-64 border-4 border-border bg-muted">
-              <p className="text-lg font-black uppercase tracking-widest">Loading Projects...</p>
+              <p className="text-lg font-black uppercase tracking-widest">Loading Projects…</p>
             </div>
           ) : (
             <Carousel
@@ -320,7 +324,8 @@ export default function ProjectsNeoBrutalist() {
                 document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
               }
             }}
-            className="inline-block border-[4px] border-foreground bg-primary-hover px-8 py-4 text-sm sm:text-base font-black uppercase tracking-[0.1em] text-black shadow-[6px_6px_0_0_var(--foreground)] transition-all hover:shadow-[3px_3px_0_0_var(--foreground)] hover:translate-x-[3px] hover:translate-y-[3px]"
+            aria-label="Navigate to contact section"
+            className="inline-block border-[4px] border-foreground bg-primary-hover px-8 py-4 text-sm sm:text-base font-black uppercase tracking-[0.1em] text-black shadow-[6px_6px_0_0_var(--foreground)] transition-[shadow,transform] hover:shadow-[3px_3px_0_0_var(--foreground)] hover:translate-x-[3px] hover:translate-y-[3px] focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
           >
             LET'S BUILD SOMETHING →
           </button>

@@ -24,10 +24,21 @@ function EmailCard() {
     setTimeout(() => setCopiedEmail(false), 2000);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      copyEmailToClipboard();
+    }
+  };
+
   return (
     <div
       className="contact-card group cursor-pointer"
       onClick={copyEmailToClipboard}
+      onKeyDown={handleKeyDown}
+      tabIndex={0}
+      role="button"
+      aria-label="Click to copy email address"
     >
       <div className="border-[4px] border-border bg-background p-6 shadow-[8px_8px_0px_0px_var(--border)] transition-all duration-300 group-hover:shadow-[4px_4px_0px_0px_var(--border)] group-hover:translate-x-1 group-hover:translate-y-1">
         <div className="flex items-start justify-between">
@@ -40,7 +51,7 @@ function EmailCard() {
               <p className="font-bold text-sm text-muted-foreground">{EMAIL}</p>
             </div>
           </div>
-          <div className="w-10 h-10 border-[3px] border-border flex items-center justify-center transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+          <div className="w-10 h-10 border-[3px] border-border flex items-center justify-center transition-colors group-hover:bg-primary group-hover:text-primary-foreground" aria-label={copiedEmail ? "Email copied" : "Copy email address"}>
             {copiedEmail ? (
               <CheckIcon className="h-5 w-5" />
             ) : (
@@ -49,7 +60,7 @@ function EmailCard() {
           </div>
         </div>
         <p className="mt-4 text-xs font-black uppercase tracking-wider text-muted-foreground">
-          {copiedEmail ? "COPIED!" : "CLICK TO COPY"}
+          {copiedEmail ? "COPIED…" : "CLICK TO COPY"}
         </p>
       </div>
     </div>

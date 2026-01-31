@@ -50,6 +50,8 @@ export default function WhoAmIAbout() {
                   <img
                     src="/AdityaVikram.webp"
                     alt="Aditya Vikram"
+                    width={384}
+                    height={384}
                     className="w-full h-full object-cover"
                   />
                 </BlurVignette>

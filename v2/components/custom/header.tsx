@@ -146,7 +146,7 @@ export default function Header() {
       <AnimatePresence>
         {menuOpen && (
           <motion.div
-            className="fixed inset-0 z-[100] bg-background flex flex-col overflow-y-auto"
+            className="fixed inset-0 z-[100] bg-background flex flex-col overflow-y-auto overscroll-contain"
             variants={menuVariants}
             initial="hidden"
             animate="visible"

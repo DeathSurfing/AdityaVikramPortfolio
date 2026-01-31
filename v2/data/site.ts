@@ -8,6 +8,10 @@ export const siteMetadata: Metadata = {
   description:
     'Full stack developer specializing in TypeScript, React, and modern web technologies. Explore my projects and digital products.',
   applicationName: 'Aditya Vikram Portfolio',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)', color: '#0a0a0a' },
+  ],
 
   metadataBase: new URL('https://adityavikram.dev'),
   alternates: {

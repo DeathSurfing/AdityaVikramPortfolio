@@ -83,6 +83,8 @@ export default function BrutalCodingProof() {
               <img
                 src={githubActivitySrc}
                 alt="GitHub Activity Graph"
+                width={800}
+                height={200}
                 className="w-full border-2 border-black bg-background"
                 loading="lazy"
               />
@@ -98,6 +100,8 @@ export default function BrutalCodingProof() {
               <img
                 src={githubHeatmapSrc}
                 alt="GitHub Contribution Heatmap"
+                width={800}
+                height={120}
                 className="w-full border-2 border-black bg-background"
                 loading="lazy"
               />
@@ -125,6 +129,8 @@ export default function BrutalCodingProof() {
               <img
                 src={leetcodeSrc}
                 alt="LeetCode Stats"
+                width={500}
+                height={200}
                 className="w-full border-2 border-black bg-background"
                 loading="lazy"
               />

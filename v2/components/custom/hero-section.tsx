@@ -5,6 +5,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Link from "next/link";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
+import { lenisStore } from "@/lib/lenis-store";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -19,6 +21,13 @@ export default function HeroNeoBrutalist() {
   
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isMobile, setIsMobile] = useState(false);
+  const prefersReducedMotion = useReducedMotion();
+  const reducedMotionRef = useRef(prefersReducedMotion);
+  
+  // Keep ref in sync
+  useEffect(() => {
+    reducedMotionRef.current = prefersReducedMotion;
+  }, [prefersReducedMotion]);
 
   // Fetch projects count from Convex
   const projects = useQuery(api.projects.getProjects, { limit: 50 });
@@ -51,6 +60,8 @@ export default function HeroNeoBrutalist() {
   }, [isMobile]);
 
   useEffect(() => {
+    if (reducedMotionRef.current) return;
+    
     const ctx = gsap.context(() => {
       // Title animation with split text effect
       const titleChars = titleRef.current?.querySelectorAll(".char");
@@ -252,7 +263,20 @@ export default function HeroNeoBrutalist() {
         <div ref={ctaRef} className="mt-8 sm:mt-12 flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 w-full sm:w-auto">
           <Link
             href="#projects"
-            className="group relative border-2 sm:border-4 border-border bg-foreground px-6 py-3 sm:px-8 sm:py-4 text-xs sm:text-sm font-extrabold uppercase tracking-wider text-background shadow-[4px_4px_0px_0px_var(--border)] sm:shadow-[8px_8px_0px_0px_var(--border)] transition-all hover:shadow-[2px_2px_0px_0px_var(--border)] sm:hover:shadow-[4px_4px_0px_0px_var(--border)] hover:translate-x-0.5 hover:translate-y-0.5 sm:hover:translate-x-1 sm:hover:translate-y-1 active:shadow-none active:translate-x-1 active:translate-y-1 sm:active:translate-x-2 sm:active:translate-y-2 text-center"
+            onClick={(e) => {
+              e.preventDefault();
+              const lenis = lenisStore.lenis;
+              if (lenis) {
+                lenis.scrollTo("#project", {
+                  offset: 0,
+                  duration: 1.2,
+                  easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                });
+              } else {
+                document.getElementById("project")?.scrollIntoView({ behavior: "smooth" });
+              }
+            }}
+            className="group relative border-2 sm:border-4 border-border bg-foreground px-6 py-3 sm:px-8 sm:py-4 text-xs sm:text-sm font-extrabold uppercase tracking-wider text-background shadow-[4px_4px_0px_0px_var(--border)] sm:shadow-[8px_8px_0px_0px_var(--border)] transition-[shadow,transform] hover:shadow-[2px_2px_0px_0px_var(--border)] sm:hover:shadow-[4px_4px_0px_0px_var(--border)] hover:translate-x-0.5 hover:translate-y-0.5 sm:hover:translate-x-1 sm:hover:translate-y-1 active:shadow-none active:translate-x-1 active:translate-y-1 sm:active:translate-x-2 sm:active:translate-y-2 text-center cursor-pointer"
           >
             <span className="relative z-10">View Work</span>
             <span className="absolute right-2 top-1/2 -translate-y-1/2 text-lg sm:text-xl transition-transform group-hover:translate-x-1">
@@ -262,7 +286,20 @@ export default function HeroNeoBrutalist() {
           
           <Link
             href="#contact"
-            className="group relative border-2 sm:border-4 border-border bg-primary px-6 py-3 sm:px-8 sm:py-4 text-xs sm:text-sm font-extrabold uppercase tracking-wider text-primary-foreground shadow-[4px_4px_0px_0px_var(--border)] sm:shadow-[8px_8px_0px_0px_var(--border)] transition-all hover:shadow-[2px_2px_0px_0px_var(--border)] sm:hover:shadow-[4px_4px_0px_0px_var(--border)] hover:translate-x-0.5 hover:translate-y-0.5 sm:hover:translate-x-1 sm:hover:translate-y-1 active:shadow-none active:translate-x-1 active:translate-y-1 sm:active:translate-x-2 sm:active:translate-y-2 text-center"
+            onClick={(e) => {
+              e.preventDefault();
+              const lenis = lenisStore.lenis;
+              if (lenis) {
+                lenis.scrollTo("#contact", {
+                  offset: 0,
+                  duration: 1.2,
+                  easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                });
+              } else {
+                document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
+              }
+            }}
+            className="group relative border-2 sm:border-4 border-border bg-primary px-6 py-3 sm:px-8 sm:py-4 text-xs sm:text-sm font-extrabold uppercase tracking-wider text-primary-foreground shadow-[4px_4px_0px_0px_var(--border)] sm:shadow-[8px_8px_0px_0px_var(--border)] transition-[shadow,transform] hover:shadow-[2px_2px_0px_0px_var(--border)] sm:hover:shadow-[4px_4px_0px_0px_var(--border)] hover:translate-x-0.5 hover:translate-y-0.5 sm:hover:translate-x-1 sm:hover:translate-y-1 active:shadow-none active:translate-x-1 active:translate-y-1 sm:active:translate-x-2 sm:active:translate-y-2 text-center cursor-pointer"
           >
             Contact
           </Link>
@@ -271,7 +308,8 @@ export default function HeroNeoBrutalist() {
             onClick={() => {
               document.getElementById("about")?.scrollIntoView({ behavior: "smooth" });
             }}
-            className="border-2 sm:border-4 border-border bg-background px-4 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-extrabold uppercase tracking-wider transition-all hover:bg-border/10 text-center sm:text-left"
+            aria-label="Scroll to about section"
+            className="border-2 sm:border-4 border-border bg-background px-4 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-extrabold uppercase tracking-wider transition-all hover:bg-border/10 text-center sm:text-left focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
           >
             ↓ Scroll
           </button>

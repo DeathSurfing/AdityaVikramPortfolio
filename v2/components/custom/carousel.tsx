@@ -203,15 +203,15 @@ const CarouselPrevious = React.forwardRef<
     <button
       ref={ref}
       className={cn(
-        "flex h-12 w-12 items-center justify-center border-4 border-border bg-background disabled:opacity-30 disabled:cursor-not-allowed",
+        "flex h-12 w-12 items-center justify-center border-4 border-border bg-background disabled:opacity-30 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
         className
       )}
       disabled={!canScrollPrev}
       onClick={scrollPrev}
+      aria-label="Previous slide"
       {...props}
     >
       <ArrowLeft className="h-6 w-6" strokeWidth={3} />
-      <span className="sr-only">Previous slide</span>
     </button>
   )
 })
@@ -227,15 +227,15 @@ const CarouselNext = React.forwardRef<
     <button
       ref={ref}
       className={cn(
-        "flex h-12 w-12 items-center justify-center border-4 border-border bg-background disabled:opacity-30 disabled:cursor-not-allowed",
+        "flex h-12 w-12 items-center justify-center border-4 border-border bg-background disabled:opacity-30 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
         className
       )}
       disabled={!canScrollNext}
       onClick={scrollNext}
+      aria-label="Next slide"
       {...props}
     >
       <ArrowRight className="h-6 w-6" strokeWidth={3} />
-      <span className="sr-only">Next slide</span>
     </button>
   )
 })

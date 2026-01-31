@@ -54,7 +54,8 @@ export default function Footer() {
               {/* Back to Top Button */}
               <button
                 onClick={scrollToTop}
-                className="group inline-flex items-center gap-2 border-[4px] border-border bg-background px-4 py-2 font-black text-sm uppercase tracking-wider shadow-[4px_4px_0_hsl(var(--border))] hover:shadow-[2px_2px_0_hsl(var(--border))] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+                aria-label="Scroll back to top of page"
+                className="group inline-flex items-center gap-2 border-[4px] border-border bg-background px-4 py-2 font-black text-sm uppercase tracking-wider shadow-[4px_4px_0_hsl(var(--border))] hover:shadow-[2px_2px_0_hsl(var(--border))] hover:translate-x-[2px] hover:translate-y-[2px] transition-all focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
               >
                 <ArrowUpIcon className="h-4 w-4 transition-transform group-hover:-translate-y-1" />
                 BACK TO TOP

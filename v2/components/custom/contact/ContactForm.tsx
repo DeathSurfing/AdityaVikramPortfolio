@@ -106,47 +106,53 @@ export default function ContactForm() {
       <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
         {/* Name Field */}
         <div className="form-field">
-          <label className="block font-black text-sm uppercase tracking-widest mb-2">
+          <label htmlFor="name" className="block font-black text-sm uppercase tracking-widest mb-2">
             Your Name
           </label>
           <input
             type="text"
+            id="name"
             name="name"
+            autoComplete="name"
             value={formData.name}
             onChange={handleInputChange}
             required
-            className="w-full border-[4px] border-border bg-background px-4 py-3 font-bold text-lg focus:outline-none focus:shadow-[4px_4px_0px_0px_var(--primary)] focus:border-primary transition-all"
+            className="w-full border-[4px] border-border bg-background px-4 py-3 font-bold text-lg focus:outline-none focus:shadow-[4px_4px_0px_0px_var(--primary)] focus:border-primary transition-[box-shadow,border-color]"
             placeholder="John Doe"
           />
         </div>
 
         {/* Email Field */}
         <div className="form-field">
-          <label className="block font-black text-sm uppercase tracking-widest mb-2">
+          <label htmlFor="email" className="block font-black text-sm uppercase tracking-widest mb-2">
             Email Address
           </label>
           <input
             type="email"
+            id="email"
             name="email"
+            autoComplete="email"
+            spellCheck={false}
             value={formData.email}
             onChange={handleInputChange}
             required
-            className="w-full border-[4px] border-border bg-background px-4 py-3 font-bold text-lg focus:outline-none focus:shadow-[4px_4px_0px_0px_var(--primary)] focus:border-primary transition-all"
+            className="w-full border-[4px] border-border bg-background px-4 py-3 font-bold text-lg focus:outline-none focus:shadow-[4px_4px_0px_0px_var(--primary)] focus:border-primary transition-[box-shadow,border-color]"
             placeholder="john@example.com"
           />
         </div>
 
         {/* Subject Field */}
         <div className="form-field">
-          <label className="block font-black text-sm uppercase tracking-widest mb-2">
+          <label htmlFor="subject" className="block font-black text-sm uppercase tracking-widest mb-2">
             Subject
           </label>
           <select
+            id="subject"
             name="subject"
             value={formData.subject}
             onChange={handleInputChange}
             required
-            className="w-full border-[4px] border-border bg-background px-4 py-3 font-bold text-lg focus:outline-none focus:shadow-[4px_4px_0px_0px_var(--primary)] focus:border-primary transition-all appearance-none cursor-pointer"
+            className="w-full border-[4px] border-border bg-background text-foreground px-4 py-3 font-bold text-lg focus:outline-none focus:shadow-[4px_4px_0px_0px_var(--primary)] focus:border-primary transition-[box-shadow,border-color] appearance-none cursor-pointer"
           >
             <option value="">Select a subject...</option>
             {SUBJECT_OPTIONS.map((option) => (
@@ -159,17 +165,18 @@ export default function ContactForm() {
 
         {/* Message Field */}
         <div className="form-field">
-          <label className="block font-black text-sm uppercase tracking-widest mb-2">
+          <label htmlFor="message" className="block font-black text-sm uppercase tracking-widest mb-2">
             Your Message
           </label>
           <textarea
+            id="message"
             name="message"
             value={formData.message}
             onChange={handleInputChange}
             required
             rows={5}
-            className="w-full border-[4px] border-border bg-background px-4 py-3 font-bold text-lg focus:outline-none focus:shadow-[4px_4px_0px_0px_var(--primary)] focus:border-primary transition-all resize-none"
-            placeholder="Tell me about your project..."
+            className="w-full border-[4px] border-border bg-background px-4 py-3 font-bold text-lg focus:outline-none focus:shadow-[4px_4px_0px_0px_var(--primary)] focus:border-primary transition-[box-shadow,border-color] resize-none"
+            placeholder="Tell me about your project…"
           />
         </div>
 
