@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, memo } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
@@ -11,51 +11,179 @@ import {
   CarouselPrevious,
 } from "@/components/custom/carousel";
 import Link from "next/link";
+import Image from "next/image";
 import { lenisStore } from "@/lib/lenis-store";
 import { projects, type Project } from "@/data/projects";
 
 gsap.registerPlugin(ScrollTrigger);
 
+// Memoized project card to prevent unnecessary re-renders
+const ProjectCard = memo(({ project, index }: { project: Project; index: number }) => {
+  return (
+    <CarouselItem className="pl-6 sm:pl-8 md:basis-1/2 lg:basis-1/3">
+      <div className="group relative h-full">
+        {/* Project Card - Optimized */}
+        <div 
+          className="relative border-[5px] border-foreground bg-background shadow-[6px_6px_0_0_var(--foreground)] h-full flex flex-col"
+          style={{ contain: 'layout style paint' }}
+        >
+          
+          {/* Project ID Badge */}
+          <div className="absolute -top-3 -right-3 z-20">
+            <div className="border-[3px] border-foreground px-3 py-1.5 text-xs font-black tracking-[0.1em] shadow-[3px_3px_0_0_var(--foreground)] rotate-2 bg-primary text-primary-foreground">
+              #{project.id.toString().padStart(2, "0")}
+            </div>
+          </div>
+
+          {/* Project number badge */}
+          <div className="absolute -top-3 -left-3 z-20 w-10 h-10 sm:w-12 sm:h-12 border-[3px] border-foreground bg-foreground flex items-center justify-center rotate-[-3deg] shadow-[2px_2px_0_0_var(--foreground)]">
+            <span className="text-lg sm:text-xl font-black text-background">
+              {project.id.toString().padStart(2, "0")}
+            </span>
+          </div>
+
+          {/* Image area */}
+          <div className="relative h-52 sm:h-60 bg-gradient-to-br from-muted via-background to-secondary overflow-hidden border-b-[4px] border-foreground">
+            {/* Project Image - Optimized */}
+            {project.image && (
+              <Image
+                src={project.image}
+                alt={project.name}
+                fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                className="object-cover opacity-90"
+                loading={index < 2 ? "eager" : "lazy"}
+                priority={index === 0}
+              />
+            )}
+            
+            {/* Simplified watermark */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <span className="text-7xl sm:text-8xl font-black opacity-[0.04]">
+                {project.id.toString().padStart(2, "0")}
+              </span>
+            </div>
+            
+            {/* Hover overlay */}
+            <div className="absolute inset-0 bg-foreground/90 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+              {project.link ? (
+                <Link
+                  href={project.link}
+                  className="border-[4px] border-background bg-primary px-6 py-3 text-sm font-black uppercase text-primary-foreground shadow-[3px_3px_0_0_var(--background)] tracking-wide"
+                >
+                  VIEW PROJECT →
+                </Link>
+              ) : (
+                <span className="border-[4px] border-background bg-primary px-6 py-3 text-sm font-black uppercase text-primary-foreground shadow-[3px_3px_0_0_var(--background)]">
+                  COMING SOON
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Content */}
+          <div className="p-5 sm:p-6 flex-1 flex flex-col bg-background">
+            {/* Category */}
+            <div className="inline-block mb-3 border-[2px] border-foreground bg-primary px-3 py-1.5 text-xs font-black uppercase tracking-[0.1em] w-fit shadow-[2px_2px_0_0_var(--foreground)] text-primary-foreground">
+              {project.category}
+            </div>
+
+            {/* Title */}
+            <h3 className="text-xl sm:text-2xl lg:text-3xl font-black leading-[0.95] mb-3 tracking-tight uppercase">
+              {project.name}
+            </h3>
+
+            {/* Description */}
+            <p className="text-sm font-bold leading-relaxed mb-4 flex-1 opacity-90">
+              {project.description}
+            </p>
+
+            {/* Technologies */}
+            <div className="flex flex-wrap gap-2 pt-4 border-t-[2px] border-foreground">
+              {project.technologies.slice(0, 4).map((tech: string, idx: number) => (
+                <span
+                  key={idx}
+                  className="border-[1px] border-foreground bg-background px-2 py-1 text-[10px] font-black uppercase tracking-wide hover:bg-primary hover:text-primary-foreground transition-colors"
+                >
+                  {tech}
+                </span>
+              ))}
+              {project.technologies.length > 4 && (
+                <span className="border-[1px] border-foreground bg-background px-2 py-1 text-[10px] font-black uppercase tracking-wide">
+                  +{project.technologies.length - 4}
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Bottom accent bars */}
+          <div className="flex h-2">
+            <div className="flex-1 bg-foreground" />
+            <div className="flex-1 bg-muted" />
+            <div className="flex-1 bg-foreground/50" />
+          </div>
+        </div>
+      </div>
+    </CarouselItem>
+  );
+});
+
+ProjectCard.displayName = 'ProjectCard';
+
 export default function ProjectsNeoBrutalist() {
   const sectionRef = useRef<HTMLElement>(null);
   const headingRef = useRef<HTMLDivElement>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
+  const triggersRef = useRef<ScrollTrigger[]>([]);
 
   useEffect(() => {
+    // Clear any existing triggers
+    triggersRef.current.forEach(trigger => trigger.kill());
+    triggersRef.current = [];
+
     const ctx = gsap.context(() => {
-      // Heading animation - more aggressive
+      // Simplified heading animation
       const headingChars = headingRef.current?.querySelectorAll(".heading-char");
-      if (headingChars) {
-        gsap.from(headingChars, {
-          y: 150,
-          rotate: () => gsap.utils.random(-30, 30),
+      if (headingChars && headingChars.length > 0) {
+        const anim = gsap.from(headingChars, {
+          y: 30,
           opacity: 0,
-          scale: 0.5,
-          duration: 0.8,
-          stagger: 0.03,
-          ease: "back.out(2)",
+          duration: 0.4,
+          stagger: 0.015,
+          ease: "power2.out",
           scrollTrigger: {
             trigger: sectionRef.current,
-            start: "top 70%",
+            start: "top 85%",
+            once: true,
           },
         });
+        if (anim.scrollTrigger) {
+          triggersRef.current.push(anim.scrollTrigger);
+        }
       }
 
-      // Carousel entrance with bounce
-      gsap.from(carouselRef.current, {
+      // Simplified carousel entrance
+      const carouselAnim = gsap.from(carouselRef.current, {
         opacity: 0,
-        y: 100,
-        scale: 0.9,
-        duration: 1.2,
-        ease: "power4.out",
+        y: 20,
+        duration: 0.5,
+        ease: "power2.out",
         scrollTrigger: {
           trigger: sectionRef.current,
-          start: "top 60%",
+          start: "top 75%",
+          once: true,
         },
       });
+      if (carouselAnim.scrollTrigger) {
+        triggersRef.current.push(carouselAnim.scrollTrigger);
+      }
     });
 
-    return () => ctx.revert();
+    return () => {
+      triggersRef.current.forEach(trigger => trigger.kill());
+      triggersRef.current = [];
+      ctx.revert();
+    };
   }, []);
 
   const splitText = (text: string) => {
@@ -70,244 +198,82 @@ export default function ProjectsNeoBrutalist() {
     <section
       ref={sectionRef}
       id="project"
-      className="relative min-h-screen bg-background py-20 sm:py-32 px-4 sm:px-6 md:px-12 overflow-hidden"
+      className="relative min-h-screen bg-background py-16 sm:py-24 px-4 sm:px-6 md:px-12 overflow-hidden"
     >
-      {/* Aggressive background grid */}
-      <div
-        className="absolute inset-0 opacity-[0.08]"
-        style={{
-          backgroundImage: `
-            linear-gradient(to right, currentColor 2px, transparent 2px),
-            linear-gradient(to bottom, currentColor 2px, transparent 2px)
-          `,
-          backgroundSize: "30px 30px",
-        }}
-      />
-
-      {/* Bold diagonal stripes */}
+      {/* Simplified background */}
       <div
         className="absolute inset-0 opacity-[0.03] pointer-events-none"
         style={{
-          backgroundImage: `repeating-linear-gradient(
-            45deg,
-            currentColor,
-            currentColor 2px,
-            transparent 2px,
-            transparent 20px
-          )`,
+          backgroundImage: `linear-gradient(to right, currentColor 1px, transparent 1px),
+                            linear-gradient(to bottom, currentColor 1px, transparent 1px)`,
+          backgroundSize: "50px 50px",
         }}
       />
 
-      {/* Massive corner brackets */}
-      <div className="absolute top-0 left-0 w-24 h-24 sm:w-32 sm:h-32 border-t-[6px] border-l-[6px] border-foreground" />
-      <div className="absolute top-0 right-0 w-24 h-24 sm:w-32 sm:h-32 border-t-[6px] border-r-[6px] border-foreground" />
-      <div className="absolute bottom-0 left-0 w-24 h-24 sm:w-32 sm:h-32 border-b-[6px] border-l-[6px] border-foreground" />
-      <div className="absolute bottom-0 right-0 w-24 h-24 sm:w-32 sm:h-32 border-b-[6px] border-r-[6px] border-foreground" />
-
-      {/* Floating aggressive stamps */}
-      <div className="absolute top-16 right-16 rotate-12 border-[5px] border-foreground bg-background px-6 py-3 text-base font-black tracking-[0.2em] shadow-[8px_8px_0px_0px_var(--foreground)] hidden lg:block">
-        ★ SELECTED WORKS ★
-      </div>
-
-      {/* Decorative aggressive shapes */}
-      <div className="absolute top-1/4 left-8 w-28 h-28 border-[6px] border-foreground bg-background rotate-45 shadow-[10px_10px_0px_0px_var(--foreground)] hidden md:block" />
-      <div className="absolute bottom-1/3 right-16 w-32 h-32 border-[6px] border-foreground bg-background rounded-full shadow-[12px_12px_0px_0px_var(--foreground)] hidden lg:block" />
-      <div className="absolute top-1/2 right-8 w-20 h-20 border-[5px] border-foreground bg-background -rotate-12 shadow-[8px_8px_0px_0px_var(--foreground)] hidden xl:block" />
-
-      {/* Noise texture overlay */}
-      <div className="absolute inset-0 opacity-[0.015] pointer-events-none mix-blend-overlay">
-        <svg className="w-full h-full">
-          <filter id="noise">
-            <feTurbulence baseFrequency="0.8" numOctaves="4" />
-          </filter>
-          <rect width="100%" height="100%" filter="url(#noise)" />
-        </svg>
-      </div>
+      {/* Corner brackets */}
+      <div className="absolute top-0 left-0 w-12 h-12 sm:w-16 sm:h-16 border-t-[3px] border-l-[3px] border-foreground" />
+      <div className="absolute top-0 right-0 w-12 h-12 sm:w-16 sm:h-16 border-t-[3px] border-r-[3px] border-foreground" />
 
       <div className="relative z-10 max-w-7xl mx-auto">
-        {/* Section Header - Ultra Brutal */}
-        <div className="mb-20 sm:mb-28">
-          <div className="flex items-start gap-6 sm:gap-8 mb-8">
-            {/* Aggressive dot */}
-            <div className="shrink-0 w-6 h-6 sm:w-8 sm:h-8 bg-foreground border-4 border-foreground rotate-45 mt-6 sm:mt-10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)]" />
+        {/* Section Header */}
+        <div className="mb-12 sm:mb-16">
+          <div className="flex items-start gap-3 sm:gap-4 mb-4">
+            <div className="shrink-0 w-4 h-4 sm:w-5 sm:h-5 bg-foreground rotate-45 mt-3 sm:mt-4" />
             
             <div className="relative">
-              {/* Background text shadow */}
-              <div 
-                ref={headingRef} 
-                className="overflow-hidden relative"
-                style={{
-                  textShadow: `
-                    4px 4px 0px rgba(0,0,0,0.1),
-                    8px 8px 0px rgba(0,0,0,0.05)
-                  `
-                }}
-              >
-                <h2 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black leading-[0.85] tracking-[-0.03em] relative">
+              <div ref={headingRef}>
+                <h2 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-[0.9] tracking-tight">
                   {splitText("PROJECTS")}
                 </h2>
               </div>
               
-              {/* Underline accent */}
-              <div className="mt-4 flex gap-2">
-                <div className="h-3 w-20 bg-foreground border-2 border-foreground shadow-[3px_3px_0px_0px_var(--foreground)]" />
-                <div className="h-3 w-16 bg-foreground border-2 border-foreground shadow-[3px_3px_0px_0px_var(--foreground)]" />
-                <div className="h-3 w-12 bg-foreground border-2 border-foreground shadow-[3px_3px_0px_0px_var(--foreground)]" />
+              <div className="mt-2 flex gap-2">
+                <div className="h-1.5 w-12 bg-foreground" />
+                <div className="h-1.5 w-8 bg-foreground/60" />
+                <div className="h-1.5 w-5 bg-foreground/30" />
               </div>
             </div>
           </div>
           
-          <div className="ml-8 sm:ml-16 max-w-2xl">
-            <div className="relative">
-              <p className="text-lg sm:text-xl lg:text-2xl font-black border-l-[6px] border-foreground pl-6 sm:pl-8 bg-primary py-4 pr-6 border-y-4 border-r-4 shadow-[8px_8px_0px_0px_var(--foreground)] text-primary-foreground">
-                REAL WORK. REAL IMPACT. ZERO BS.
-              </p>
-            </div>
+          <div className="ml-5 sm:ml-8 max-w-md">
+            <p className="text-sm sm:text-base lg:text-lg font-bold border-l-[3px] border-foreground pl-3 sm:pl-4 bg-primary py-2 pr-3 border-y-[2px] border-r-[2px] shadow-[3px_3px_0_0_var(--border)] text-primary-foreground">
+              REAL WORK. REAL IMPACT.
+            </p>
           </div>
         </div>
 
-        {/* Carousel - Brutalist AF */}
-        <div ref={carouselRef} className="relative">
-          
+        {/* Carousel */}
+        <div ref={carouselRef}>
           <Carousel
             opts={{
               align: "start",
-              loop: true,
+              loop: false,
+              skipSnaps: false,
+              dragFree: false,
             }}
             className="w-full relative"
           >
             <CarouselContent className="-ml-6 sm:-ml-8">
               {projects.map((project, idx) => (
-                <CarouselItem key={project.id} className="pl-6 sm:pl-8 md:basis-1/2 lg:basis-1/3">
-                  <div className="group relative h-full">
-                    {/* Project Card - BRUTAL */}
-                    <div className="relative border-[5px] border-foreground bg-background shadow-[12px_12px_0px_0px_var(--foreground)] transition-all duration-300 hover:shadow-[6px_6px_0px_0px_var(--foreground)] hover:translate-x-[6px] hover:translate-y-[6px] h-full flex flex-col">
-                      
-                      {/* Project ID Badge */}
-                      <div className="absolute -top-4 -right-4 z-20">
-                        <div className="border-4 border-foreground px-4 py-2 text-xs font-black tracking-[0.15em] shadow-[6px_6px_0px_0px_var(--foreground)] rotate-3 bg-primary text-primary-foreground">
-                          ★ PROJECT {project.id.toString().padStart(2, "0")}
-                        </div>
-                      </div>
-
-                      {/* Project number badge */}
-                      <div className="absolute -top-4 -left-4 z-20 w-12 h-12 sm:w-14 sm:h-14 border-4 border-foreground bg-foreground flex items-center justify-center rotate-[-5deg] shadow-[4px_4px_0px_0px_var(--foreground)]">
-                        <span className="text-xl sm:text-2xl font-black text-background">
-                          {project.id.toString().padStart(2, "0")}
-                        </span>
-                      </div>
-
-                      {/* Image area - Bold gradient */}
-                      <div className="relative h-56 sm:h-64 bg-linear-to-br from-muted via-background to-secondary overflow-hidden border-b-[5px] border-foreground">
-                        {/* Project Image */}
-                        {project.image && (
-                          <img
-                            src={project.image}
-                            alt={project.name}
-                            className="absolute inset-0 w-full h-full object-cover opacity-90"
-                            loading="lazy"
-                            onError={(e) => {
-                              // Fallback to placeholder if image fails to load
-                              (e.target as HTMLImageElement).style.display = 'none';
-                            }}
-                          />
-                        )}
-                        
-                        {/* Diagonal stripes overlay */}
-                        <div
-                          className="absolute inset-0 opacity-10 mix-blend-multiply"
-                          style={{
-                            backgroundImage: `repeating-linear-gradient(
-                              45deg,
-                              transparent,
-                              transparent 10px,
-                              rgba(0,0,0,0.5) 10px,
-                              rgba(0,0,0,0.5) 20px
-                            )`,
-                          }}
-                        />
-                        
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="text-8xl sm:text-9xl font-black opacity-5 mix-blend-overlay">
-                            {project.id.toString().padStart(2, "0")}
-                          </div>
-                        </div>
-                        
-                        {/* Hover overlay - BRUTAL */}
-                        <div className="absolute inset-0 bg-foreground flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                          {project.link ? (
-                            <Link
-                              href={project.link}
-                              className="border-[5px] border-background bg-primary px-8 py-4 text-base font-black uppercase text-primary-foreground shadow-[6px_6px_0px_0px_var(--background)] hover:shadow-[3px_3px_0px_0px_var(--background)] hover:translate-x-[3px] hover:translate-y-[3px] transition-all tracking-wider"
-                            >
-                              VIEW PROJECT →
-                            </Link>
-                          ) : (
-                            <span className="border-[5px] border-background bg-primary px-8 py-4 text-base font-black uppercase text-primary-foreground shadow-[6px_6px_0px_0px_var(--background)]">
-                              COMING SOON
-                            </span>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Content */}
-                      <div className="p-6 sm:p-8 flex-1 flex flex-col bg-background">
-                        {/* Category - Aggressive tag */}
-                        <div className="inline-block mb-4 border-[3px] border-foreground bg-primary px-4 py-2 text-xs font-black uppercase tracking-[0.15em] w-fit shadow-[4px_4px_0px_0px_var(--foreground)] -rotate-1 text-primary-foreground">
-                          {project.category}
-                        </div>
-
-                        {/* Title - MASSIVE */}
-                        <h3 className="text-2xl sm:text-3xl lg:text-4xl font-black leading-[0.95] mb-4 tracking-tight uppercase">
-                          {project.name}
-                        </h3>
-
-                        {/* Description */}
-                        <p className="text-sm sm:text-base font-bold leading-relaxed mb-6 flex-1 opacity-90">
-                          {project.description}
-                        </p>
-
-                        {/* Technologies - Brutalist style */}
-                        <div className="flex flex-wrap gap-2 pt-5 border-t-[3px] border-foreground">
-                          {project.technologies.map((tech: string, idx: number) => (
-                            <span
-                              key={idx}
-                              className="border-2 border-foreground bg-background px-3 py-1.5 text-[11px] font-black uppercase tracking-wide hover:bg-primary hover:text-primary-foreground transition-colors shadow-[2px_2px_0px_0px_var(--foreground)]"
-                            >
-                              {tech}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Bottom brutal accent bars */}
-                      <div className="flex h-3">
-                        <div className="flex-1 bg-foreground" />
-                        <div className="flex-1 bg-muted" />
-                        <div className="flex-1 bg-foreground opacity-50" />
-                      </div>
-                    </div>
-                  </div>
-                </CarouselItem>
+                <ProjectCard key={project.id} project={project} index={idx} />
               ))}
             </CarouselContent>
 
-            {/* Navigation Buttons - ULTRA BRUTAL */}
-            <div className="flex items-center justify-center gap-6 mt-16">
-              <CarouselPrevious className="static translate-y-0 border-[5px] border-foreground bg-primary hover:bg-foreground h-16 w-16 shadow-[8px_8px_0px_0px_var(--foreground)] hover:shadow-[4px_4px_0px_0px_var(--foreground)] hover:translate-x-1 hover:translate-y-1 transition-all text-primary-foreground hover:text-background" />
+            {/* Navigation */}
+            <div className="flex items-center justify-center gap-4 mt-10">
+              <CarouselPrevious className="static translate-y-0 border-[4px] border-foreground bg-primary hover:bg-foreground h-12 w-12 shadow-[4px_4px_0_0_var(--foreground)] transition-all text-primary-foreground hover:text-background" />
               
-              <div className="border-4 border-foreground bg-foreground px-6 py-3 text-background font-black text-sm uppercase tracking-[0.2em] shadow-[6px_6px_0px_0px_rgba(0,0,0,0.2)]">
-                ← DRAG OR NAV →
+              <div className="border-[3px] border-foreground bg-foreground px-4 py-2 text-background font-black text-xs uppercase tracking-[0.15em]">
+                ← SCROLL →
               </div>
               
-              <CarouselNext className="static translate-y-0 border-[5px] border-foreground bg-primary hover:bg-foreground h-16 w-16 shadow-[8px_8px_0px_0px_var(--foreground)] hover:shadow-[4px_4px_0px_0px_var(--foreground)] hover:translate-x-1 hover:translate-y-1 transition-all text-primary-foreground hover:text-background" />
+              <CarouselNext className="static translate-y-0 border-[4px] border-foreground bg-primary hover:bg-foreground h-12 w-12 shadow-[4px_4px_0_0_var(--foreground)] transition-all text-primary-foreground hover:text-background" />
             </div>
           </Carousel>
         </div>
 
-        {/* Bottom CTA - MASSIVE BRUTAL BUTTON */}
-        <div className="mt-20 sm:mt-28 text-center relative">
-          
+        {/* CTA Button */}
+        <div className="mt-16 sm:mt-20 text-center">
           <button
             onClick={() => {
               const lenis = lenisStore.lenis;
@@ -321,31 +287,15 @@ export default function ProjectsNeoBrutalist() {
                 document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
               }
             }}
-            className="inline-block relative border-[6px] border-foreground bg-primary-hover px-12 py-6 text-base sm:text-lg font-black uppercase tracking-[0.15em] text-primary-foreground shadow-[12px_12px_0px_0px_var(--foreground)] transition-all hover:shadow-[6px_6px_0px_0px_var(--foreground)] hover:translate-x-[6px] hover:translate-y-[6px] group"
+            className="inline-block border-[4px] border-foreground bg-primary-hover px-8 py-4 text-sm sm:text-base font-black uppercase tracking-[0.1em] text-black shadow-[6px_6px_0_0_var(--foreground)] transition-all hover:shadow-[3px_3px_0_0_var(--foreground)] hover:translate-x-[3px] hover:translate-y-[3px]"
           >
-            <span className="relative z-10 text-black">LET'S BUILD SOMETHING →</span>
-            
-            {/* Animated underline */}
-            <div className="absolute bottom-2 left-6 right-6 h-1 bg-foreground transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
+            LET'S BUILD SOMETHING →
           </button>
-
-          {/* Decorative arrows */}
-          <div className="flex justify-center gap-4 mt-8">
-            <div className="w-0 h-0 border-l-15 border-l-transparent border-r-15 border-r-transparent border-b-20 border-b-foreground opacity-30" />
-            <div className="w-0 h-0 border-l-15 border-l-transparent border-r-15 border-r-transparent border-b-20 border-b-foreground opacity-50" />
-            <div className="w-0 h-0 border-l-15 border-l-transparent border-r-15 border-r-transparent border-b-20 border-b-foreground opacity-70" />
-          </div>
         </div>
       </div>
 
-      {/* Bottom decorative brutal bars */}
-      <div className="absolute bottom-0 left-0 right-0 h-4 bg-foreground" />
-      <div className="absolute bottom-4 left-0 right-0 flex h-3">
-        <div className="flex-1 bg-foreground" />
-        <div className="flex-1 bg-muted" />
-        <div className="flex-1 bg-foreground opacity-70" />
-        <div className="flex-1 bg-muted" />
-      </div>
+      {/* Bottom bars */}
+      <div className="absolute bottom-0 left-0 right-0 h-3 bg-foreground" />
     </section>
   );
 }
