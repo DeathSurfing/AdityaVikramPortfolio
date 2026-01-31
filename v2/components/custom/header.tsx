@@ -9,9 +9,11 @@ import {
   QuestionMarkCircledIcon,
   HamburgerMenuIcon,
   Cross1Icon,
+  EnvelopeClosedIcon,
 } from '@radix-ui/react-icons';
 import { AnimatePresence, motion } from 'framer-motion';
 import { PreferencesPopover } from './PreferencesPopover';
+import { lenisStore } from '@/lib/lenis-store';
 
 /* Animation Variants */
 const menuVariants = {
@@ -44,6 +46,7 @@ const navLinks = [
   { href: '#project', icon: <CubeIcon className="h-4 w-4" />, label: 'Projects' },
   { href: '#opinions', icon: <BarChartIcon className="h-4 w-4" />, label: 'Opinions' },
   { href: '#about', icon: <QuestionMarkCircledIcon className="h-4 w-4" />, label: 'WhoAmI?' },
+  { href: '#contact', icon: <EnvelopeClosedIcon className="h-4 w-4" />, label: 'Contact' },
 ];
 
 export default function Header() {
@@ -112,9 +115,7 @@ export default function Header() {
           <div className="flex items-center gap-2.5">
             {/* DESKTOP PREFERENCES */}
             <div className="hidden md:block">
-              <BrutalBox>
-                <PreferencesPopover />
-              </BrutalBox>
+              <PreferencesPopover />
             </div>
 
             {/* MOBILE HAMBURGER */}
@@ -219,6 +220,19 @@ export default function Header() {
 
 /* Helper Components */
 
+function scrollToSection(href: string) {
+  const lenis = lenisStore.lenis;
+  if (lenis) {
+    lenis.scrollTo(href, {
+      offset: 0,
+      duration: 1.2,
+      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    });
+  } else {
+    document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' });
+  }
+}
+
 function NavLink({
   href,
   icon,
@@ -228,9 +242,15 @@ function NavLink({
   icon: React.ReactNode;
   label: string;
 }) {
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    scrollToSection(href);
+  };
+
   return (
     <Link
       href={href}
+      onClick={handleClick}
       className="
         group flex items-center gap-2
         px-3 py-1.5
@@ -259,10 +279,16 @@ function MenuLink({
   children: React.ReactNode;
   onClick: () => void;
 }) {
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    onClick();
+    scrollToSection(href);
+  };
+
   return (
     <Link
       href={href}
-      onClick={onClick}
+      onClick={handleClick}
       className="
         flex items-center gap-5
         border-l-[6px] border-border

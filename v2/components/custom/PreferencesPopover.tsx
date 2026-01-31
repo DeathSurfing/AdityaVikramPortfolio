@@ -25,10 +25,30 @@ const THEMES: {
   value: ThemeOption;
   label: string;
   icon: React.ReactNode;
+  color: string;
+  iconColor: string;
 }[] = [
-  { value: "light", label: "Light", icon: <SunIcon /> },
-  { value: "dark", label: "Dark", icon: <MoonIcon /> },
-  { value: "system", label: "System", icon: <LaptopIcon /> },
+  { 
+    value: "light", 
+    label: "LIGHT", 
+    icon: <SunIcon className="h-5 w-5" />,
+    color: "bg-primary",
+    iconColor: "text-primary-foreground"
+  },
+  { 
+    value: "dark", 
+    label: "DARK", 
+    icon: <MoonIcon className="h-5 w-5" />,
+    color: "bg-foreground",
+    iconColor: "text-background"
+  },
+  { 
+    value: "system", 
+    label: "SYSTEM", 
+    icon: <LaptopIcon className="h-5 w-5" />,
+    color: "bg-secondary",
+    iconColor: "text-secondary-foreground"
+  },
 ];
 
 /* =======================
@@ -45,35 +65,65 @@ export function PreferencesPopover() {
 
   return (
     <Popover>
-      {/* SETTINGS BUTTON */}
+      {/* SETTINGS BUTTON - Clean Icon Only */}
       <Popover.Trigger asChild>
         <Button
           size="icon"
-          variant="outline"
+          variant="ghost"
           aria-label="Preferences"
           className="
-            border-3 border-border
-            shadow-[3px_3px_0_hsl(var(--border))]
-            hover:-translate-x-px
-            hover:-translate-y-px
-            hover:shadow-[5px_5px_0_hsl(var(--border))]
-            transition-all
+            relative
+            h-10 w-10
+            p-0
+            bg-transparent
+            hover:bg-transparent
+            hover:opacity-70
+            active:opacity-50
+            transition-opacity
+            group
           "
         >
-          <GearIcon className="h-5 w-5" />
+          <GearIcon className="h-6 w-6 transition-transform group-hover:rotate-90" />
         </Button>
       </Popover.Trigger>
 
-      {/* IMPORTANT: high z-index so mobile menu never blocks it */}
+      {/* POPOVER CONTENT - Ultra Brutalist */}
       <Popover.Content
         align="end"
-        sideOffset={8}
-        className="z-200 w-80 p-0 border-4 border-border bg-background shadow-[6px_6px_0_hsl(var(--border))]"
+        sideOffset={12}
+        className="z-[200] w-80 border-[5px] border-border bg-background shadow-[8px_8px_0_hsl(var(--border))] p-0 overflow-hidden"
       >
-        {/* COMMAND LIST */}
+        {/* Decorative Top Strip */}
+        <div className="h-3 w-full flex">
+          <div className="flex-1 bg-primary" />
+          <div className="flex-1 bg-background" />
+          <div className="flex-1 bg-foreground" />
+        </div>
+
+        {/* Header */}
+        <div className="px-4 py-3 border-b-[4px] border-border bg-muted">
+          <div className="flex items-center gap-3">
+            <GearIcon className="h-6 w-6 text-foreground" />
+            <div>
+              <h3 className="font-black text-lg tracking-wider uppercase">
+                Settings
+              </h3>
+              <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                Customize your experience
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Theme Options */}
         <Command className="border-0">
-          <Command.List>
+          <Command.List className="p-2">
             <Command.Group>
+              <div className="px-2 py-2 mb-2">
+                <span className="text-xs font-black uppercase tracking-widest text-muted-foreground">
+                  Theme
+                </span>
+              </div>
               {THEMES.map((t) => (
                 <Command.Item
                   key={t.value}
@@ -84,21 +134,70 @@ export function PreferencesPopover() {
                     }
                   }}
                   className="
+                    group
                     flex items-center justify-between
-                    px-3 py-2
-                    font-black
+                    px-3 py-3 mb-2
+                    border-[3px] border-border
+                    bg-background
+                    cursor-pointer
+                    transition-all
+                    hover:bg-muted
+                    hover:shadow-[3px_3px_0_hsl(var(--border))]
+                    hover:-translate-x-[1px]
+                    hover:-translate-y-[1px]
+                    data-[selected=true]:border-primary
+                    data-[selected=true]:bg-primary
+                    data-[selected=true]:text-primary-foreground
+                    data-[selected=true]:shadow-[3px_3px_0_hsl(var(--border))]
                   "
+                  data-selected={theme === t.value}
                 >
                   <span className="flex items-center gap-3">
-                    {t.icon}
-                    {t.label}
+                    <div className={`
+                      w-8 h-8 
+                      border-[3px] border-border 
+                      ${t.color}
+                      ${t.iconColor}
+                      flex items-center justify-center
+                      shadow-[2px_2px_0_hsl(var(--border))]
+                    `}>
+                      {t.icon}
+                    </div>
+                    <span className="font-black text-sm tracking-wider">
+                      {t.label}
+                    </span>
                   </span>
-                  {theme === t.value && <CheckIcon />}
+                  
+                  {theme === t.value && (
+                    <div className="w-6 h-6 border-[3px] border-primary bg-primary flex items-center justify-center shadow-[2px_2px_0_hsl(var(--border))]">
+                      <CheckIcon className="h-4 w-4 text-primary-foreground" />
+                    </div>
+                  )}
                 </Command.Item>
               ))}
             </Command.Group>
           </Command.List>
         </Command>
+
+        {/* Footer Accent */}
+        <div className="border-t-[3px] border-border bg-muted px-4 py-2">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+              v2.0.0
+            </span>
+            <div className="flex gap-1">
+              <div className="w-2 h-2 bg-primary" />
+              <div className="w-2 h-2 bg-foreground" />
+              <div className="w-2 h-2 bg-border" />
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom Decorative Bar */}
+        <div className="h-2 w-full flex">
+          <div className="flex-1 bg-primary" />
+          <div className="flex-1 bg-foreground" />
+        </div>
       </Popover.Content>
     </Popover>
   );

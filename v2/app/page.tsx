@@ -9,16 +9,21 @@ import WhoAmIHero from "@/components/custom/WhoAmIHero"
 import WhoAmIAbout from "@/components/custom/WhoAmIAbout"
 import WhoAmITestimonials from "@/components/custom/WhoAmITestimonials"
 import BrutalCodingProof from "@/components/custom/BrutalCodingProof"
+import ContactSection from "@/components/custom/ContactSection"
+import Footer from "@/components/custom/Footer"
 
 export default function HomePage() {
 
-  // Optional depth (visual stack)
+  // Optional depth (visual stack) - only on desktop
   useEffect(() => {
-    const cards = document.querySelectorAll(".stack-card")
-    cards.forEach((card, i) => {
-      (card as HTMLElement).style.transform =
-        `scale(${1 - i * 0.05}) translateY(${-i * 40}px)`
-    })
+    // Only apply transforms on desktop (lg breakpoint)
+    if (typeof window !== 'undefined' && window.innerWidth >= 1024) {
+      const cards = document.querySelectorAll(".stack-card")
+      cards.forEach((card, i) => {
+        (card as HTMLElement).style.transform =
+          `scale(${1 - i * 0.05}) translateY(${-i * 40}px)`
+      })
+    }
   }, [])
 
   return (
@@ -43,6 +48,10 @@ export default function HomePage() {
         <CredibilitySection />
         
         <BrutalCodingProof/>
+
+        <ContactSection />
+        
+        <Footer />
     </main>
   )
 }

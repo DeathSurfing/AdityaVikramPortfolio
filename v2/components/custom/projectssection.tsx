@@ -1,4 +1,6 @@
 "use client";
+"use client";
+
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -10,6 +12,7 @@ import {
   CarouselPrevious,
 } from "@/components/custom/carousel";
 import Link from "next/link";
+import { lenisStore } from "@/lib/lenis-store";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -368,15 +371,26 @@ export default function ProjectsNeoBrutalist() {
         {/* Bottom CTA - MASSIVE BRUTAL BUTTON */}
         <div className="mt-20 sm:mt-28 text-center relative">
           
-          <Link
-            href="#contact"
+          <button
+            onClick={() => {
+              const lenis = lenisStore.lenis;
+              if (lenis) {
+                lenis.scrollTo("#contact", {
+                  offset: 0,
+                  duration: 1.2,
+                  easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                });
+              } else {
+                document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
+              }
+            }}
             className="inline-block relative border-[6px] border-foreground bg-primary-hover px-12 py-6 text-base sm:text-lg font-black uppercase tracking-[0.15em] text-primary-foreground shadow-[12px_12px_0px_0px_var(--foreground)] transition-all hover:shadow-[6px_6px_0px_0px_var(--foreground)] hover:translate-x-[6px] hover:translate-y-[6px] group"
           >
             <span className="relative z-10">LET'S BUILD SOMETHING →</span>
             
             {/* Animated underline */}
             <div className="absolute bottom-2 left-6 right-6 h-1 bg-foreground transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
-          </Link>
+          </button>
 
           {/* Decorative arrows */}
           <div className="flex justify-center gap-4 mt-8">
