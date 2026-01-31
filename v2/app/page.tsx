@@ -29,7 +29,7 @@ export default function HomePage() {
 
   return (
     <main className="relative bg-background">
-      <div id="#"></div>
+      <div id="top"></div>
       <section className="stack-card">
         <HeroNeoBrutalist />
       </section>

@@ -21,7 +21,7 @@ export const navLinks: NavLink[] = [
 ];
 
 export const quickLinks = [
-  { href: '#', label: 'Home' },
+  { href: '#top', label: 'Home' },
   { href: '#about', label: 'About' },
   { href: '#experience', label: 'Experience' },
   { href: '#project', label: 'Projects' },

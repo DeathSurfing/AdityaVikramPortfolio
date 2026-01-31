@@ -79,6 +79,18 @@ export default function Header() {
           {/* LOGO */}
           <Link
             href="/#"
+            onClick={(e) => {
+              e.preventDefault();
+              const lenis = lenisStore.lenis;
+              if (lenis) {
+                lenis.scrollTo(0, {
+                  duration: 1.2,
+                  easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                });
+              } else {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }
+            }}
             className="
               flex items-center gap-2.5
               font-mono text-xl md:text-2xl font-black tracking-widest
@@ -86,6 +98,7 @@ export default function Header() {
               hover:-translate-y-[1px]
               transition-transform
               group
+              cursor-pointer
             "
           >
             <div className="p-1.5 bg-primary border-3 border-border shadow-[3px_3px_0_hsl(var(--border))] group-hover:shadow-[5px_5px_0_hsl(var(--border))] group-hover:-translate-x-[1px] group-hover:-translate-y-[1px] transition-all">
