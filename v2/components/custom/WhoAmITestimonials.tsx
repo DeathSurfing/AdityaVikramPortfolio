@@ -2,9 +2,29 @@
 
 import { motion } from 'framer-motion';
 import { AnimatedTestimonials } from '@/components/ui/animated-testimonials';
-import { professionalTestimonials } from '@/data/testimonials';
+import { useQuery } from 'convex/react';
+import { api } from '@/convex/_generated/api';
+import type { Doc } from '@/convex/_generated/dataModel';
+
+interface Testimonial {
+  quote: string;
+  name: string;
+  designation: string;
+  src: string;
+}
 
 export default function WhoAmITestimonials() {
+  // Fetch testimonials from Convex
+  const convexTestimonials = useQuery(api.projects.getTestimonials, { limit: 50 });
+
+  // Map Convex data to component format
+  const testimonials: Testimonial[] = convexTestimonials?.map((t: Doc<'testimonials'>) => ({
+    quote: t.quote,
+    name: t.name,
+    designation: t.designation,
+    src: t.src,
+  })) ?? [];
+
   return (
     <section className="min-h-screen flex items-center justify-center px-6 lg:px-20 py-20 relative bg-background">
       <div className="max-w-6xl mx-auto w-full">
@@ -26,7 +46,7 @@ export default function WhoAmITestimonials() {
 
         <div className="border-4 border-border bg-background p-8 shadow-[12px_12px_0px_0px_var(--primary)]">
           <AnimatedTestimonials
-            testimonials={professionalTestimonials}
+            testimonials={testimonials}
           />
         </div>
       </div>

@@ -3,8 +3,10 @@
 import { useEffect, useRef, useState, FormEvent } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { CheckIcon, ArrowRightIcon } from "@radix-ui/react-icons";
+import { CheckIcon, ArrowRightIcon, CrossCircledIcon } from "@radix-ui/react-icons";
 import { FormData, SUBJECT_OPTIONS } from "./constants";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -19,6 +21,9 @@ export default function ContactForm() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const submitForm = useMutation(api.submissions.submitContactForm);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -53,21 +58,34 @@ export default function ContactForm() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setError(null);
 
-    console.log("Contact Form Submission:", {
-      ...formData,
-      timestamp: new Date().toISOString(),
-    });
+    try {
+      // Get IP address (will be captured server-side in the mutation)
+      // For now, we'll use a client-side IP detection or a placeholder
+      // The actual IP will be captured by Convex's context
+      const ipResponse = await fetch("https://api.ipify.org?format=json").catch(() => null);
+      const ipAddress = ipResponse ? (await ipResponse.json()).ip : "unknown";
 
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+      await submitForm({
+        name: formData.name,
+        email: formData.email,
+        subject: formData.subject,
+        message: formData.message,
+        ipAddress,
+      });
 
-    setIsSubmitting(false);
-    setIsSubmitted(true);
-
-    setTimeout(() => {
-      setIsSubmitted(false);
+      setIsSubmitted(true);
       setFormData({ name: "", email: "", subject: "", message: "" });
-    }, 3000);
+
+      setTimeout(() => {
+        setIsSubmitted(false);
+      }, 3000);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to submit form. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -77,6 +95,13 @@ export default function ContactForm() {
           SEND A MESSAGE
         </div>
       </div>
+
+      {error && (
+        <div className="mb-6 p-4 border-4 border-red-500 bg-red-50 text-red-700 font-bold flex items-center gap-2">
+          <CrossCircledIcon className="h-5 w-5 flex-shrink-0" />
+          <span>{error}</span>
+        </div>
+      )}
 
       <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
         {/* Name Field */}

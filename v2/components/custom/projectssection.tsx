@@ -13,9 +13,22 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import { lenisStore } from "@/lib/lenis-store";
-import { projects, type Project } from "@/data/projects";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import type { Doc } from "@/convex/_generated/dataModel";
 
 gsap.registerPlugin(ScrollTrigger);
+
+// Map Convex project type to component project type
+interface Project {
+  id: number;
+  name: string;
+  description: string;
+  image: string;
+  category: string;
+  technologies: string[];
+  link?: string;
+}
 
 // Memoized project card to prevent unnecessary re-renders
 const ProjectCard = memo(({ project, index }: { project: Project; index: number }) => {
@@ -136,6 +149,20 @@ export default function ProjectsNeoBrutalist() {
   const carouselRef = useRef<HTMLDivElement>(null);
   const triggersRef = useRef<ScrollTrigger[]>([]);
 
+  // Fetch projects from Convex
+  const convexProjects = useQuery(api.projects.getProjects, { limit: 50 });
+
+  // Map Convex data to component format
+  const projects: Project[] = convexProjects?.map((p: Doc<"projects">) => ({
+    id: p.displayId,
+    name: p.name,
+    description: p.description,
+    image: p.image,
+    category: p.category,
+    technologies: p.technologies,
+    link: p.link,
+  })) ?? [];
+
   useEffect(() => {
     // Clear any existing triggers
     triggersRef.current.forEach(trigger => trigger.kill());
@@ -244,20 +271,25 @@ export default function ProjectsNeoBrutalist() {
 
         {/* Carousel */}
         <div ref={carouselRef}>
-          <Carousel
-            opts={{
-              align: "start",
-              loop: false,
-              skipSnaps: false,
-              dragFree: false,
-            }}
-            className="w-full relative"
-          >
-            <CarouselContent className="-ml-6 sm:-ml-8">
-              {projects.map((project, idx) => (
-                <ProjectCard key={project.id} project={project} index={idx} />
-              ))}
-            </CarouselContent>
+          {projects.length === 0 ? (
+            <div className="flex items-center justify-center h-64 border-4 border-border bg-muted">
+              <p className="text-lg font-black uppercase tracking-widest">Loading Projects...</p>
+            </div>
+          ) : (
+            <Carousel
+              opts={{
+                align: "start",
+                loop: false,
+                skipSnaps: false,
+                dragFree: false,
+              }}
+              className="w-full relative"
+            >
+              <CarouselContent className="-ml-6 sm:-ml-8">
+                {projects.map((project, idx) => (
+                  <ProjectCard key={project.id} project={project} index={idx} />
+                ))}
+              </CarouselContent>
 
             {/* Navigation */}
             <div className="flex items-center justify-center gap-4 mt-10">
@@ -270,6 +302,7 @@ export default function ProjectsNeoBrutalist() {
               <CarouselNext className="static translate-y-0 border-[4px] border-foreground bg-primary hover:bg-foreground h-12 w-12 shadow-[4px_4px_0_0_var(--foreground)] transition-all text-primary-foreground hover:text-background" />
             </div>
           </Carousel>
+          )}
         </div>
 
         {/* CTA Button */}

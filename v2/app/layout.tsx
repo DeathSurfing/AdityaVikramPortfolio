@@ -11,6 +11,7 @@ import Header from "@/components/custom/header";
 import { ThemeProvider } from "@/components/theme-provider";
 import LenisProvider from "@/providers/LenisProvider";
 import LenisHashHandler from "@/providers/LenisHashHandler";
+import { ConvexClientProvider } from "@/providers/ConvexClientProvider";
 import { siteMetadata } from "@/data/site";
 
 
@@ -55,13 +56,15 @@ export default function RootLayout({
       className={`${archivoBlack.variable} ${spaceGrotesk.variable} ${plexMono.variable}`}
     >
       <body className="bg-background text-foreground antialiased">
+        <ConvexClientProvider>
           <ThemeProvider>
             <LenisProvider>
               <LenisHashHandler />
-                  <Header />
-                  {children}
+              <Header />
+              {children}
             </LenisProvider>
           </ThemeProvider>
+        </ConvexClientProvider>
       </body>
     </html>
   );
