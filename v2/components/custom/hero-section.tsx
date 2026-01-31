@@ -3,7 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Link from "next/link";
-import { projects } from "@/data/projects";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -18,6 +19,10 @@ export default function HeroNeoBrutalist() {
   
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isMobile, setIsMobile] = useState(false);
+
+  // Fetch projects count from Convex
+  const projects = useQuery(api.projects.getProjects, { limit: 50 });
+  const projectCount = projects?.length ?? 0;
 
   // Detect mobile devices
   useEffect(() => {
@@ -236,7 +241,7 @@ export default function HeroNeoBrutalist() {
         {/* Stats bar - responsive grid */}
         <div className="mt-6 sm:mt-8 flex flex-wrap gap-2 sm:gap-4 text-xs sm:text-sm font-bold">
           <div className="border border-border sm:border-2 bg-background px-3 py-1.5 sm:px-4 sm:py-2">
-            <span className="text-primary text-xl sm:text-2xl font-black">{projects.length}</span> PROJECTS
+            <span className="text-primary text-xl sm:text-2xl font-black">{projectCount}</span> PROJECTS
           </div>
           <div className="border border-border sm:border-2 bg-background px-3 py-1.5 sm:px-4 sm:py-2">
             <span className="text-primary text-xl sm:text-2xl font-black">2</span> YEARS

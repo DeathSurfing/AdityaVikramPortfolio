@@ -3,12 +3,6 @@
 // Navigation
 export * from './navigation';
 
-// Projects
-export * from './projects';
-
-// Testimonials
-export * from './testimonials';
-
 // Social Links
 export * from './social';
 
