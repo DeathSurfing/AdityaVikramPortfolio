@@ -1,21 +1,21 @@
 import {
-  CubeIcon,
-  BarChartIcon,
-  QuestionMarkCircledIcon,
-  EnvelopeClosedIcon,
-} from '@radix-ui/react-icons';
+  IconBox,
+  IconChartBar,
+  IconHelpSquare,
+  IconMail,
+} from '@tabler/icons-react';
 
 export interface NavLink {
   href: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
   label: string;
 }
 
 export const navLinks: NavLink[] = [
-  { href: '#project', icon: CubeIcon, label: 'Projects' },
-  { href: '#opinions', icon: BarChartIcon, label: 'Opinions' },
-  { href: '#about', icon: QuestionMarkCircledIcon, label: 'WhoAmI?' },
-  { href: '#contact', icon: EnvelopeClosedIcon, label: 'Contact' },
+  { href: '#project', icon: IconBox, label: 'Projects' },
+  { href: '#opinions', icon: IconChartBar, label: 'Opinions' },
+  { href: '#about', icon: IconHelpSquare, label: 'WhoAmI?' },
+  { href: '#contact', icon: IconMail, label: 'Contact' },
 ];
 
 export const quickLinks = [

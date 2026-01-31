@@ -3,10 +3,10 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import {
-  HomeIcon,
-  HamburgerMenuIcon,
-  Cross1Icon,
-} from '@radix-ui/react-icons';
+  IconHome,
+  IconMenu2,
+  IconSquareX,
+} from '@tabler/icons-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { PreferencesPopover } from './PreferencesPopover';
 import { lenisStore } from '@/lib/lenis-store';
@@ -89,7 +89,7 @@ export default function Header() {
             "
           >
             <div className="p-1.5 bg-primary border-3 border-border shadow-[3px_3px_0_hsl(var(--border))] group-hover:shadow-[5px_5px_0_hsl(var(--border))] group-hover:-translate-x-[1px] group-hover:-translate-y-[1px] transition-all">
-              <HomeIcon className="h-5 w-5 text-primary-foreground" />
+              <IconHome className="h-5 w-5 text-primary-foreground" strokeWidth={2.5} />
             </div>
           </Link>
 
@@ -123,7 +123,7 @@ export default function Header() {
               "
               aria-label="Open menu"
             >
-              <HamburgerMenuIcon className="h-5 w-5" />
+              <IconMenu2 className="h-5 w-5" strokeWidth={2.5} />
             </button>
           </div>
         </div>
@@ -163,7 +163,7 @@ export default function Header() {
                 "
                 aria-label="Close menu"
               >
-                <Cross1Icon className="h-5 w-5" />
+                <IconSquareX className="h-5 w-5" strokeWidth={2.5} />
               </button>
             </div>
 
@@ -181,7 +181,7 @@ export default function Header() {
               {navLinks.map(({ href, icon: Icon, label }) => (
                 <motion.div key={href} variants={itemVariants}>
                   <MenuLink href={href} onClick={() => setMenuOpen(false)}>
-                    <Icon className="h-4 w-4" /> {label}
+                    <Icon className="h-4 w-4" strokeWidth={2.5} /> {label}
                   </MenuLink>
                 </motion.div>
               ))}
@@ -228,7 +228,7 @@ function NavLink({
   label,
 }: {
   href: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
   label: string;
 }) {
   const handleClick = (e: React.MouseEvent) => {
@@ -252,7 +252,7 @@ function NavLink({
       "
     >
       <span className="transition-transform group-hover:rotate-[-5deg] translate-y-[0.5px]">
-        <Icon className="h-4 w-4" />
+        <Icon className="h-4 w-4" strokeWidth={2.5} />
       </span>
       {label}
     </Link>

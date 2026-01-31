@@ -25,7 +25,7 @@ export interface SocialLink {
 export const SOCIAL_LINKS: SocialLink[] = [
   {
     name: "LinkedIn",
-    icon: React.createElement(LinkedInLogoIcon, { className: "h-6 w-6" }),
+    icon: React.createElement(LinkedInLogoIcon, { className: "h-6 w-6 text-white" }),
     url: "https://www.linkedin.com/in/aditya-vikram-mahendru/",
     color: "bg-[#0A66C2]",
   },

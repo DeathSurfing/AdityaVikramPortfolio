@@ -323,7 +323,7 @@ export default function ProjectsNeoBrutalist() {
             }}
             className="inline-block relative border-[6px] border-foreground bg-primary-hover px-12 py-6 text-base sm:text-lg font-black uppercase tracking-[0.15em] text-primary-foreground shadow-[12px_12px_0px_0px_var(--foreground)] transition-all hover:shadow-[6px_6px_0px_0px_var(--foreground)] hover:translate-x-[6px] hover:translate-y-[6px] group"
           >
-            <span className="relative z-10">LET'S BUILD SOMETHING →</span>
+            <span className="relative z-10 text-black">LET'S BUILD SOMETHING →</span>
             
             {/* Animated underline */}
             <div className="absolute bottom-2 left-6 right-6 h-1 bg-foreground transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
