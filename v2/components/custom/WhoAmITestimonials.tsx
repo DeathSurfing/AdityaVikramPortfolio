@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { AnimatedTestimonials } from '@/components/ui/animated-testimonials';
+import { professionalTestimonials } from '@/data/testimonials';
 
 export default function WhoAmITestimonials() {
   return (
@@ -25,28 +26,7 @@ export default function WhoAmITestimonials() {
 
         <div className="border-4 border-border bg-background p-8 shadow-[12px_12px_0px_0px_var(--primary)]">
           <AnimatedTestimonials
-            testimonials={[
-              {
-                quote: "Aditya is one of the most creative individuals I've worked with.",
-                name: 'G. Lohith Reddy',
-                designation:
-                  'General Secretary at Woxsen University Student Council',
-                src: '/testimonials/Lohith.webp',
-              },
-              {
-                quote: 'His problem-solving skills and UI sense are top-notch.',
-                name: 'Melvin Johnson',
-                designation:
-                  'Intern at AI Research Center Woxsen University',
-                src: '/testimonials/melvin.webp',
-              },
-              {
-                quote: 'He blends design and code like an artist.',
-                name: 'Mitansh Seghal',
-                designation: 'Software Engineer',
-                src: '/testimonials/mitansh.webp',
-              },
-            ]}
+            testimonials={professionalTestimonials}
           />
         </div>
       </div>

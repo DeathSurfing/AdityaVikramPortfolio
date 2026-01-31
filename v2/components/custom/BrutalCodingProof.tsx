@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useTheme } from "next-themes"
+import { programmingSkills } from "@/data/skills"
 
 export default function BrutalCodingProof() {
   const [mounted, setMounted] = useState(false)
@@ -132,21 +133,16 @@ export default function BrutalCodingProof() {
             {/* Extra Stats */}
             <div className="bg-pink-400 border-4 border-black p-6 rotate-[-0.5deg] shadow-lg">
               <div className="space-y-3">
-                {[
-                  ["RUST", "LEARNING"],
-                  ["PYTHON", "INTERMEDIATE"],
-                  ["JAVASCRIPT", "INTERMEDIATE"],
-                  ["C++", "INTERMEDIATE"],
-                ].map(([label, value]) => (
+                {programmingSkills.map((skill) => (
                   <div
-                    key={label}
+                    key={skill.language}
                     className="flex items-center justify-between border-b-2 border-black pb-2 last:border-none"
                   >
                     <span className="font-black text-black text-sm">
-                      {label}
+                      {skill.language}
                     </span>
                     <span className="bg-black text-pink-400 px-3 py-1 font-black text-xs">
-                      {value}
+                      {skill.level}
                     </span>
                   </div>
                 ))}

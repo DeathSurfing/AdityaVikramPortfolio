@@ -2,9 +2,6 @@
 
 import * as React from "react";
 import {
-  SunIcon,
-  MoonIcon,
-  LaptopIcon,
   GearIcon,
   CheckIcon,
 } from "@radix-ui/react-icons";
@@ -14,42 +11,7 @@ import { useTheme } from "next-themes";
 import { Popover } from "@/components/retroui/Popover";
 import { Command } from "@/components/retroui/Command";
 import { Button } from "@/components/retroui/Button";
-
-/* =======================
-   Types & Data
-======================= */
-
-type ThemeOption = "light" | "dark" | "system";
-
-const THEMES: {
-  value: ThemeOption;
-  label: string;
-  icon: React.ReactNode;
-  color: string;
-  iconColor: string;
-}[] = [
-  { 
-    value: "light", 
-    label: "LIGHT", 
-    icon: <SunIcon className="h-5 w-5" />,
-    color: "bg-primary",
-    iconColor: "text-primary-foreground"
-  },
-  { 
-    value: "dark", 
-    label: "DARK", 
-    icon: <MoonIcon className="h-5 w-5" />,
-    color: "bg-foreground",
-    iconColor: "text-background"
-  },
-  { 
-    value: "system", 
-    label: "SYSTEM", 
-    icon: <LaptopIcon className="h-5 w-5" />,
-    color: "bg-secondary",
-    iconColor: "text-secondary-foreground"
-  },
-];
+import { themes } from "@/data/themes";
 
 /* =======================
    Component
@@ -124,57 +86,60 @@ export function PreferencesPopover() {
                   Theme
                 </span>
               </div>
-              {THEMES.map((t) => (
-                <Command.Item
-                  key={t.value}
-                  value={t.value}
-                  onSelect={(v) => {
-                    if (v === "light" || v === "dark" || v === "system") {
-                      setTheme(v);
-                    }
-                  }}
-                  className="
-                    group
-                    flex items-center justify-between
-                    px-3 py-3 mb-2
-                    border-[3px] border-border
-                    bg-background
-                    cursor-pointer
-                    transition-all
-                    hover:bg-muted
-                    hover:shadow-[3px_3px_0_hsl(var(--border))]
-                    hover:-translate-x-[1px]
-                    hover:-translate-y-[1px]
-                    data-[selected=true]:border-primary
-                    data-[selected=true]:bg-primary
-                    data-[selected=true]:text-primary-foreground
-                    data-[selected=true]:shadow-[3px_3px_0_hsl(var(--border))]
-                  "
-                  data-selected={theme === t.value}
-                >
-                  <span className="flex items-center gap-3">
-                    <div className={`
-                      w-8 h-8 
-                      border-[3px] border-border 
-                      ${t.color}
-                      ${t.iconColor}
-                      flex items-center justify-center
-                      shadow-[2px_2px_0_hsl(var(--border))]
-                    `}>
-                      {t.icon}
-                    </div>
-                    <span className="font-black text-sm tracking-wider">
-                      {t.label}
+              {themes.map((t) => {
+                const IconComponent = t.icon;
+                return (
+                  <Command.Item
+                    key={t.value}
+                    value={t.value}
+                    onSelect={(v) => {
+                      if (v === "light" || v === "dark" || v === "system") {
+                        setTheme(v);
+                      }
+                    }}
+                    className="
+                      group
+                      flex items-center justify-between
+                      px-3 py-3 mb-2
+                      border-[3px] border-border
+                      bg-background
+                      cursor-pointer
+                      transition-all
+                      hover:bg-muted
+                      hover:shadow-[3px_3px_0_hsl(var(--border))]
+                      hover:-translate-x-[1px]
+                      hover:-translate-y-[1px]
+                      data-[selected=true]:border-primary
+                      data-[selected=true]:bg-primary
+                      data-[selected=true]:text-primary-foreground
+                      data-[selected=true]:shadow-[3px_3px_0_hsl(var(--border))]
+                    "
+                    data-selected={theme === t.value}
+                  >
+                    <span className="flex items-center gap-3">
+                      <div className={`
+                        w-8 h-8 
+                        border-[3px] border-border 
+                        ${t.color}
+                        ${t.iconColor}
+                        flex items-center justify-center
+                        shadow-[2px_2px_0_hsl(var(--border))]
+                      `}>
+                        <IconComponent className="h-5 w-5" />
+                      </div>
+                      <span className="font-black text-sm tracking-wider">
+                        {t.label}
+                      </span>
                     </span>
-                  </span>
-                  
-                  {theme === t.value && (
-                    <div className="w-6 h-6 border-[3px] border-primary bg-primary flex items-center justify-center shadow-[2px_2px_0_hsl(var(--border))]">
-                      <CheckIcon className="h-4 w-4 text-primary-foreground" />
-                    </div>
-                  )}
-                </Command.Item>
-              ))}
+                    
+                    {theme === t.value && (
+                      <div className="w-6 h-6 border-[3px] border-primary bg-primary flex items-center justify-center shadow-[2px_2px_0_hsl(var(--border))]">
+                        <CheckIcon className="h-4 w-4 text-primary-foreground" />
+                      </div>
+                    )}
+                  </Command.Item>
+                );
+              })}
             </Command.Group>
           </Command.List>
         </Command>

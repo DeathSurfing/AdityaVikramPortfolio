@@ -4,16 +4,13 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import {
   HomeIcon,
-  CubeIcon,
-  BarChartIcon,
-  QuestionMarkCircledIcon,
   HamburgerMenuIcon,
   Cross1Icon,
-  EnvelopeClosedIcon,
 } from '@radix-ui/react-icons';
 import { AnimatePresence, motion } from 'framer-motion';
 import { PreferencesPopover } from './PreferencesPopover';
 import { lenisStore } from '@/lib/lenis-store';
+import { navLinks } from '@/data/navigation';
 
 /* Animation Variants */
 const menuVariants = {
@@ -40,14 +37,6 @@ const itemVariants = {
   hidden: { y: 20, opacity: 0 },
   visible: { y: 0, opacity: 1 },
 } as const;
-
-// Define a single source of truth for links and icons
-const navLinks = [
-  { href: '#project', icon: <CubeIcon className="h-4 w-4" />, label: 'Projects' },
-  { href: '#opinions', icon: <BarChartIcon className="h-4 w-4" />, label: 'Opinions' },
-  { href: '#about', icon: <QuestionMarkCircledIcon className="h-4 w-4" />, label: 'WhoAmI?' },
-  { href: '#contact', icon: <EnvelopeClosedIcon className="h-4 w-4" />, label: 'Contact' },
-];
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -106,8 +95,8 @@ export default function Header() {
 
           {/* DESKTOP NAV */}
           <nav className="hidden md:flex items-center gap-4 text-sm font-black tracking-wide text-foreground">
-            {navLinks.map(({ href, icon, label }) => (
-              <NavLink key={href} href={href} icon={icon} label={label} />
+            {navLinks.map(({ href, icon: Icon, label }) => (
+              <NavLink key={href} href={href} icon={Icon} label={label} />
             ))}
           </nav>
 
@@ -189,10 +178,10 @@ export default function Header() {
                 },
               }}
             >
-              {navLinks.map(({ href, icon, label }) => (
+              {navLinks.map(({ href, icon: Icon, label }) => (
                 <motion.div key={href} variants={itemVariants}>
                   <MenuLink href={href} onClick={() => setMenuOpen(false)}>
-                    {icon} {label}
+                    <Icon className="h-4 w-4" /> {label}
                   </MenuLink>
                 </motion.div>
               ))}
@@ -235,11 +224,11 @@ function scrollToSection(href: string) {
 
 function NavLink({
   href,
-  icon,
+  icon: Icon,
   label,
 }: {
   href: string;
-  icon: React.ReactNode;
+  icon: React.ComponentType<{ className?: string }>;
   label: string;
 }) {
   const handleClick = (e: React.MouseEvent) => {
@@ -263,7 +252,7 @@ function NavLink({
       "
     >
       <span className="transition-transform group-hover:rotate-[-5deg] translate-y-[0.5px]">
-        {icon}
+        <Icon className="h-4 w-4" />
       </span>
       {label}
     </Link>

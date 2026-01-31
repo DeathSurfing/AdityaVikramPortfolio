@@ -1,42 +1,6 @@
 import Link from "next/link";
-import {
-  LinkedInLogoIcon,
-  GitHubLogoIcon,
-  EnvelopeClosedIcon,
-  FileTextIcon,
-  ArrowUpIcon,
-} from "@radix-ui/react-icons";
-
-const QUICK_LINKS = [
-  { href: "#", label: "Home" },
-  { href: "#about", label: "About" },
-  { href: "#project", label: "Projects" },
-  { href: "#opinions", label: "Opinions" },
-  { href: "#contact", label: "Contact" },
-];
-
-const SOCIAL_LINKS = [
-  {
-    name: "LinkedIn",
-    icon: <LinkedInLogoIcon className="h-5 w-5" />,
-    url: "https://linkedin.com/in/adityavikram",
-  },
-  {
-    name: "GitHub",
-    icon: <GitHubLogoIcon className="h-5 w-5" />,
-    url: "https://github.com/deathSurfing",
-  },
-  {
-    name: "Email",
-    icon: <EnvelopeClosedIcon className="h-5 w-5" />,
-    url: "mailto:adityavikram@example.com",
-  },
-  {
-    name: "Resume",
-    icon: <FileTextIcon className="h-5 w-5" />,
-    url: "/resume",
-  },
-];
+import { ArrowUpIcon } from "@radix-ui/react-icons";
+import { quickLinks, socialLinks, type SocialLink } from "@/data";
 
 export default function Footer() {
   const scrollToTop = () => {
@@ -105,7 +69,7 @@ export default function Footer() {
                 </p>
               </div>
               <ul className="space-y-3">
-                {QUICK_LINKS.map((link) => (
+                {quickLinks.map((link) => (
                   <li key={link.href}>
                     <Link
                       href={link.href}
@@ -134,37 +98,40 @@ export default function Footer() {
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                {SOCIAL_LINKS.map((social) => (
-                  <a
-                    key={social.name}
-                    href={social.url}
-                    target={social.url.startsWith("http") ? "_blank" : undefined}
-                    rel={
-                      social.url.startsWith("http")
-                        ? "noopener noreferrer"
-                        : undefined
-                    }
-                    className="
-                      group
-                      flex items-center gap-3
-                      border-[3px] border-border
-                      bg-background
-                      px-4 py-3
-                      font-black text-sm
-                      uppercase tracking-wider
-                      shadow-[3px_3px_0_hsl(var(--border))]
-                      hover:shadow-[1px_1px_0_hsl(var(--border))]
-                      hover:translate-x-[2px]
-                      hover:translate-y-[2px]
-                      transition-all
-                    "
-                  >
-                    <span className="text-foreground group-hover:text-primary transition-colors">
-                      {social.icon}
-                    </span>
-                    {social.name}
-                  </a>
-                ))}
+                {socialLinks.map((social: SocialLink) => {
+                  const IconComponent = social.icon;
+                  return (
+                    <a
+                      key={social.name}
+                      href={social.url}
+                      target={social.url.startsWith("http") ? "_blank" : undefined}
+                      rel={
+                        social.url.startsWith("http")
+                          ? "noopener noreferrer"
+                          : undefined
+                      }
+                      className="
+                        group
+                        flex items-center gap-3
+                        border-[3px] border-border
+                        bg-background
+                        px-4 py-3
+                        font-black text-sm
+                        uppercase tracking-wider
+                        shadow-[3px_3px_0_hsl(var(--border))]
+                        hover:shadow-[1px_1px_0_hsl(var(--border))]
+                        hover:translate-x-[2px]
+                        hover:translate-y-[2px]
+                        transition-all
+                      "
+                    >
+                      <span className="text-foreground group-hover:text-primary transition-colors">
+                        <IconComponent className="h-5 w-5" />
+                      </span>
+                      {social.name}
+                    </a>
+                  );
+                })}
               </div>
             </div>
           </div>

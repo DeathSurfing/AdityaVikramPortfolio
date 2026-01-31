@@ -1,21 +1,18 @@
+// NOTE: All contact data has been moved to @/data/contact.ts
+// This file is kept for backward compatibility during migration
+// Please import from @/data/* for all new code
+
 import { LinkedInLogoIcon, GitHubLogoIcon } from "@radix-ui/react-icons";
 import React from "react";
 
-export interface FormData {
-  name: string;
-  email: string;
-  subject: string;
-  message: string;
-}
+// Re-export from centralized data for backward compatibility
+export type { FormData } from "@/data/contact";
+export {
+  subjectOptions as SUBJECT_OPTIONS,
+  EMAIL,
+} from "@/data/contact";
 
-export const SUBJECT_OPTIONS = [
-  "Project Inquiry",
-  "Collaboration",
-  "Job Opportunity",
-  "Just saying hi",
-  "Other",
-];
-
+// Legacy interface - kept for compatibility
 export interface SocialLink {
   name: string;
   icon: React.ReactNode;
@@ -23,6 +20,8 @@ export interface SocialLink {
   color: string;
 }
 
+// Legacy export - redirects to new data location
+// Use @/data/social for new code
 export const SOCIAL_LINKS: SocialLink[] = [
   {
     name: "LinkedIn",
@@ -37,5 +36,3 @@ export const SOCIAL_LINKS: SocialLink[] = [
     color: "bg-[#24292e]",
   },
 ];
-
-export const EMAIL = "jobs.aditya.vikram.mahendru@gmail.com";
