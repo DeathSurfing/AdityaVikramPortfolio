@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Link from "next/link";
+import { projects } from "@/data/projects";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -235,7 +236,7 @@ export default function HeroNeoBrutalist() {
         {/* Stats bar - responsive grid */}
         <div className="mt-6 sm:mt-8 flex flex-wrap gap-2 sm:gap-4 text-xs sm:text-sm font-bold">
           <div className="border border-border sm:border-2 bg-background px-3 py-1.5 sm:px-4 sm:py-2">
-            <span className="text-primary text-xl sm:text-2xl font-black">15+</span> PROJECTS
+            <span className="text-primary text-xl sm:text-2xl font-black">{projects.length}</span> PROJECTS
           </div>
           <div className="border border-border sm:border-2 bg-background px-3 py-1.5 sm:px-4 sm:py-2">
             <span className="text-primary text-xl sm:text-2xl font-black">2</span> YEARS

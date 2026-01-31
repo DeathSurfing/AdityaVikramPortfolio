@@ -1,74 +1,68 @@
+import React from 'react';
+
 export interface Project {
   id: number;
-  title: string;
-  category: string;
+  name: string;
   description: string;
-  tags: string[];
   image: string;
-  link: string;
-  year: string;
-  status: 'Live' | 'In Progress' | 'Archived';
+  category: string;
+  technologies: string[];
+  link?: string;
+  content?: React.ReactNode;
 }
 
 export const projects: Project[] = [
   {
-    id: 1,
-    title: 'E-COMMERCE REVOLUTION',
-    category: 'Full Stack',
-    description:
-      'A brutal approach to online shopping. No unnecessary elements, just pure conversion-focused design with real-time inventory management.',
-    tags: ['Next.js', 'Stripe', 'PostgreSQL', 'Redis'],
-    image: '/projects/ecommerce.jpg',
-    link: 'https://example.com',
-    year: '2024',
-    status: 'Live',
-  },
-  {
-    id: 2,
-    title: 'TASK DOMINATION',
-    category: 'SaaS Platform',
-    description:
-      "Project management that doesn't mess around. Built for teams who ship fast and break things intentionally.",
-    tags: ['React', 'Node.js', 'MongoDB', 'WebSocket'],
-    image: '/projects/taskmanager.jpg',
-    link: 'https://example.com',
-    year: '2024',
-    status: 'Live',
-  },
-  {
-    id: 3,
-    title: 'PORTFOLIO SYSTEM',
-    category: 'Web Design',
-    description:
-      'Dynamic portfolio generator for creatives who refuse to be templated. Each site is unique, loud, and unapologetically bold.',
-    tags: ['TypeScript', 'Tailwind', 'Framer Motion', 'CMS'],
-    image: '/projects/portfolio.jpg',
-    link: 'https://example.com',
-    year: '2023',
-    status: 'Live',
-  },
-  {
-    id: 4,
-    title: 'SOCIAL DISRUPTOR',
-    category: 'Mobile App',
-    description:
-      'Social media platform that prioritizes genuine connection over engagement metrics. Revolutionary UX patterns.',
-    tags: ['React Native', 'Firebase', 'GraphQL', 'AWS'],
-    image: '/projects/social.jpg',
-    link: 'https://example.com',
-    year: '2024',
-    status: 'In Progress',
+    id: 6,
+    name: "Self-Hosted Bare-Metal Kubernetes Cluster",
+    description: "High-availability compute cluster using Raspberry Pi's and recycled hardware with K3s orchestration",
+    image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&h=600&fit=crop",
+    category: "DevOps & Infrastructure Engineering",
+    technologies: ["Kubernetes", "K3s", "MetalLB", "Docker", "Raspberry Pi", "Proxmox", "Nginx"],
   },
   {
     id: 5,
-    title: 'DATA CRUSHER',
-    category: 'Dashboard',
-    description:
-      "Analytics dashboard that makes data scream. Real-time visualizations that actually tell you what to do next.",
-    tags: ['Vue.js', 'D3.js', 'FastAPI', 'Docker'],
-    image: '/projects/analytics.jpg',
-    link: 'https://example.com',
-    year: '2023',
-    status: 'Live',
+    name: "Woxsen Student Council Website",
+    description: "Full-stack platform serving 600+ students with CRM dashboard and real-time analytics",
+    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop",
+    link: "https://studentcouncil.woxsen.edu.in/",
+    category: "Software & Web Development",
+    technologies: ["Next.js", "Tailwind CSS", "MongoDB", "Redis", "Umami Analytics"],
+  },
+  {
+    id: 4,
+    name: "Spotify Top 100 Analysis",
+    description: "Segmenting Spotify music data to predict song hit potential",
+    image: "https://opengraph.githubassets.com/1/DeathSurfing/Spotify-Top-100-Analysis",
+    link: "https://github.com/DeathSurfing/Spotify-Top-100-Analysis",
+    category: "AI & Machine Learning",
+    technologies: ["Python", "Pandas", "Machine Learning", "Data Analysis", "Spotify API"],
+  },
+  {
+    id: 3,
+    name: "Slang Translator",
+    description: "AI-powered slang translator using LLaMA 3.1",
+    image: "https://opengraph.githubassets.com/1/DeathSurfing/Slang-Translator",
+    link: "https://github.com/DeathSurfing/Slang-Translator",
+    category: "AI & Machine Learning",
+    technologies: ["LLaMA 3.1", "Natural Language Processing", "Python", "AI"],
+  },
+  {
+    id: 2,
+    name: "CNN From Scratch",
+    description: "A convolutional neural network built from scratch in Rust",
+    image: "https://opengraph.githubassets.com/1/DeathSurfing/CNN-From-Scratch",
+    link: "https://github.com/DeathSurfing/CNN-From-Scratch",
+    category: "AI & Machine Learning",
+    technologies: ["Rust", "Neural Networks", "Deep Learning", "Linear Algebra"],
+  },
+  {
+    id: 1,
+    name: "NoteRefactor",
+    description: "Interactive notebook tool for cleaning and refactoring text data",
+    image: "https://opengraph.githubassets.com/1/DeathSurfing/NoteRefactor",
+    link: "https://github.com/DeathSurfing/NoteRefactor",
+    category: "Software & Web Development",
+    technologies: ["Text Processing", "Data Cleaning", "Interactive UI", "Python"],
   },
 ];

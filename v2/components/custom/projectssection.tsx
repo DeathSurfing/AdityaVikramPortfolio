@@ -183,18 +183,10 @@ export default function ProjectsNeoBrutalist() {
                     {/* Project Card - BRUTAL */}
                     <div className="relative border-[5px] border-foreground bg-background shadow-[12px_12px_0px_0px_var(--foreground)] transition-all duration-300 hover:shadow-[6px_6px_0px_0px_var(--foreground)] hover:translate-x-[6px] hover:translate-y-[6px] h-full flex flex-col">
                       
-                      {/* Status Badge - Aggressive */}
+                      {/* Project ID Badge */}
                       <div className="absolute -top-4 -right-4 z-20">
-                        <div
-                          className={`border-4 border-foreground px-4 py-2 text-xs font-black tracking-[0.15em] shadow-[6px_6px_0px_0px_var(--foreground)] rotate-3 ${
-                            project.status === "Live"
-                              ? "bg-primary text-primary-foreground"
-                              : project.status === "In Progress"
-                              ? "bg-muted text-muted-foreground"
-                              : "bg-background text-foreground"
-                          }`}
-                        >
-                          ★ {project.status.toUpperCase()}
+                        <div className="border-4 border-foreground px-4 py-2 text-xs font-black tracking-[0.15em] shadow-[6px_6px_0px_0px_var(--foreground)] rotate-3 bg-primary text-primary-foreground">
+                          ★ PROJECT {project.id.toString().padStart(2, "0")}
                         </div>
                       </div>
 
@@ -207,9 +199,23 @@ export default function ProjectsNeoBrutalist() {
 
                       {/* Image area - Bold gradient */}
                       <div className="relative h-56 sm:h-64 bg-linear-to-br from-muted via-background to-secondary overflow-hidden border-b-[5px] border-foreground">
+                        {/* Project Image */}
+                        {project.image && (
+                          <img
+                            src={project.image}
+                            alt={project.name}
+                            className="absolute inset-0 w-full h-full object-cover opacity-90"
+                            loading="lazy"
+                            onError={(e) => {
+                              // Fallback to placeholder if image fails to load
+                              (e.target as HTMLImageElement).style.display = 'none';
+                            }}
+                          />
+                        )}
+                        
                         {/* Diagonal stripes overlay */}
                         <div
-                          className="absolute inset-0 opacity-10"
+                          className="absolute inset-0 opacity-10 mix-blend-multiply"
                           style={{
                             backgroundImage: `repeating-linear-gradient(
                               45deg,
@@ -222,24 +228,30 @@ export default function ProjectsNeoBrutalist() {
                         />
                         
                         <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="text-8xl sm:text-9xl font-black opacity-10 mix-blend-overlay">
+                          <div className="text-8xl sm:text-9xl font-black opacity-5 mix-blend-overlay">
                             {project.id.toString().padStart(2, "0")}
                           </div>
                         </div>
                         
                         {/* Hover overlay - BRUTAL */}
                         <div className="absolute inset-0 bg-foreground flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                          <Link
-                            href={project.link}
-                            className="border-[5px] border-background bg-primary px-8 py-4 text-base font-black uppercase text-primary-foreground shadow-[6px_6px_0px_0px_var(--background)] hover:shadow-[3px_3px_0px_0px_var(--background)] hover:translate-x-[3px] hover:translate-y-[3px] transition-all tracking-wider"
-                          >
-                            VIEW PROJECT →
-                          </Link>
+                          {project.link ? (
+                            <Link
+                              href={project.link}
+                              className="border-[5px] border-background bg-primary px-8 py-4 text-base font-black uppercase text-primary-foreground shadow-[6px_6px_0px_0px_var(--background)] hover:shadow-[3px_3px_0px_0px_var(--background)] hover:translate-x-[3px] hover:translate-y-[3px] transition-all tracking-wider"
+                            >
+                              VIEW PROJECT →
+                            </Link>
+                          ) : (
+                            <span className="border-[5px] border-background bg-primary px-8 py-4 text-base font-black uppercase text-primary-foreground shadow-[6px_6px_0px_0px_var(--background)]">
+                              COMING SOON
+                            </span>
+                          )}
                         </div>
 
-                        {/* Year badge - Corner stamp */}
+                        {/* Tech count badge - Corner stamp */}
                         <div className="absolute bottom-4 left-4 border-[3px] border-foreground bg-background px-3 py-2 text-sm font-black shadow-[4px_4px_0px_0px_var(--foreground)] -rotate-2">
-                          {project.year}
+                          {project.technologies.length} TECH
                         </div>
                       </div>
 
@@ -252,7 +264,7 @@ export default function ProjectsNeoBrutalist() {
 
                         {/* Title - MASSIVE */}
                         <h3 className="text-2xl sm:text-3xl lg:text-4xl font-black leading-[0.95] mb-4 tracking-tight uppercase">
-                          {project.title}
+                          {project.name}
                         </h3>
 
                         {/* Description */}
@@ -260,14 +272,14 @@ export default function ProjectsNeoBrutalist() {
                           {project.description}
                         </p>
 
-                        {/* Tags - Brutalist style */}
+                        {/* Technologies - Brutalist style */}
                         <div className="flex flex-wrap gap-2 pt-5 border-t-[3px] border-foreground">
-                          {project.tags.map((tag, idx) => (
+                          {project.technologies.map((tech: string, idx: number) => (
                             <span
                               key={idx}
                               className="border-2 border-foreground bg-background px-3 py-1.5 text-[11px] font-black uppercase tracking-wide hover:bg-primary hover:text-primary-foreground transition-colors shadow-[2px_2px_0px_0px_var(--foreground)]"
                             >
-                              {tag}
+                              {tech}
                             </span>
                           ))}
                         </div>
