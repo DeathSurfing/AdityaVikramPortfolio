@@ -30,8 +30,8 @@ export default function HeroNeoBrutalist() {
   }, [prefersReducedMotion]);
 
   // Fetch projects count from Convex
-  const projects = useQuery(api.projects.getProjects, { limit: 50 });
-  const projectCount = projects?.length ?? 0;
+  const projectsData = useQuery(api.projects.getProjects, { limit: 50 });
+  const projectCount = projectsData?.projects?.length ?? 0;
 
   // Detect mobile devices
   useEffect(() => {

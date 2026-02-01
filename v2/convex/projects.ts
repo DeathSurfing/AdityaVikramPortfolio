@@ -5,24 +5,40 @@ import { query, mutation } from "./_generated/server";
 export const getProjects = query({
   args: {
     limit: v.optional(v.number()),
+    cursor: v.optional(v.number()),
     category: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    // Use by_createdAt index to sort by creation time (newest first)
     let projectsQuery = ctx.db
       .query("projects")
-      .withIndex("by_active", (q) => q.eq("isActive", true))
-      .order("asc");
+      .withIndex("by_createdAt", (q) => q.gt("createdAt", 0)) // Get all with createdAt > 0
+      .filter((q) => q.eq(q.field("isActive"), true))
+      .order("desc"); // Newest first
 
     if (args.category) {
       projectsQuery = ctx.db
         .query("projects")
         .withIndex("by_category", (q) => q.eq("category", args.category!))
         .filter((q) => q.eq(q.field("isActive"), true))
-        .order("asc");
+        .order("desc");
     }
 
-    const projects = await projectsQuery.take(args.limit ?? 50);
-    return projects;
+    // Apply cursor pagination if provided (for createdAt)
+    if (args.cursor) {
+      projectsQuery = projectsQuery.filter((q) => q.lt(q.field("createdAt"), args.cursor!));
+    }
+
+    const projects = await projectsQuery.take(args.limit ?? 6);
+    
+    // Get next cursor (last project's createdAt)
+    const nextCursor = projects.length > 0 ? projects[projects.length - 1].createdAt : null;
+    
+    return {
+      projects,
+      nextCursor,
+      hasMore: projects.length === (args.limit ?? 6),
+    };
   },
 });
 
@@ -53,19 +69,18 @@ export const getTestimonials = query({
 // Admin Mutations for Projects
 export const createProject = mutation({
   args: {
-    displayId: v.number(),
     name: v.string(),
     description: v.string(),
     image: v.string(),
     category: v.string(),
     technologies: v.array(v.string()),
     link: v.optional(v.string()),
-    order: v.number(),
   },
   handler: async (ctx, args) => {
     const projectId = await ctx.db.insert("projects", {
       ...args,
       isActive: true,
+      createdAt: Date.now(),
     });
     return { projectId };
   },
@@ -80,7 +95,6 @@ export const updateProject = mutation({
     category: v.optional(v.string()),
     technologies: v.optional(v.array(v.string())),
     link: v.optional(v.string()),
-    order: v.optional(v.number()),
     isActive: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {

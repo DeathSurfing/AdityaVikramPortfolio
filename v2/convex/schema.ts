@@ -16,19 +16,18 @@ export default defineSchema({
     .index("by_ip_and_timestamp", ["ipAddress", "timestamp"]),
 
   projects: defineTable({
-    displayId: v.number(),
     name: v.string(),
     description: v.string(),
     image: v.string(),
     category: v.string(),
     technologies: v.array(v.string()),
     link: v.optional(v.string()),
-    order: v.number(),
     isActive: v.boolean(),
+    createdAt: v.number(),
   })
     .index("by_category", ["category"])
-    .index("by_order", ["order"])
-    .index("by_active", ["isActive"]),
+    .index("by_active", ["isActive"])
+    .index("by_createdAt", ["createdAt"]),
 
   testimonials: defineTable({
     quote: v.string(),
