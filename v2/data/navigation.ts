@@ -5,6 +5,7 @@ import {
   IconMail,
   IconBriefcase,
   IconTools,
+  IconFileText,
 } from '@tabler/icons-react';
 
 export interface NavLink {
@@ -20,6 +21,7 @@ export const navLinks: NavLink[] = [
   { href: '#skillset', icon: IconTools, label: 'Skillset' },
   { href: '#about', icon: IconHelpSquare, label: 'WhoAmI?' },
   { href: '#contact', icon: IconMail, label: 'Contact' },
+  { href: '/resume', icon: IconFileText, label: 'Resume' },
 ];
 
 export const quickLinks = [
@@ -30,4 +32,5 @@ export const quickLinks = [
   { href: '#opinions', label: 'Opinions' },
   { href: '#skillset', label: 'Skillset' },
   { href: '#contact', label: 'Contact' },
+  { href: '/resume', label: 'Resume' },
 ];

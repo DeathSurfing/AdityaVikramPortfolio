@@ -93,22 +93,25 @@ export default function HeroNeoBrutalist() {
         },
       });
 
-      // CTA buttons with bounce
+      // CTA buttons with bounce - no ScrollTrigger to ensure visibility
       const ctaButtons = ctaRef.current?.querySelectorAll("a, button");
       if (ctaButtons) {
-        gsap.from(ctaButtons, {
-          scale: 0,
-          opacity: 0,
-          rotation: -180,
-          duration: 0.6,
-          stagger: 0.1,
-          delay: isMobile ? 0.4 : 0.6,
-          ease: "back.out(2)",
-          scrollTrigger: {
-            trigger: containerRef.current,
-            start: "top 65%",
+        gsap.fromTo(ctaButtons, 
+          {
+            scale: 0,
+            opacity: 0,
+            rotation: -180,
           },
-        });
+          {
+            scale: 1,
+            opacity: 1,
+            rotation: 0,
+            duration: 0.6,
+            stagger: 0.1,
+            delay: isMobile ? 0.4 : 0.6,
+            ease: "back.out(2)",
+          }
+        );
       }
 
       // Stamp animations - reduce on mobile
