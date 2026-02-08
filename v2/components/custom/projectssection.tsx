@@ -48,11 +48,11 @@ const getTechnologies = (projects: Project[]): string[] => {
 
 // Memoized project card to prevent unnecessary re-renders
 const ProjectCard = memo(({ project }: { project: Project }) => {
-  return (
-    <div className="group relative h-full">
+  const cardContent = (
+    <div className="group relative h-full cursor-pointer">
       {/* Project Card - Optimized */}
       <div 
-        className="relative border-[5px] border-foreground bg-background shadow-[6px_6px_0_0_var(--foreground)] h-full flex flex-col"
+        className="relative border-[5px] border-foreground bg-background shadow-[6px_6px_0_0_var(--foreground)] h-full flex flex-col transition-all group-hover:shadow-[10px_10px_0_0_var(--foreground)] group-hover:-translate-x-1 group-hover:-translate-y-1"
         style={{ contain: 'layout style paint' }}
       >
         {/* Image area */}
@@ -64,20 +64,17 @@ const ProjectCard = memo(({ project }: { project: Project }) => {
               alt={project.name}
               fill
               sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-              className="object-cover opacity-90"
+              className="object-cover opacity-90 transition-transform duration-300 group-hover:scale-105"
               loading="lazy"
             />
           )}
           
-          {/* Hover overlay */}
+          {/* Hover overlay - shows "View Project" text or "Coming Soon" */}
           <div className="absolute inset-0 bg-foreground/90 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
             {project.link ? (
-              <Link
-                href={project.link}
-                className="border-[4px] border-background bg-primary px-6 py-3 text-sm font-black uppercase text-primary-foreground shadow-[3px_3px_0_0_var(--background)] tracking-wide"
-              >
+              <span className="border-[4px] border-background bg-primary px-6 py-3 text-sm font-black uppercase text-primary-foreground shadow-[3px_3px_0_0_var(--background)] tracking-wide">
                 VIEW PROJECT →
-              </Link>
+              </span>
             ) : (
               <span className="border-[4px] border-background bg-primary px-6 py-3 text-sm font-black uppercase text-primary-foreground shadow-[3px_3px_0_0_var(--background)]">
                 COMING SOON
@@ -130,6 +127,18 @@ const ProjectCard = memo(({ project }: { project: Project }) => {
       </div>
     </div>
   );
+
+  // Wrap entire card in Link if project has a link
+  if (project.link) {
+    return (
+      <Link href={project.link} className="block h-full">
+        {cardContent}
+      </Link>
+    );
+  }
+
+  // Return non-clickable card for projects without links
+  return cardContent;
 });
 
 ProjectCard.displayName = 'ProjectCard';
