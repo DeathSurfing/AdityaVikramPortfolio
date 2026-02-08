@@ -26,6 +26,7 @@ export default function ExperienceSection() {
   const headingRef = useRef<HTMLDivElement>(null);
   const timelineRef = useRef<HTMLDivElement>(null);
   const [timelineHeight, setTimelineHeight] = useState(0);
+  const [forceUpdate, setForceUpdate] = useState(0);
 
   useEffect(() => {
     if (!headingRef.current) return;
@@ -59,6 +60,14 @@ export default function ExperienceSection() {
     };
   }, []);
 
+  // Function to trigger timeline update when cards expand/collapse
+  const handleCardExpandChange = () => {
+    // Small delay to allow animation to complete
+    setTimeout(() => {
+      setForceUpdate((prev) => prev + 1);
+    }, 350);
+  };
+
   useEffect(() => {
     if (!timelineRef.current) return;
 
@@ -77,7 +86,7 @@ export default function ExperienceSection() {
     return () => {
       resizeObserver.disconnect();
     };
-  }, []);
+  }, [forceUpdate]);
 
   return (
     <section
@@ -129,6 +138,7 @@ export default function ExperienceSection() {
                 experience={experience}
                 index={index}
                 isLeft={index % 2 === 0}
+                onExpandChange={handleCardExpandChange}
               />
             ))}
           </div>
