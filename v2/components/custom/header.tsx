@@ -245,8 +245,11 @@ function NavLink({
   label: string;
 }) {
   const handleClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    scrollToSection(href);
+    // Only scroll for anchor links, allow normal navigation for page routes
+    if (href.startsWith('#')) {
+      e.preventDefault();
+      scrollToSection(href);
+    }
   };
 
   return (
@@ -282,9 +285,12 @@ function MenuLink({
   onClick: () => void;
 }) {
   const handleClick = (e: React.MouseEvent) => {
-    e.preventDefault();
     onClick();
-    scrollToSection(href);
+    // Only scroll for anchor links, allow normal navigation for page routes
+    if (href.startsWith('#')) {
+      e.preventDefault();
+      scrollToSection(href);
+    }
   };
 
   return (
