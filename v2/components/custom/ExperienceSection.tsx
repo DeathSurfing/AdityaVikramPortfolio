@@ -60,9 +60,23 @@ export default function ExperienceSection() {
   }, []);
 
   useEffect(() => {
-    if (timelineRef.current) {
-      setTimelineHeight(timelineRef.current.scrollHeight);
-    }
+    if (!timelineRef.current) return;
+
+    // Set initial height
+    setTimelineHeight(timelineRef.current.scrollHeight);
+
+    // Watch for height changes (when cards expand)
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setTimelineHeight(entry.target.scrollHeight);
+      }
+    });
+
+    resizeObserver.observe(timelineRef.current);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
   }, []);
 
   return (
