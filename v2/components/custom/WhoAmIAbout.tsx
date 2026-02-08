@@ -1,7 +1,6 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import BlurVignette from '@/components/ui/blur-vignette';
 
 export default function WhoAmIAbout() {
   return (
@@ -46,15 +45,13 @@ export default function WhoAmIAbout() {
           <div className="relative">
             <div className="border-8 border-border bg-primary p-3 shadow-[16px_16px_0px_0px_var(--border)] rotate-2">
               <div className="w-72 h-72 md:w-96 md:h-96 border-4 border-background overflow-hidden">
-                <BlurVignette>
-                  <img
-                    src="/AdityaVikram.webp"
-                    alt="Aditya Vikram"
-                    width={384}
-                    height={384}
-                    className="w-full h-full object-cover"
-                  />
-                </BlurVignette>
+                <img
+                  src="/AdityaVikram.webp"
+                  alt="Aditya Vikram"
+                  width={384}
+                  height={384}
+                  className="w-full h-full object-cover"
+                />
               </div>
             </div>
 
