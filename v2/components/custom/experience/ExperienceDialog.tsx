@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { Experience, experienceIcons } from '@/data/experiences';
+import { DBExperience, experienceIcons, getIconByName } from '@/lib/experience-utils';
 import { lenisStore } from '@/lib/lenis-store';
 import {
   IconBuilding,
@@ -15,7 +15,7 @@ import {
 } from '@tabler/icons-react';
 
 interface ExperienceDialogProps {
-  experience: Experience | null;
+  experience: DBExperience | null;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -169,7 +169,7 @@ export default function ExperienceDialog({ experience, isOpen, onClose }: Experi
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {experience.highlights.map((highlight, idx) => {
-                    const Icon = highlight.icon;
+                    const Icon = getIconByName(highlight.iconName);
                     return (
                       <div
                         key={idx}

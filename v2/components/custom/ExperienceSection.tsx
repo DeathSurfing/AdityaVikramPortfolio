@@ -4,7 +4,8 @@ import React, { useRef, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { experiences } from '@/data/experiences';
+import { useQuery } from 'convex/react';
+import { api } from '@/convex/_generated/api';
 import ExperienceCard from './experience/ExperienceCard';
 import TimelineConnector from './experience/TimelineConnector';
 import { IconBriefcase } from '@tabler/icons-react';
@@ -27,6 +28,9 @@ export default function ExperienceSection() {
   const timelineRef = useRef<HTMLDivElement>(null);
   const [timelineHeight, setTimelineHeight] = useState(0);
   const [forceUpdate, setForceUpdate] = useState(0);
+  
+  // Fetch experiences from Convex database
+  const experiences = useQuery(api.experiences.getExperiences, {});
 
   useEffect(() => {
     if (!headingRef.current) return;
@@ -132,15 +136,31 @@ export default function ExperienceSection() {
 
           {/* Experience cards */}
           <div className="relative space-y-8 md:space-y-12 lg:space-y-16 pl-16 lg:pl-0">
-            {experiences.map((experience, index) => (
-              <ExperienceCard
-                key={experience.id}
-                experience={experience}
-                index={index}
-                isLeft={index % 2 === 0}
-                onExpandChange={handleCardExpandChange}
-              />
-            ))}
+            {!experiences ? (
+              // Loading state
+              <div className="flex items-center justify-center py-20">
+                <div className="border-[4px] border-border bg-muted p-8 shadow-[6px_6px_0_0_var(--border)]">
+                  <p className="font-black text-lg uppercase tracking-wider">Loading Experiences...</p>
+                </div>
+              </div>
+            ) : experiences.length === 0 ? (
+              // Empty state
+              <div className="flex items-center justify-center py-20">
+                <div className="border-[4px] border-border bg-muted p-8 shadow-[6px_6px_0_0_var(--border)]">
+                  <p className="font-black text-lg uppercase tracking-wider">No experiences found</p>
+                </div>
+              </div>
+            ) : (
+              experiences.map((experience, index) => (
+                <ExperienceCard
+                  key={experience._id}
+                  experience={experience}
+                  index={index}
+                  isLeft={index % 2 === 0}
+                  onExpandChange={handleCardExpandChange}
+                />
+              ))
+            )}
           </div>
 
           {/* Timeline end marker */}

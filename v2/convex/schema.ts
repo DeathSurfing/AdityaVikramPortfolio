@@ -39,4 +39,25 @@ export default defineSchema({
   })
     .index("by_order", ["order"])
     .index("by_active", ["isActive"]),
+
+  experiences: defineTable({
+    id: v.number(),
+    title: v.string(),
+    company: v.string(),
+    location: v.string(),
+    duration: v.string(),
+    type: v.string(),
+    description: v.string(),
+    achievements: v.array(v.string()),
+    technologies: v.array(v.string()),
+    highlights: v.array(v.object({
+      title: v.string(),
+      description: v.string(),
+      iconName: v.string(),
+    })),
+    isActive: v.boolean(),
+    order: v.number(),
+  })
+    .index("by_active", ["isActive"])
+    .index("by_order", ["order"]),
 });

@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as experiences from "../experiences.js";
 import type * as projects from "../projects.js";
 import type * as seed from "../seed.js";
 import type * as submissions from "../submissions.js";
@@ -19,6 +20,7 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  experiences: typeof experiences;
   projects: typeof projects;
   seed: typeof seed;
   submissions: typeof submissions;

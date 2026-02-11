@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Experience, experienceIcons } from '@/data/experiences';
+import { DBExperience, experienceIcons, getIconByName } from '@/lib/experience-utils';
 import {
   IconChevronDown,
   IconRocket,
@@ -13,7 +13,7 @@ import {
 } from '@tabler/icons-react';
 
 interface ExperienceCardProps {
-  experience: Experience;
+  experience: DBExperience;
   index: number;
   isLeft: boolean;
   onExpandChange?: () => void;
@@ -203,7 +203,7 @@ export default function ExperienceCard({ experience, index, isLeft, onExpandChan
             </div>
             <div className="space-y-2">
               {previewHighlights.map((highlight, idx) => {
-                const Icon = highlight.icon;
+                const Icon = getIconByName(highlight.iconName);
                 return (
                   <motion.div
                     key={idx}
@@ -323,7 +323,7 @@ export default function ExperienceCard({ experience, index, isLeft, onExpandChan
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {experience.highlights.map((highlight, idx) => {
-                      const Icon = highlight.icon;
+                      const Icon = getIconByName(highlight.iconName);
                       return (
                         <motion.div
                           key={idx}
