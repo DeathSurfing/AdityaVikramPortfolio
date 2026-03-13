@@ -1,7 +1,3 @@
-# nixpacks.toml
-[variables]
-PORT = "3000"
-
 [phases.setup]
 nixPkgs = ["bun"]
 
