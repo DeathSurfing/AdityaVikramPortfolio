@@ -1,0 +1,23 @@
+# Use official Bun image
+FROM oven/bun:1
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files first (better caching)
+COPY package.json bun.lockb* ./
+
+# Install dependencies
+RUN bun install
+
+# Copy rest of the project
+COPY . .
+
+# Build the project
+RUN bun run build
+
+# Expose port (Next.js default)
+EXPOSE 3000
+
+# Start the application
+CMD ["bun", "run", "start"]
