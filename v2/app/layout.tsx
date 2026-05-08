@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import {
   Space_Grotesk,
   Archivo_Black,
@@ -13,6 +13,13 @@ import LenisProvider from "@/providers/LenisProvider";
 import LenisHashHandler from "@/providers/LenisHashHandler";
 import { ConvexClientProvider } from "@/providers/ConvexClientProvider";
 import { siteMetadata } from "@/data/site";
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)', color: '#0a0a0a' },
+  ],
+};
 
 
 /* ───────────────────────── Fonts ───────────────────────── */
