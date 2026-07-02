@@ -251,7 +251,7 @@ Running in a single 4GB LXC container — it serves as:
 - Analytics store (columnar via pg_analytics)
 - Cache layer (materialized views + LISTEN/NOTIFY)
 
-## caveats
+## Caveats
 
 - Postgres replication is **single-primary** — you need a connection pooler (PgBouncer) for high concurrency
 - Extensions must be installed per-database

@@ -1,6 +1,6 @@
 ---
 title: "Designing for Performance: Web Vitals Deep Dive"
-description: "Learn how to optimize Core Web Vitals — LCP, FID, and CLS — with actionable techniques and real metrics."
+description: "Learn how to optimize Core Web Vitals — LCP, INP, and CLS — with actionable techniques and real metrics."
 date: "2026-06-12"
 tags: ["performance", "web", "optimization", "css"]
 coverImage: "/blog/web-vitals.png"
@@ -14,7 +14,7 @@ Google's Core Web Vitals are a set of real-world metrics that measure user exper
 ### The Three Pillars
 
 1. **LCP (Largest Contentful Paint)** — loading performance
-2. **FID (First Input Delay)** — interactivity
+2. **INP (Interaction to Next Paint)** — interactivity
 3. **CLS (Cumulative Layout Shift)** — visual stability
 
 ## Optimizing LCP
@@ -79,9 +79,9 @@ img {
 </div>
 ```
 
-## Improving FID
+## Improving INP
 
-FID measures the time from first user interaction to the browser processing the event. Aim for **under 100ms**.
+INP measures the time from user interaction to the browser painting the next frame. Aim for **under 200ms**.
 
 ### Code Splitting
 
