@@ -1,0 +1,209 @@
+---
+title: "Clean Architecture in TypeScript"
+description: "Applying clean architecture principles to TypeScript applications — separating concerns, managing dependencies, and writing testable code."
+date: "2026-06-05"
+tags: ["typescript", "architecture", "patterns", "clean-code"]
+coverImage: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1200&h=630&fit=crop"
+author: "Aditya Vikram Mahendru"
+---
+
+## What Is Clean Architecture?
+
+Clean Architecture, popularized by Robert C. Martin, is about **separating concerns** into layers. The core principle: dependencies flow inward — outer layers depend on inner layers, never the reverse.
+
+### The Layered Model
+
+```
+┌─────────────────────────────┐
+│       Infrastructure        │  ← DB, APIs, frameworks
+├─────────────────────────────┤
+│        Application          │  ← Use cases, ports
+├─────────────────────────────┤
+│          Domain             │  ← Entities, business rules
+└─────────────────────────────┘
+```
+
+- **Domain** — Pure business logic, no external dependencies
+- **Application** — Orchestration, use cases, interfaces (ports)
+- **Infrastructure** — Implementation details (databases, HTTP clients)
+
+## TypeScript Implementation
+
+### Domain Layer
+
+The domain contains **entities** — pure business objects with no framework dependencies:
+
+```typescript
+// domain/entities/User.ts
+export class User {
+  constructor(
+    readonly id: string,
+    readonly email: Email,
+    readonly name: string,
+    readonly role: Role,
+  ) {}
+
+  canAccessResource(resource: Resource): boolean {
+    if (this.role === Role.Admin) return true
+    return resource.ownerId === this.id
+  }
+}
+```
+
+Value objects encapsulate validation:
+
+```typescript
+// domain/value-objects/Email.ts
+export class Email {
+  private constructor(readonly value: string) {}
+
+  static create(raw: string): Email {
+    const email = raw.trim().toLowerCase()
+    if (!email.includes("@") || !email.includes(".")) {
+      throw new Error("Invalid email address")
+    }
+    return new Email(email)
+  }
+}
+```
+
+### Application Layer
+
+Ports are interfaces that define how the application communicates with the outside world:
+
+```typescript
+// application/ports/UserRepository.ts
+export interface UserRepository {
+  findById(id: string): Promise<User | null>
+  save(user: User): Promise<void>
+  delete(id: string): Promise<void>
+}
+```
+
+Use cases orchestrate business logic:
+
+```typescript
+// application/use-cases/CreateUser.ts
+export class CreateUserUseCase {
+  constructor(
+    private userRepo: UserRepository,
+    private emailService: EmailService,
+  ) {}
+
+  async execute(input: CreateUserInput): Promise<User> {
+    const email = Email.create(input.email)
+    const existing = await this.userRepo.findByEmail(email.value)
+    if (existing) throw new Error("User already exists")
+
+    const user = new User(
+      crypto.randomUUID(),
+      email,
+      input.name,
+      Role.User,
+    )
+
+    await this.userRepo.save(user)
+    await this.emailService.sendWelcome(user.email)
+    return user
+  }
+}
+```
+
+### Infrastructure Layer
+
+Concrete implementations of the ports:
+
+```typescript
+// infrastructure/repositories/PostgresUserRepository.ts
+export class PostgresUserRepository implements UserRepository {
+  constructor(private db: Pool) {}
+
+  async findById(id: string): Promise<User | null> {
+    const result = await this.db.query(
+      "SELECT * FROM users WHERE id = $1",
+      [id],
+    )
+    if (result.rows.length === 0) return null
+    return this.toDomain(result.rows[0])
+  }
+
+  async save(user: User): Promise<void> {
+    await this.db.query(
+      `INSERT INTO users (id, email, name, role)
+       VALUES ($1, $2, $3, $4)
+       ON CONFLICT (id) DO UPDATE
+       SET email = $2, name = $3, role = $4`,
+      [user.id, user.email.value, user.name, user.role],
+    )
+  }
+
+  private toDomain(row: any): User {
+    return new User(
+      row.id,
+      Email.create(row.email),
+      row.name,
+      row.role as Role,
+    )
+  }
+}
+```
+
+## Dependency Injection
+
+Wire everything together at the composition root:
+
+```typescript
+// main.ts
+const db = new Pool(connectionString)
+const userRepo = new PostgresUserRepository(db)
+const emailService = new SendGridEmailService(apiKey)
+const createUser = new CreateUserUseCase(userRepo, emailService)
+
+// Express route handler
+app.post("/users", async (req, res) => {
+  try {
+    const user = await createUser.execute(req.body)
+    res.status(201).json({ id: user.id })
+  } catch (err) {
+    res.status(400).json({ error: (err as Error).message })
+  }
+})
+```
+
+## Testing
+
+Clean Architecture makes testing straightforward:
+
+```typescript
+// tests/CreateUser.test.ts
+describe("CreateUser", () => {
+  it("creates a user successfully", async () => {
+    const userRepo = new InMemoryUserRepository()
+    const emailService = new MockEmailService()
+    const useCase = new CreateUserUseCase(userRepo, emailService)
+
+    const user = await useCase.execute({
+      email: "test@example.com",
+      name: "Test User",
+    })
+
+    expect(user.name).toBe("Test User")
+    expect(emailService.sentEmails).toHaveLength(1)
+  })
+})
+```
+
+## When to Use Clean Architecture
+
+| Scenario | Apply Clean Architecture? |
+|---|---|
+| Simple CRUD app | Overkill — use a framework convention |
+| Complex business logic | ✅ Yes |
+| Multiple delivery mechanisms (API + CLI + Queue) | ✅ Yes |
+| Microservices | ✅ Yes |
+| Rapid prototyping | Not necessary — refactor later |
+| Large team, long-lived project | ✅ Essential |
+
+## Conclusion
+
+Clean Architecture shines in complex, long-lived applications. For smaller projects, it's overkill — but the **separation of concerns** and **dependency inversion** principles apply at any scale. Start simple, and introduce layers as your application grows.

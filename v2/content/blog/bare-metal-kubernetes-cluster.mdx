@@ -1,0 +1,267 @@
+---
+title: "Building a Bare-Metal Kubernetes Cluster with K3s"
+description: "How I built a high-availability compute cluster using Raspberry Pis and recycled hardware, orchestrated with lightweight K3s."
+date: "2026-06-30"
+tags: ["kubernetes", "k3s", "raspberry-pi", "self-hosting", "devops"]
+coverImage: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1200&h=630&fit=crop"
+author: "Aditya Vikram Mahendru"
+---
+
+## Why Bare-Metal Kubernetes?
+
+Cloud-managed Kubernetes (EKS, GKE, AKS) is great for production — until you realize you're paying $100+/month per control plane just for the management fee. A bare-metal cluster with K3s gives you the same orchestration power at a fraction of the cost.
+
+### The Hardware
+
+My cluster uses a mix of Raspberry Pi 5s and recycled office desktops:
+
+| Node | Hardware | Role | Specs |
+|---|---|---|---|
+| `k0-control` | HP EliteDesk 800 G4 (recycled) | Control plane + worker | i5-8500T, 32GB RAM, 512GB NVMe |
+| `k1-worker` | Raspberry Pi 5 | Worker | 4GB RAM, 128GB SSD (USB 3.0) |
+| `k2-worker` | Raspberry Pi 5 | Worker | 8GB RAM, 256GB SSD (USB 3.0) |
+| `k3-worker` | Dell OptiPlex 3060 (recycled) | Worker | i5-8500T, 16GB RAM, 256GB NVMe |
+| `k4-worker` | Lenovo ThinkCentre (recycled) | Worker | i5-7500T, 16GB RAM, 256GB SATA SSD |
+
+Total cost: **~$300** (mostly Pis + SSDs, the office desktops were free e-waste).
+
+## Why K3s?
+
+K3s is a CNCF-certified Kubernetes distribution designed for resource-constrained environments. It replaces etcd with SQLite (or embedded PostgreSQL), strips out legacy alpha features, and packages everything into a single ~60MB binary.
+
+### vs Full Kubernetes
+
+| Feature | K3s | Standard K8s |
+|---|---|---|
+| Binary size | ~60MB | ~1GB+ |
+| RAM (control plane) | ~300MB | ~1.5GB |
+| Database | SQLite (default) | etcd |
+| TLS | Auto-generated | Manual setup |
+| Built-in | Traefik, Local Path Provisioner, Helm | Nothing |
+| Cert management | cert-manager (optional) | cert-manager (required) |
+
+## Installation
+
+### Control Plane
+
+```bash
+# On the control plane node (Ubuntu 24.04)
+curl -sfL https://get.k3s.io | sh -s - \
+  --write-kubeconfig-mode 644 \
+  --disable traefik \
+  --disable metrics-server
+
+# Get the node token for workers
+sudo cat /var/lib/rancher/k3s/server/node-token
+```
+
+### Worker Nodes
+
+```bash
+# On each Raspberry Pi / worker
+curl -sfL https://get.k3s.io | K3S_URL=https://k0-control:6443 \
+  K3S_TOKEN="your-node-token" \
+  sh -
+
+# Verify from the control plane
+kubectl get nodes
+```
+
+```
+NAME          STATUS   ROLES                  AGE   VERSION
+k0-control    Ready    control-plane,master   12m   v1.30.2+k3s2
+k1-worker     Ready    <none>                 8m    v1.30.2+k3s2
+k2-worker     Ready    <none>                 7m    v1.30.2+k3s2
+k3-worker     Ready    <none>                 5m    v1.30.2+k3s2
+k4-worker     Ready    <none>                 3m    v1.30.2+k3s2
+```
+
+## Networking
+
+### Flannel (Default)
+
+K3s uses Flannel with VXLAN by default — it works out of the box across subnets:
+
+```bash
+# Check pod network
+kubectl get pods -n kube-system
+kubectl describe node k1-worker | grep PodCIDR
+```
+
+### MetalLB for Load Balancing
+
+On bare metal, there's no cloud load balancer. MetalLB assigns IPs from your LAN range to services of type `LoadBalancer`:
+
+```bash
+kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.5/config/manifests/metallb-native.yaml
+
+# Configure IP pool
+cat <<EOF | kubectl apply -f -
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: lan-pool
+  namespace: metallb-system
+spec:
+  addresses:
+  - 192.168.1.200-192.168.1.220
+---
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: l2-advert
+  namespace: metallb-system
+EOF
+```
+
+## Storage
+
+### Local Path Provisioner
+
+K3s includes a built-in local storage provisioner:
+
+```yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 10Gi
+```
+
+### Longhorn for Distributed Storage
+
+For replicated storage across nodes, Longhorn is the go-to:
+
+```bash
+kubectl apply -f https://raw.githubusercontent.com/longhorn/longhorn/v1.6.2/deploy/longhorn.yaml
+```
+
+## Deploying Workloads
+
+### Simple Web App
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: portfolio
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: portfolio
+  template:
+    metadata:
+      labels:
+        app: portfolio
+    spec:
+      containers:
+      - name: app
+        image: ghcr.io/username/portfolio:latest
+        ports:
+        - containerPort: 3000
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: portfolio
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 3000
+  selector:
+    app: portfolio
+```
+
+### Tolerating ARM + x86
+
+With a mixed cluster, use node affinity to schedule correctly:
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cross-platform
+spec:
+  replicas: 2
+  template:
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringScheduling:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/arch
+                operator: In
+                values:
+                - arm64
+                - amd64
+      containers:
+      - name: app
+        image: myimage:latest  # Must be multi-arch
+```
+
+## Observability
+
+```bash
+# Metrics Server (lightweight)
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+
+# K9s (terminal dashboard)
+k9s
+
+# cAdvisor + Prometheus + Grafana (via Helm)
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm upgrade --install kube-prometheus-stack prometheus-community/kube-prometheus-stack
+```
+
+## What Runs on It
+
+| Service | Purpose | Architecture |
+|---|---|---|
+| Adguard Home | DNS + ad blocking | ARM64 |
+| Vaultwarden | Password manager | ARM64 |
+| Gitea | Git hosting | AMD64 |
+| Drone CI | CI/CD pipeline | AMD64 |
+| Nextcloud | File sync | AMD64 |
+| Uptime Kuma | Monitoring | ARM64 |
+| Nginx Proxy Manager | Reverse proxy | ARM64 |
+| PostgreSQL + Redis | Stateful storage | AMD64 |
+
+## Power and Cooling
+
+The entire cluster idles at ~85W and ~$15/month in electricity:
+
+| Device | Idle | Load |
+|---|---|---|
+| 2x Raspberry Pi 5 | 8W | 15W |
+| 3x recycled desktops | 45W | 120W |
+| Switch + accessories | 15W | 15W |
+| Fans (USB) | 5W | 5W |
+| **Total** | **~73W** | **~155W** |
+
+## Lessons Learned
+
+1. **SD cards die** — always boot Raspberry Pis from USB SSDs
+2. **ARM images are evolving** — not every Docker image supports `linux/arm64`
+3. **Network reliability matters** — a flaky switch will cause node flapping
+4. **K3s upgrades are smooth** — `apt upgrade` + `systemctl restart k3s` works
+5. **Mixed architectures are manageable** — build multi-arch images or use emulation
+
+## Conclusion
+
+A bare-metal K3s cluster is the most cost-effective way to learn Kubernetes at scale. For ~$300 in hardware and ~$15/month in electricity, you get a production-grade orchestrator running 10+ services on a mix of ARM and x86 nodes. It's not cloud — it's better, because it's yours.

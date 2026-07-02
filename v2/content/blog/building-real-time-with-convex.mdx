@@ -1,0 +1,155 @@
+---
+title: "Building Real-Time Features with Convex"
+description: "How to build reactive, real-time features using Convex — from live cursors to instant data sync — without managing WebSocket infrastructure."
+date: "2026-06-15"
+tags: ["convex", "backend", "realtime", "typescript"]
+coverImage: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1200&h=630&fit=crop"
+author: "Aditya Vikram Mahendru"
+---
+
+## Why Convex?
+
+Convex is a full-stack platform that combines a real-time database, serverless functions, and reactive queries into a single SDK. The killer feature: **data automatically syncs to every connected client** without polling or manual WebSocket management.
+
+### The Traditional Approach
+
+Building real-time features traditionally requires:
+
+- A database (PostgreSQL, MongoDB)
+- A WebSocket server
+- Pub/Sub infrastructure (Redis, RabbitMQ)
+- Client-side state management
+- Optimistic update logic
+
+### With Convex
+
+Write a query function, use it from React — data stays synchronized automatically:
+
+```typescript
+// convex/projects.ts
+import { query } from "./_generated/server"
+import { v } from "convex/values"
+
+export const getProjects = query({
+  args: { category: v.optional(v.string()) },
+  handler: async (ctx, args) => {
+    if (args.category) {
+      return await ctx.db
+        .query("projects")
+        .filter(q => q.eq(q.field("category"), args.category))
+        .collect()
+    }
+    return await ctx.db.query("projects").collect()
+  },
+})
+```
+
+```tsx
+// components/ProjectList.tsx
+import { useQuery } from "convex/react"
+import { api } from "@/convex/_generated/api"
+
+export function ProjectList() {
+  const projects = useQuery(api.projects.getProjects, { category: "web" })
+  if (projects === undefined) return <div>Loading...</div>
+  return projects.map(p => <ProjectCard key={p._id} project={p} />)
+}
+```
+
+## Reactive Queries
+
+Every `useQuery` hook subscribes to changes. When any mutation modifies data that the query depends on, Convex **automatically re-runs the query and pushes the new result** to all connected clients.
+
+```typescript
+// convex/submissions.ts
+import { mutation } from "./_generated/server"
+
+export const submitContact = mutation({
+  args: {
+    name: v.string(),
+    email: v.string(),
+    message: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity()
+    // Rate limiting built-in
+    await ctx.db.insert("submissions", {
+      ...args,
+      userId: identity?.subject,
+      createdAt: Date.now(),
+    })
+  },
+})
+```
+
+## Real-Time Collaborative Features
+
+### Live Cursors
+
+```typescript
+// convex/cursors.ts
+export const updateCursor = mutation({
+  args: { x: v.number(), y: v.number() },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity()
+    await ctx.db.insert("cursors", {
+      userId: identity?.subject,
+      x: args.x,
+      y: args.y,
+      updatedAt: Date.now(),
+    })
+  },
+})
+
+export const getActiveCursors = query({
+  handler: async (ctx) => {
+    const fiveSecondsAgo = Date.now() - 5000
+    return await ctx.db
+      .query("cursors")
+      .filter(q => q.gte(q.field("updatedAt"), fiveSecondsAgo))
+      .collect()
+  },
+})
+```
+
+## Schema Design
+
+Define your database schema in TypeScript:
+
+```typescript
+// convex/schema.ts
+import { defineSchema, defineTable } from "convex/server"
+import { v } from "convex/values"
+
+export default defineSchema({
+  projects: defineTable({
+    title: v.string(),
+    description: v.string(),
+    category: v.string(),
+    technologies: v.array(v.string()),
+    imageUrl: v.optional(v.string()),
+  }).index("by_category", ["category"]),
+
+  testimonials: defineTable({
+    name: v.string(),
+    role: v.string(),
+    content: v.string(),
+    avatar: v.optional(v.string()),
+  }),
+})
+```
+
+## When to Use Convex
+
+| Use Case | Convex Fit | Alternative |
+|---|---|---|
+| Real-time dashboards | ✅ Excellent | WebSockets + Redis |
+| Collaborative editing | ✅ Excellent | CRDTs + WebRTC |
+| Contact forms | ✅ Great (built-in rate limiting) | Serverless functions |
+| Blog CMS | ✅ Good | Headless CMS |
+| File storage | ⚠️ Needs external service | S3 / Cloudinary |
+| Heavy analytics | ⚠️ Query limits | Data warehouse |
+
+## Conclusion
+
+Convex eliminates the infrastructure complexity of building real-time features. For projects where live data sync is critical — collaboration tools, live dashboards, interactive UIs — it's one of the fastest paths to production.

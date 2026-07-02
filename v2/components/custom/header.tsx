@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter, usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import {
   IconHome,
@@ -39,6 +40,8 @@ const itemVariants = {
 } as const;
 
 export default function Header() {
+  const router = useRouter();
+  const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -78,17 +81,19 @@ export default function Header() {
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 md:px-5">
           {/* LOGO */}
           <Link
-            href="/#"
+            href="/"
             onClick={(e) => {
-              e.preventDefault();
-              const lenis = lenisStore.lenis;
-              if (lenis) {
-                lenis.scrollTo(0, {
-                  duration: 1.2,
-                  easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-                });
-              } else {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+              if (pathname === '/') {
+                e.preventDefault();
+                const lenis = lenisStore.lenis;
+                if (lenis) {
+                  lenis.scrollTo(0, {
+                    duration: 1.2,
+                    easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                  });
+                } else {
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
               }
             }}
             className="
@@ -244,11 +249,17 @@ function NavLink({
   icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
   label: string;
 }) {
+  const router = useRouter();
+  const pathname = usePathname();
+
   const handleClick = (e: React.MouseEvent) => {
-    // Only scroll for anchor links, allow normal navigation for page routes
     if (href.startsWith('#')) {
       e.preventDefault();
-      scrollToSection(href);
+      if (pathname !== '/') {
+        router.push('/' + href);
+      } else {
+        scrollToSection(href);
+      }
     }
   };
 
@@ -284,12 +295,18 @@ function MenuLink({
   children: React.ReactNode;
   onClick: () => void;
 }) {
+  const router = useRouter();
+  const pathname = usePathname();
+
   const handleClick = (e: React.MouseEvent) => {
     onClick();
-    // Only scroll for anchor links, allow normal navigation for page routes
     if (href.startsWith('#')) {
       e.preventDefault();
-      scrollToSection(href);
+      if (pathname !== '/') {
+        router.push('/' + href);
+      } else {
+        scrollToSection(href);
+      }
     }
   };
 

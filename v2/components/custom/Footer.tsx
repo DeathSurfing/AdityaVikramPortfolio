@@ -1,3 +1,5 @@
+"use client"
+
 import Link from "next/link";
 import { ArrowUpIcon } from "@radix-ui/react-icons";
 import { quickLinks, socialLinks, type SocialLink } from "@/data";

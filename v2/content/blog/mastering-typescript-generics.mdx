@@ -1,0 +1,105 @@
+---
+title: "Mastering TypeScript Generics"
+description: "Understanding generics in TypeScript — from basic usage to advanced patterns with real-world examples."
+date: "2026-06-20"
+tags: ["typescript", "javascript", "programming"]
+coverImage: "/blog/typescript-generics.png"
+author: "Aditya Vikram Mahendru"
+---
+
+## What Are Generics?
+
+Generics allow you to write reusable, type-safe code that works with multiple types rather than a single one. Think of them as **type variables** — placeholders that get filled in when the function or class is used.
+
+### The Problem
+
+Without generics, you'd have to use `any` or duplicate code:
+
+```typescript
+// Type-safe but duplicated
+function identityNumber(arg: number): number { return arg }
+function identityString(arg: string): string { return arg }
+
+// Flexible but unsafe
+function identityAny(arg: any): any { return arg }
+```
+
+### The Generic Solution
+
+```typescript
+function identity<T>(arg: T): T {
+  return arg
+}
+
+const num = identity(42)        // Type: number
+const str = identity("hello")   // Type: string
+```
+
+## Practical Patterns
+
+### Generic Constraints
+
+Limit what types can be used with `extends`:
+
+```typescript
+interface HasLength {
+  length: number
+}
+
+function logLength<T extends HasLength>(arg: T): T {
+  console.log(arg.length)
+  return arg
+}
+
+logLength("hello")     // ✅ string has length
+logLength([1, 2, 3])   // ✅ array has length
+logLength(42)          // ❌ number has no length
+```
+
+### Generic React Components
+
+```tsx
+interface ListProps<T> {
+  items: T[]
+  renderItem: (item: T) => React.ReactNode
+}
+
+function List<T>({ items, renderItem }: ListProps<T>) {
+  return (
+    <ul>
+      {items.map((item, i) => (
+        <li key={i}>{renderItem(item)}</li>
+      ))}
+    </ul>
+  )
+}
+```
+
+### Key-Value Store
+
+```typescript
+class Store<T extends Record<string, unknown>> {
+  private data: T
+
+  constructor(initial: T) {
+    this.data = initial
+  }
+
+  get<K extends keyof T>(key: K): T[K] {
+    return this.data[key]
+  }
+
+  set<K extends keyof T>(key: K, value: T[K]): void {
+    this.data[key] = value
+  }
+}
+```
+
+## When to Use Generics
+
+- **Utility functions** that operate on multiple types
+- **Data structures** (stacks, queues, trees)
+- **React components** that render different data types
+- **API wrappers** with different response types
+
+Generics make your code more reusable without sacrificing type safety. Start simple and add complexity as needed.

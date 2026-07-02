@@ -1,0 +1,185 @@
+---
+title: "Proxmox LXC Containers: Lightweight Virtualization Done Right"
+description: "Why LXC containers on Proxmox beat full VMs for most workloads — performance, density, and management walkthrough."
+date: "2026-07-02"
+tags: ["proxmox", "lxc", "containers", "self-hosting", "devops"]
+coverImage: "https://images.unsplash.com/photo-1605745341112-85968b19335b?w=1200&h=630&fit=crop"
+author: "Aditya Vikram Mahendru"
+---
+
+## VMs vs Containers on Proxmox
+
+Proxmox VE supports both full VMs (KVM) and system containers (LXC). While VMs virtualize the hardware, LXC containers share the host kernel — making them dramatically more efficient for most server workloads.
+
+### The Density Advantage
+
+| Metric | KVM VM | LXC Container |
+|---|---|---|
+| Boot time | 30-60s | `&lt;1s` |
+| RAM overhead | ~300MB per VM | ~10MB per container |
+| Disk usage | 2-10GB base | ~200MB base |
+| Max density (per host) | 10-20 | 100+ |
+| Kernel isolation | Full (separate kernel) | Shared (host kernel) |
+
+## Why LXC Over Docker?
+
+Docker containers are stateless, ephemeral, and designed for microservices. LXC containers are **system containers** — they behave like full VMs with `systemd`, SSH, and persistent state.
+
+| Feature | Docker | LXC on Proxmox |
+|---|---|---|
+| Scope | Single process | Full OS |
+| Persistence | Volumes | Native filesystem |
+| Networking | Overlay/bridge | Bridge, NAT, routed |
+| Management | Docker CLI + compose | Proxmox UI + `pct` |
+| Use case | Stateless services | Infrastructure services |
+
+## Getting Started with LXC on Proxmox
+
+### Creating a Container
+
+Via the Proxmox web UI:
+- **Datacenter → your_node → Create CT**
+- Select a template (Ubuntu 24.04, Debian 12, Alpine)
+- Allocate CPU cores, RAM, and disk
+- Configure networking (DHCP or static)
+
+Or via CLI:
+
+```bash
+# List available templates
+pveam available
+
+# Download an Ubuntu template
+pveam download local ubuntu-24.04-standard_24.04-2_amd64.tar.zst
+
+# Create the container
+pct create 100 \
+  local:vztmpl/ubuntu-24.04-standard_24.04-2_amd64.tar.zst \
+  --rootfs local-lvm:8 \
+  --cores 2 \
+  --memory 2048 \
+  --net0 name=eth0,bridge=vmbr0,ip=dhcp \
+  --hostname my-ct
+
+# Start it
+pct start 100
+
+# Enter the shell
+pct enter 100
+```
+
+### Post-Creation Setup
+
+```bash
+# Set root password
+pct set 100 --password
+
+# Assign a static IP
+pct set 100 --net0 name=eth0,bridge=vmbr0,ip=192.168.1.100/24,gw=192.168.1.1
+
+# Mount a bind mount from the host
+pct set 100 --mp0 /storage/data,mp=/mnt/data
+
+# Set resource limits
+pct set 100 --memory 4096 --swap 1024 --cores 4
+```
+
+## Production Layout
+
+```
+┌──────────────────────────────────────┐
+│         Proxmox Host (Debian)        │
+│  ┌────────┐ ┌────────┐ ┌──────────┐ │
+│  │ LXC 101 │ │ LXC 102 │ │ LXC 103  │ │
+│  │  DNS    │ │  DB     │ │  Web     │ │
+│  │ (PiHole)│ │(Postgres│ │ (Nginx + │ │
+│  │         │ │ + Redis)│ │  Next.js)│ │
+│  └────────┘ └────────┘ └──────────┘ │
+│  ┌────────┐ ┌────────┐ ┌──────────┐ │
+│  │ LXC 104 │ │ LXC 105 │ │ LXC 106  │ │
+│  │  VPN    │ │  CI/CD  │ │  Backup  │ │
+│  │ (WG)   │ │ (Drone) │ │ (Borg)   │ │
+│  └────────┘ └────────┘ └──────────┘ │
+└──────────────────────────────────────┘
+```
+
+## Networking Patterns
+
+### Bridge Networking (Default)
+
+Containers get IPs on the same subnet as the host — they're first-class citizens on your LAN.
+
+```bash
+# /etc/network/interfaces on Proxmox host
+auto vmbr0
+iface vmbr0 inet static
+  address 192.168.1.10/24
+  gateway 192.168.1.1
+  bridge-ports eno1
+  bridge-stp off
+  bridge-fd 0
+```
+
+### NAT Networking
+
+Containers share the host's IP via NAT — useful when you have limited public IPs.
+
+```bash
+pct set 100 --net0 name=eth0,bridge=vmbr0,firewall=1
+# Set up NAT via iptables on the host
+```
+
+## Backup and Snapshots
+
+```bash
+# Snapshot (live, with RAM)
+pct snapshot 100 pre-upgrade --description "Before Postgres 16 upgrade"
+
+# Backup to Proxmox Backup Server
+vzdump 100 --compress zstd --mode snapshot --storage pbs
+
+# Restore
+pct restore 100 /var/lib/vz/dump/vzdump-lxc-100-2026_07_02.tar.zst
+```
+
+## Resource Optimization
+
+### Memory
+
+LXC containers use **no memory overhead** beyond the processes running inside. A tiny Alpine container running a single service uses ~15MB RAM.
+
+```bash
+# Limit memory hard and soft
+pct set 100 --memory 2048 --swap 512
+
+# View actual memory usage
+pct status 100 --verbose
+```
+
+### Disk
+
+Use `.raw` disk images on ZFS or LVM-thin for best performance with snapshots.
+
+```bash
+# Move rootfs to a different storage
+pct move-volume 100 rootfs local-zfs
+
+# Resize rootfs online
+pct resize 100 rootfs +4G
+```
+
+## When to Use LXC vs KVM
+
+| Scenario | Best Fit |
+|---|---|
+| Web servers, databases | LXC |
+| Docker hosts | LXC (Docker in LXC) |
+| Custom kernels, kernel modules | KVM |
+| Windows guests | KVM |
+| Untrusted workloads | KVM |
+| Maximum density | LXC |
+| Snapshots with RAM | LXC (supported) |
+
+## Conclusion
+
+LXC containers on Proxmox give you the density and performance of containers with the management experience of full VMs. For most Linux server workloads — web services, databases, DNS, monitoring — they're the right default choice.

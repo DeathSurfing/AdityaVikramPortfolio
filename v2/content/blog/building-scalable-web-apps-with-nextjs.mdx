@@ -1,0 +1,67 @@
+---
+title: "Building Scalable Web Apps with Next.js"
+description: "A deep dive into modern architecture patterns for building production-ready Next.js applications that scale."
+date: "2026-06-28"
+tags: ["nextjs", "react", "typescript", "architecture"]
+coverImage: "/blog/nextjs-scalable.png"
+author: "Aditya Vikram Mahendru"
+---
+
+## Why Next.js?
+
+Next.js has become the de facto framework for building modern web applications. It provides a powerful set of tools for both static site generation (SSG) and server-side rendering (SSR), making it versatile for a wide range of use cases.
+
+### Key Benefits
+
+- **File-based routing** — intuitive and scalable
+- **Server Components** — reduced client-side JavaScript
+- **Automatic code splitting** — faster page loads
+- **Built-in optimizations** — image, font, script optimization out of the box
+
+## Architecture Patterns
+
+### Project Structure
+
+A well-organized project is crucial for maintainability:
+
+```
+src/
+├── app/          # App Router pages
+├── components/   # Reusable UI components
+├── lib/          # Utility functions
+├── data/         # Static data and configuration
+├── hooks/        # Custom React hooks
+└── providers/    # Context providers
+```
+
+### Server Components First
+
+With React Server Components, you can fetch data on the server and send only the rendered HTML to the client. This reduces the bundle size and improves performance.
+
+```tsx
+// app/posts/[id]/page.tsx
+export default async function PostPage({ params }: { params: { id: string } }) {
+  const post = await getPost(params.id)
+  return <article>{post.content}</article>
+}
+```
+
+### Data Fetching Strategies
+
+| Strategy | Use Case | When to Use |
+|---|---|---|
+| Static (SSG) | Blog posts, documentation | Content rarely changes |
+| Dynamic (SSR) | User dashboards, real-time data | Per-request freshness needed |
+| Incremental (ISR) | E-commerce, news sites | Balance of speed and freshness |
+
+## Performance Considerations
+
+1. **Optimize images** — Use `next/image` with proper sizing
+2. **Streaming** — Leverage `loading.tsx` and `Suspense` boundaries
+3. **Bundle analysis** — Regularly check your bundle size
+
+> "Performance is not just about speed — it's about delivering a great user experience regardless of device or network conditions."
+
+## Conclusion
+
+Next.js provides everything you need to build production-ready applications. Start with Server Components, optimize progressively, and scale confidently.

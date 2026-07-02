@@ -1,0 +1,122 @@
+---
+title: "Understanding React Server Components"
+description: "A practical guide to React Server Components in Next.js App Router — when to use them and how they change the mental model of building web apps."
+date: "2026-06-25"
+tags: ["react", "nextjs", "architecture", "frontend"]
+coverImage: "https://images.unsplash.com/photo-1555099962-4199c345e5dd?w=1200&h=630&fit=crop"
+author: "Aditya Vikram Mahendru"
+---
+
+## The Shift in Mental Model
+
+React Server Components (RSC) represent a fundamental shift in how we think about React. Instead of rendering everything on the client, components can now run **exclusively on the server**.
+
+### What Changed?
+
+Before RSC, every component ran in the browser. You'd use `useEffect` for data fetching, state management libraries for client state, and everything shipped as JavaScript to the client.
+
+With RSC:
+
+- Server Components fetch data, access databases, and read from the filesystem
+- Client Components handle interactivity, state, and browser APIs
+- The framework decides the optimal rendering strategy
+
+## Server vs Client Components
+
+```tsx
+// ServerComponent.tsx — runs on the server, zero JS sent to client
+import db from "@/lib/db"
+
+export default async function PostList() {
+  const posts = await db.query("SELECT * FROM posts")
+  return (
+    <ul>
+      {posts.map(post => <li key={post.id}>{post.title}</li>)}
+    </ul>
+  )
+}
+```
+
+```tsx
+// ClientComponent.tsx — "use client", runs in the browser
+"use client"
+
+import { useState } from "react"
+
+export default function LikeButton({ postId }: { postId: string }) {
+  const [liked, setLiked] = useState(false)
+  return (
+    <button onClick={() => setLiked(!liked)}>
+      {liked ? "❤️" : "🤍"}
+    </button>
+  )
+}
+```
+
+### The Rule
+
+Server components can import and render client components. Client components **cannot** import server components — they must receive them as `children` or through composition.
+
+```tsx
+// ✅ Correct: Server passes Client as children
+// Parent (Server) wraps ClientChild
+export default function Page() {
+  return (
+    <div>
+      <ServerSection />
+      <ClientWrapper>
+        <ServerSection /> {/* Server component rendered as children */}
+      </ClientWrapper>
+    </div>
+  )
+}
+```
+
+## Data Fetching Patterns
+
+### Server Data Fetching
+
+No more `useEffect` or loading states for initial data:
+
+```tsx
+// Before — client-side fetch with loading state
+function Profile() {
+  const [user, setUser] = useState(null)
+  useEffect(() => {
+    fetch("/api/user").then(r => r.json()).then(setUser)
+  }, [])
+  if (!user) return <Skeleton />
+  return <div>{user.name}</div>
+}
+
+// After — server-side fetch, no loading state
+async function Profile() {
+  const user = await getCurrentUser()
+  return <div>{user.name}</div>
+}
+```
+
+## When to Use What
+
+| Scenario | Component Type | Reason |
+|---|---|---|
+| Fetching data from DB | Server | Direct access, no API layer needed |
+| User interaction (clicks, input) | Client | Needs `useState`, `onClick` |
+| Static content rendering | Server | No interactivity needed |
+| Third-party hooks | Client | Hooks only work on client |
+| Reading from filesystem | Server | Browser can't access `fs` |
+| Animations with GSAP/Framer | Client | Requires DOM access |
+
+## Performance Benefits
+
+RSC dramatically reduces the JavaScript bundle sent to the client. Only **Client Components** ship their JavaScript — Server Components render to static HTML on the server and stream it to the browser.
+
+This means:
+- Faster initial page loads
+- Smaller bundle sizes
+- Better Core Web Vitals scores
+- Reduced client-side processing
+
+## Conclusion
+
+React Server Components aren't just a new feature — they're a new paradigm. Start with Server Components by default, reach for Client Components only when you need interactivity. Your users will thank you for the smaller bundles.
