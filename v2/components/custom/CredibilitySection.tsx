@@ -97,9 +97,9 @@ export default function CredibilitySection() {
       <div className="relative z-10 px-6 lg:px-20 pt-32 pb-20">
         <div className="max-w-7xl mx-auto">
           <div ref={heroRef} className="mb-12">
-            <h1 className="text-6xl md:text-8xl font-black leading-none tracking-tight">
+            <h2 className="text-6xl md:text-8xl font-black leading-none tracking-tight">
               {splitText("OPINIONS")}
-            </h1>
+            </h2>
             <p className="mt-6 text-xl font-bold border-l-4 border-border pl-6 max-w-xl">
               No trendy tools. Only things I'd defend in production.
             </p>

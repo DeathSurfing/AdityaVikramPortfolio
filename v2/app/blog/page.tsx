@@ -7,6 +7,9 @@ export const metadata: Metadata = {
   title: "Blog",
   description:
     "Thoughts on web development, TypeScript, React, and building better software.",
+  alternates: {
+    canonical: "/blog",
+  },
   openGraph: {
     title: "Blog | Aditya Vikram",
     description:

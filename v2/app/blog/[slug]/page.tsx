@@ -36,12 +36,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: post.title,
     description: post.description,
+    alternates: {
+      canonical: `/blog/${slug}`,
+    },
     openGraph: {
       title: `${post.title} | Aditya Vikram`,
       description: post.description,
       type: "article",
       publishedTime: post.date,
       authors: [post.author],
+      url: `https://adityavikram.dev/blog/${slug}`,
       images: post.coverImage
         ? [{ url: post.coverImage, width: 1200, height: 630 }]
         : undefined,
@@ -50,6 +54,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       card: "summary_large_image",
       title: post.title,
       description: post.description,
+      images: post.coverImage ? [post.coverImage] : undefined,
     },
   }
 }
@@ -80,6 +85,31 @@ export default async function BlogPostPage({ params }: PageProps) {
   const tags: string[] = data.tags || []
   const readingTimeText = `${Math.ceil(stats.minutes)} min read`
 
+  const articleJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: data.title,
+    description: data.description,
+    image: data.coverImage ? `https://adityavikram.dev${data.coverImage}` : undefined,
+    datePublished: data.date,
+    dateModified: data.date,
+    author: {
+      "@type": "Person",
+      name: data.author || "Aditya Vikram Mahendru",
+      url: "https://adityavikram.dev",
+    },
+    publisher: {
+      "@type": "Person",
+      name: "Aditya Vikram Mahendru",
+      url: "https://adityavikram.dev",
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `https://adityavikram.dev/blog/${slug}`,
+    },
+    keywords: tags.join(", "),
+  }
+
   return (
     <main className="min-h-screen bg-background pt-24">
       <div className="h-3 w-full bg-border flex">
@@ -91,6 +121,10 @@ export default async function BlogPostPage({ params }: PageProps) {
       </div>
 
       <article className="mx-auto max-w-3xl px-4 md:px-6 py-12 lg:py-16">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+        />
         <Link
           href="/blog"
           className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors mb-8 group"

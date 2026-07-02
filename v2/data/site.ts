@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 
 export const siteMetadata: Metadata = {
   title: {
-    default: 'Aditya Vikram — Full Stack Developer',
+    default: 'Aditya Vikram — Full Stack Developer | TypeScript & React',
     template: '%s | Aditya Vikram',
   },
   description:
@@ -28,20 +28,29 @@ export const siteMetadata: Metadata = {
   publisher: 'Aditya Vikram',
 
   openGraph: {
-    title: 'Aditya Vikram — Full Stack Developer',
+    title: 'Aditya Vikram — Full Stack Developer | TypeScript & React',
     description:
       'Full stack developer creating modern web applications with TypeScript and React.',
     url: 'https://adityavikram.dev',
     siteName: 'Aditya Vikram',
     locale: 'en_US',
     type: 'website',
+    images: [
+      {
+        url: '/opengraph-image',
+        width: 1200,
+        height: 630,
+        alt: 'Aditya Vikram — Full Stack Developer',
+      },
+    ],
   },
 
   twitter: {
     card: 'summary_large_image',
-    title: 'Aditya Vikram — Full Stack Developer',
+    title: 'Aditya Vikram — Full Stack Developer | TypeScript & React',
     description:
       'Exploring full stack development, modern technologies, and digital innovation.',
+    images: ['/opengraph-image'],
   },
 
   robots: {

@@ -36,14 +36,14 @@ export default function WhoAmIHero() {
           variants={fadeInVariants}
         >
           <div className="border-4 border-border bg-background p-8 md:p-16 shadow-[12px_12px_0px_0px_var(--border)] -rotate-1">
-            <h1
+            <h2
               className={cn(
                 'text-6xl md:text-9xl font-black mb-6 leading-none tracking-tight',
                 azeretMono.className
               )}
             >
               WHO AM I?
-            </h1>
+            </h2>
             <div className="h-2 w-32 bg-primary mb-6" />
             <p className="text-xl md:text-3xl font-bold max-w-3xl border-l-4 border-primary pl-6">
               A journey through code, creativity, and continuous learning

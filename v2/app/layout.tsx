@@ -12,7 +12,43 @@ import { ThemeProvider } from "@/components/theme-provider";
 import LenisProvider from "@/providers/LenisProvider";
 import LenisHashHandler from "@/providers/LenisHashHandler";
 import { ConvexClientProvider } from "@/providers/ConvexClientProvider";
-import { siteMetadata } from "@/data/site";
+import { siteMetadata, siteConfig } from "@/data/site";
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Person",
+      name: "Aditya Vikram Mahendru",
+      url: siteConfig.url,
+      image: `${siteConfig.url}/AdityaVikram.webp`,
+      jobTitle: "Full Stack Developer",
+      email: `mailto:${siteConfig.email}`,
+      sameAs: [
+        siteConfig.linkedin.url,
+        siteConfig.github.url,
+      ],
+      knowsAbout: [
+        "TypeScript",
+        "React",
+        "Next.js",
+        "Node.js",
+        "PostgreSQL",
+        "Docker",
+        "Kubernetes",
+      ],
+    },
+    {
+      "@type": "WebSite",
+      name: "Aditya Vikram",
+      url: siteConfig.url,
+      author: {
+        "@type": "Person",
+        name: "Aditya Vikram Mahendru",
+      },
+    },
+  ],
+};
 
 export const viewport: Viewport = {
   themeColor: [
@@ -64,6 +100,10 @@ export default function RootLayout({
       style={{ colorScheme: "dark" }}
     >
       <body className="bg-background text-foreground antialiased">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <ConvexClientProvider>
           <ThemeProvider>
             <LenisProvider>
