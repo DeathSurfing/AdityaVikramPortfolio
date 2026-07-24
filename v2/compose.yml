@@ -13,6 +13,10 @@ services:
       args:
         - NEXT_PUBLIC_CONVEX_URL=${NEXT_PUBLIC_CONVEX_URL}
     container_name: aditya-portfolio
+    # NOTE: Host networking is required in this environment — /dev/net/tun is
+    # unavailable so slirp4netns/pasta can't create virtual interfaces.
+    # Use the deploy.sh script which sets --network host correctly for both
+    # build and run steps.
     network_mode: host
     env_file:
       - .env
