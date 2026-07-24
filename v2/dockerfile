@@ -13,6 +13,10 @@ RUN bun install
 # Copy rest of the project
 COPY . .
 
+# Build-time args for Next.js public env vars (inlined at build)
+ARG NEXT_PUBLIC_CONVEX_URL
+ENV NEXT_PUBLIC_CONVEX_URL=$NEXT_PUBLIC_CONVEX_URL
+
 # Build the project
 RUN bun run build
 
