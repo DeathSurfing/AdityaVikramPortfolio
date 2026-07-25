@@ -22,7 +22,7 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-RUN addgroup -S bun && adduser -S bun -G bun
+RUN groupadd --system bun && useradd --system --no-create-home -g bun bun
 
 COPY --from=builder /app/public ./public
 COPY --from=builder --chown=bun:bun /app/.next/standalone ./
