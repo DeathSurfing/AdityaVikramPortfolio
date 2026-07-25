@@ -1,6 +1,5 @@
 /* ──────────────────────────────────────────────
-   Syntax highlighting (light mode)
-   Dark code block → dark theme colors
+   Syntax highlighting — dark code blocks
    ────────────────────────────────────────────── */
 .hljs {
   background: transparent !important;
@@ -36,36 +35,3 @@
 .hljs-selector-pseudo { color: #7ee787 !important; }
 .hljs-template-tag { color: #ff7b72 !important; }
 .hljs-doctag { color: #8b949e !important; }
-
-/* ──────────────────────────────────────────────
-   Syntax highlighting (dark mode)
-   Light code block → light theme colors
-   ────────────────────────────────────────────── */
-.dark .hljs-keyword { color: #d73a49 !important; }
-.dark .hljs-string { color: #032f62 !important; }
-.dark .hljs-number { color: #005cc5 !important; }
-.dark .hljs-comment { color: #6a737d !important; font-style: italic; }
-.dark .hljs-function { color: #6f42c1 !important; }
-.dark .hljs-title { color: #6f42c1 !important; }
-.dark .hljs-built_in { color: #e36209 !important; }
-.dark .hljs-type { color: #e36209 !important; }
-.dark .hljs-literal { color: #005cc5 !important; }
-.dark .hljs-attr { color: #005cc5 !important; }
-.dark .hljs-params { color: #24292e !important; }
-.dark .hljs-meta { color: #6a737d !important; }
-.dark .hljs-tag { color: #22863a !important; }
-.dark .hljs-name { color: #22863a !important; }
-.dark .hljs-selector-class { color: #22863a !important; }
-.dark .hljs-selector-tag { color: #d73a49 !important; }
-.dark .hljs-deletion { color: #b31d28 !important; background: #ffeef0 !important; }
-.dark .hljs-addition { color: #22863a !important; background: #f0fff4 !important; }
-.dark .hljs-section { color: #6f42c1 !important; font-weight: bold; }
-.dark .hljs-regexp { color: #032f62 !important; }
-.dark .hljs-symbol { color: #e36209 !important; }
-.dark .hljs-variable { color: #e36209 !important; }
-.dark .hljs-template-variable { color: #e36209 !important; }
-.dark .hljs-link { color: #005cc5 !important; text-decoration: underline; }
-.dark .hljs-selector-id { color: #d73a49 !important; }
-.dark .hljs-selector-pseudo { color: #22863a !important; }
-.dark .hljs-template-tag { color: #d73a49 !important; }
-.dark .hljs-doctag { color: #6a737d !important; }

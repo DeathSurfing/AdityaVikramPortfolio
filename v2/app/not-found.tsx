@@ -2,37 +2,24 @@ import Link from "next/link"
 
 export default function NotFound() {
   return (
-    <main className="min-h-screen bg-background flex items-center justify-center px-4">
-      <div className="text-center">
-        <div className="inline-block px-6 py-3 bg-primary text-primary-foreground border-2 border-border shadow-md -rotate-1 mb-6">
-          <span className="text-xs font-black uppercase tracking-widest">
-            Error 404
-          </span>
-        </div>
+    <main className="flex min-h-screen flex-col items-center justify-center px-6 font-sans text-[#e5e5e5] selection:bg-[#e5e5e5] selection:text-[#0a0a0a]">
+      <div className="flex flex-col items-center gap-5 text-center">
+        <span className="font-mono text-xs text-[#8a8a8a]">404</span>
 
-        <h1 className="font-head text-6xl lg:text-8xl font-bold mb-4">
-          PAGE NOT FOUND
+        <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+          page not found
         </h1>
 
-        <p className="text-muted-foreground text-lg max-w-md mx-auto mb-8">
-          The page you're looking for doesn't exist or has been moved to another
-          dimension.
+        <p className="max-w-sm text-sm leading-relaxed text-[#8a8a8a]">
+          The page you're looking for doesn't exist or has been moved.
         </p>
 
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 border-2 border-border bg-primary text-primary-foreground px-6 py-3 font-black text-sm uppercase tracking-wider shadow-md hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all"
-          >
-            &larr; Back Home
-          </Link>
-          <Link
-            href="/blog"
-            className="inline-flex items-center gap-2 border-2 border-border bg-background px-6 py-3 font-black text-sm uppercase tracking-wider shadow-md hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all"
-          >
-            Read the Blog
-          </Link>
-        </div>
+        <Link
+          href="/"
+          className="mt-2 font-mono text-xs text-[#b0b0b0] underline decoration-[#3a3a3a] underline-offset-4 transition-colors hover:text-[#e5e5e5] hover:decoration-[#e5e5e5]"
+        >
+          &larr; home
+        </Link>
       </div>
     </main>
   )

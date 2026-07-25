@@ -7,42 +7,38 @@ export function BlogCard({ post, className }: { post: BlogPost; className?: stri
     <Link
       href={`/blog/${post.slug}`}
       className={cn(
-        "group block border-2 border-border rounded p-6 shadow-md hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all bg-card",
+        "group block border-b border-[#1f1f1f] py-6 transition-colors",
         className,
       )}
     >
-      <div className="flex flex-wrap gap-2 mb-3">
-        {post.tags.map((tag) => (
-          <span
-            key={tag}
-            className="px-2 py-0.5 text-xs font-bold uppercase tracking-wider bg-muted border border-border rounded"
-          >
-            {tag}
-          </span>
-        ))}
+      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+        <h3 className="text-base font-medium text-[#e5e5e5] transition-transform duration-300 group-hover:translate-x-1.5">
+          {post.title}
+        </h3>
+        <span className="shrink-0 font-mono text-xs text-[#666]">
+          <time dateTime={post.date}>
+            {new Date(post.date).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            })}
+          </time>
+          {" · "}
+          {post.readingTime}
+        </span>
       </div>
 
-      <h3 className="font-head text-xl font-bold mb-2 group-hover:text-primary transition-colors">
-        {post.title}
-      </h3>
-
       {post.description && (
-        <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+        <p className="mt-1.5 text-sm leading-relaxed text-[#8a8a8a] line-clamp-2">
           {post.description}
         </p>
       )}
 
-      <div className="flex items-center gap-3 text-xs font-bold text-muted-foreground uppercase tracking-wider">
-        <time dateTime={post.date}>
-          {new Date(post.date).toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-            year: "numeric",
-          })}
-        </time>
-        <span className="w-1 h-1 bg-border rounded-full" />
-        <span>{post.readingTime}</span>
-      </div>
+      {post.tags.length > 0 && (
+        <span className="mt-2 block font-mono text-xs text-[#666]">
+          {post.tags.join(" · ")}
+        </span>
+      )}
     </Link>
   )
 }

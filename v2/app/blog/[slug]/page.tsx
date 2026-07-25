@@ -12,6 +12,9 @@ import readingTime from "reading-time"
 
 import { mdxComponents } from "@/components/blog/MDXComponents"
 import { getPostBySlug } from "@/lib/blog"
+import MotionRoot from "@/components/identity/MotionRoot"
+import IdentityFooter from "@/components/identity/IdentityFooter"
+import { FadeUp } from "@/components/identity/motion-primitives"
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -111,92 +114,89 @@ export default async function BlogPostPage({ params }: PageProps) {
   }
 
   return (
-    <main className="min-h-screen bg-background pt-24">
-      <div className="h-3 w-full bg-border flex">
-        <div className="flex-1 bg-foreground" />
-        <div className="flex-1 bg-background" />
-        <div className="flex-1 bg-primary" />
-        <div className="flex-1 bg-background" />
-        <div className="flex-1 bg-foreground" />
-      </div>
+    <MotionRoot>
+      <main className="min-h-screen bg-[#0a0a0a] font-sans text-[#e5e5e5] selection:bg-[#e5e5e5] selection:text-[#0a0a0a]">
+        <article className="mx-auto max-w-2xl px-6 pt-32 pb-20">
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+          />
 
-      <article className="mx-auto max-w-3xl px-4 md:px-6 py-12 lg:py-16">
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
-        />
-        <Link
-          href="/blog"
-          className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors mb-8 group"
-        >
-          <span className="transition-transform group-hover:-translate-x-1">
-            &larr;
-          </span>
-          Back to Blog
-        </Link>
+          <FadeUp>
+            <Link
+              href="/blog"
+              className="mb-10 inline-block font-mono text-xs text-[#8a8a8a] transition-colors hover:text-[#e5e5e5]"
+            >
+              &larr; blog
+            </Link>
+          </FadeUp>
 
-        <header className="mb-10">
-          {tags.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-4">
-              {tags.map((tag: string) => (
-                <span
-                  key={tag}
-                  className="px-2.5 py-1 text-xs font-bold uppercase tracking-wider bg-muted border border-border rounded"
-                >
-                  {tag}
-                </span>
-              ))}
+          <FadeUp as="header" delay={1} className="mb-10 flex flex-col gap-4">
+            <h1 className="text-3xl font-semibold tracking-tight text-[#e5e5e5] lg:text-4xl">
+              {data.title}
+            </h1>
+
+            {data.description && (
+              <p className="text-base leading-relaxed text-[#8a8a8a]">
+                {data.description}
+              </p>
+            )}
+
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-xs text-[#666]">
+              <span>{data.author || "Aditya Vikram Mahendru"}</span>
+              <span aria-hidden>·</span>
+              <time dateTime={data.date}>
+                {new Date(data.date).toLocaleDateString("en-US", {
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                })}
+              </time>
+              <span aria-hidden>·</span>
+              <span>{readingTimeText}</span>
             </div>
-          )}
 
-          <h1 className="font-head text-3xl lg:text-4xl xl:text-5xl font-bold mb-4">
-            {data.title}
-          </h1>
+            {tags.length > 0 && (
+              <div className="flex flex-wrap gap-1.5">
+                {tags.map((tag: string) => (
+                  <span
+                    key={tag}
+                    className="rounded-sm border border-[#262626] bg-[#141414] px-2 py-0.5 font-mono text-xs text-[#b0b0b0]"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
 
-          {data.description && (
-            <p className="text-lg text-muted-foreground mb-6">
-              {data.description}
-            </p>
-          )}
+            {data.coverImage && (
+              <div className="mt-4 overflow-hidden rounded-sm border border-[#262626]">
+                <Image
+                  src={data.coverImage}
+                  alt={data.title}
+                  width={1200}
+                  height={630}
+                  className="h-auto w-full object-cover"
+                />
+              </div>
+            )}
+          </FadeUp>
 
-          <div className="flex flex-wrap items-center gap-3 text-sm font-bold text-muted-foreground uppercase tracking-wider">
-            <span>{data.author || "Aditya Vikram Mahendru"}</span>
-            <span className="w-1.5 h-1.5 bg-border rotate-45" />
-            <time dateTime={data.date}>
-              {new Date(data.date).toLocaleDateString("en-US", {
-                month: "long",
-                day: "numeric",
-                year: "numeric",
-              })}
-            </time>
-            <span className="w-1.5 h-1.5 bg-border rotate-45" />
-            <span>{readingTimeText}</span>
-          </div>
+          <FadeUp delay={2}>
+            <div className="prose-custom">{mdxContent}</div>
+          </FadeUp>
 
-          {data.coverImage && (
-            <div className="mt-8 border-2 border-border rounded shadow-md overflow-hidden">
-              <Image
-                src={data.coverImage}
-                alt={data.title}
-                width={1200}
-                height={630}
-                className="w-full h-auto object-cover"
-              />
-            </div>
-          )}
-        </header>
-
-        <div className="prose-custom">{mdxContent}</div>
-
-        <footer className="mt-16 pt-8 border-t-2 border-border">
-          <Link
-            href="/blog"
-            className="inline-flex items-center gap-2 border-2 border-border bg-background px-5 py-2.5 font-black text-sm uppercase tracking-wider shadow-md hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all"
-          >
-            &larr; Back to Blog
-          </Link>
-        </footer>
-      </article>
-    </main>
+          <footer className="mt-16 border-t border-[#1f1f1f] pt-8">
+            <Link
+              href="/blog"
+              className="font-mono text-xs text-[#8a8a8a] transition-colors hover:text-[#e5e5e5]"
+            >
+              &larr; all posts
+            </Link>
+          </footer>
+        </article>
+        <IdentityFooter />
+      </main>
+    </MotionRoot>
   )
 }

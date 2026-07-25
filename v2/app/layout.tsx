@@ -7,11 +7,11 @@ import {
 
 import "./globals.css";
 
-import Header from "@/components/custom/header";
+import IdentityHeader from "@/components/identity/IdentityHeader";
+import PageWipe from "@/components/identity/PageWipe";
 import { ThemeProvider } from "@/components/theme-provider";
 import LenisProvider from "@/providers/LenisProvider";
 import LenisHashHandler from "@/providers/LenisHashHandler";
-import { ConvexClientProvider } from "@/providers/ConvexClientProvider";
 import { siteMetadata, siteConfig } from "@/data/site";
 
 const jsonLd = {
@@ -104,15 +104,14 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        <ConvexClientProvider>
-          <ThemeProvider>
-            <LenisProvider>
-              <LenisHashHandler />
-              <Header />
-              {children}
-            </LenisProvider>
-          </ThemeProvider>
-        </ConvexClientProvider>
+        <ThemeProvider>
+          <LenisProvider>
+            <LenisHashHandler />
+            <IdentityHeader />
+            {children}
+            <PageWipe />
+          </LenisProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

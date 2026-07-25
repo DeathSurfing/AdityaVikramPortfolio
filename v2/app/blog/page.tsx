@@ -2,6 +2,9 @@ import Link from "next/link"
 import type { Metadata } from "next"
 import { BlogCard } from "@/components/blog/BlogCard"
 import { getAllPosts, getAllTags } from "@/lib/blog"
+import MotionRoot from "@/components/identity/MotionRoot"
+import IdentityFooter from "@/components/identity/IdentityFooter"
+import { FadeUp, SectionHeading } from "@/components/identity/motion-primitives"
 
 export const metadata: Metadata = {
   title: "Blog",
@@ -28,71 +31,63 @@ export default async function BlogPage({
   const posts = tag ? allPosts.filter((p) => p.tags.includes(tag)) : allPosts
 
   return (
-    <main className="min-h-screen bg-background pt-24">
-      <div className="h-3 w-full bg-border flex">
-        <div className="flex-1 bg-primary" />
-        <div className="flex-1 bg-background" />
-        <div className="flex-1 bg-foreground" />
-        <div className="flex-1 bg-background" />
-        <div className="flex-1 bg-primary" />
-      </div>
-
-      <div className="mx-auto max-w-7xl px-4 md:px-6 py-12 lg:py-16">
-        <div className="mb-10">
-          <div className="inline-block px-4 py-1.5 bg-primary text-primary-foreground border-2 border-border shadow-md -rotate-1 mb-4">
-            <span className="text-xs font-black uppercase tracking-widest">
-              Writings
-            </span>
+    <MotionRoot>
+      <main className="min-h-screen bg-[#0a0a0a] font-sans text-[#e5e5e5] selection:bg-[#e5e5e5] selection:text-[#0a0a0a]">
+        <div className="mx-auto flex max-w-2xl flex-col gap-8 px-6 pt-32 pb-20">
+          <div className="flex flex-col gap-5">
+            <SectionHeading>// writing</SectionHeading>
+            <FadeUp as="p" className="text-base leading-relaxed text-[#b0b0b0]">
+              Thoughts on web development, TypeScript, React, and building
+              better software.
+            </FadeUp>
           </div>
-          <h1 className="font-head text-4xl lg:text-5xl font-bold mb-3">
-            Blog
-          </h1>
-          <p className="text-muted-foreground text-lg max-w-2xl">
-            Thoughts on web development, TypeScript, React, and building better
-            software.
-          </p>
-        </div>
 
-        {tags.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-8 pb-6 border-b-2 border-border">
-            <span className="text-xs font-black uppercase tracking-widest text-muted-foreground mr-1 self-center">
-              Filter:
-            </span>
-            <Link
-              href="/blog"
-              className="px-3 py-1 text-xs font-bold uppercase tracking-wider border-2 border-border bg-background shadow-sm hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all"
-            >
-              All
-            </Link>
-            {tags.map((tag) => (
-              <Link
-                key={tag}
-                href={`/blog?tag=${encodeURIComponent(tag)}`}
-                className="px-3 py-1 text-xs font-bold uppercase tracking-wider border-2 border-border bg-background shadow-sm hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all"
-              >
-                {tag}
-              </Link>
-            ))}
-          </div>
-        )}
+          {tags.length > 0 && (
+            <FadeUp delay={1}>
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-[#1f1f1f] pb-6 font-mono text-xs">
+                <Link
+                  href="/blog"
+                  className={
+                    !tag
+                      ? "text-[#e5e5e5] underline underline-offset-4"
+                      : "text-[#8a8a8a] transition-colors hover:text-[#e5e5e5]"
+                  }
+                >
+                  all
+                </Link>
+                {tags.map((t) => (
+                  <Link
+                    key={t}
+                    href={`/blog?tag=${encodeURIComponent(t)}`}
+                    className={
+                      tag === t
+                        ? "text-[#e5e5e5] underline underline-offset-4"
+                        : "text-[#8a8a8a] transition-colors hover:text-[#e5e5e5]"
+                    }
+                  >
+                    {t.toLowerCase()}
+                  </Link>
+                ))}
+              </div>
+            </FadeUp>
+          )}
 
-        {posts.length === 0 ? (
-          <div className="text-center py-20">
-            <div className="inline-block px-6 py-3 bg-muted border-2 border-border shadow-md rotate-1 mb-4">
-              <p className="font-black text-lg">Coming Soon</p>
+          {posts.length === 0 ? (
+            <FadeUp as="p" className="py-12 font-mono text-sm text-[#666]">
+              nothing here yet — check back soon.
+            </FadeUp>
+          ) : (
+            <div className="flex flex-col">
+              {posts.map((post, i) => (
+                <FadeUp key={post.slug} delay={Math.min(i, 6)}>
+                  <BlogCard post={post} />
+                </FadeUp>
+              ))}
             </div>
-            <p className="text-muted-foreground">
-              Blog posts are on their way. Check back soon!
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {posts.map((post) => (
-              <BlogCard key={post.slug} post={post} />
-            ))}
-          </div>
-        )}
-      </div>
-    </main>
+          )}
+        </div>
+        <IdentityFooter />
+      </main>
+    </MotionRoot>
   )
 }

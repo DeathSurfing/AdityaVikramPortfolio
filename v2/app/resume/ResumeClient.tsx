@@ -1,16 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
+import { useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
 import {
-  ArrowLeftIcon,
   DownloadIcon,
   ExternalLinkIcon,
-  FileTextIcon,
+  GearIcon,
   PersonIcon,
   RocketIcon,
-  GearIcon,
 } from "@radix-ui/react-icons";
+import MotionRoot from "@/components/identity/MotionRoot";
+import IdentityFooter from "@/components/identity/IdentityFooter";
+import {
+  AnimatedLink,
+  EASE,
+  FadeUp,
+  SectionHeading,
+} from "@/components/identity/motion-primitives";
+import { siteConfig } from "@/data/site";
 
 type ResumeOption = {
   id: string;
@@ -24,7 +31,7 @@ const RESUME_OPTIONS: ResumeOption[] = [
   {
     id: "general",
     label: "General",
-    icon: <PersonIcon className="h-4 w-4" />,
+    icon: <PersonIcon className="size-3.5" />,
     file: "/uploads/Resume.pdf",
     description:
       "Full-stack development, software engineering, and technical leadership.",
@@ -32,7 +39,7 @@ const RESUME_OPTIONS: ResumeOption[] = [
   {
     id: "ai-ml",
     label: "AI / ML Intern",
-    icon: <RocketIcon className="h-4 w-4" />,
+    icon: <RocketIcon className="size-3.5" />,
     file: "/uploads/Resume-AI-ML.pdf",
     description:
       "Machine learning, deep learning, NLP, and AI research experience.",
@@ -40,180 +47,130 @@ const RESUME_OPTIONS: ResumeOption[] = [
   {
     id: "devops",
     label: "DevOps Intern",
-    icon: <GearIcon className="h-4 w-4" />,
+    icon: <GearIcon className="size-3.5" />,
     file: "/uploads/Resume-DevOps.pdf",
     description:
       "Kubernetes, CI/CD, infrastructure automation, and cloud deployment.",
   },
 ];
 
-export default function ResumePage() {
-  const [mounted, setMounted] = useState(false);
+export default function ResumeClient() {
   const [selected, setSelected] = useState<ResumeOption>(RESUME_OPTIONS[0]);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-2xl font-black">Loading&hellip;</div>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-background border-b-[6px] border-border">
-        {/* Striped top accent */}
-        <div className="h-2.5 w-full bg-border flex">
-          <div className="flex-1 bg-primary" />
-          <div className="flex-1 bg-background" />
-          <div className="flex-1 bg-primary" />
-          <div className="flex-1 bg-background" />
-        </div>
-
-        <div className="mx-auto max-w-7xl px-4 md:px-6 py-4">
-          <div className="flex items-center justify-between">
-            {/* Back Button */}
-            <Link
-              href="/#contact"
-              className="group flex items-center gap-2 border-[4px] border-border bg-background px-4 py-2 font-black text-sm uppercase tracking-wider shadow-[4px_4px_0px_0px_var(--border)] transition-all hover:shadow-[2px_2px_0px_0px_var(--border)] hover:translate-x-[2px] hover:translate-y-[2px]"
+    <MotionRoot>
+      <main className="min-h-screen bg-[#0a0a0a] font-sans text-[#e5e5e5] selection:bg-[#e5e5e5] selection:text-[#0a0a0a]">
+        <div className="mx-auto flex max-w-3xl flex-col gap-8 px-6 pt-32 pb-20">
+          {/* Heading */}
+          <div className="flex flex-col gap-5">
+            <SectionHeading>// resume</SectionHeading>
+            <FadeUp
+              as="p"
+              className="text-base leading-relaxed text-[#b0b0b0]"
             >
-              <ArrowLeftIcon className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
-              BACK
-            </Link>
+              Pick a role — the PDF below swaps to the tailored version.
+            </FadeUp>
+          </div>
 
-            {/* Title */}
-            <div className="hidden md:flex items-center gap-3">
-              <div className="w-10 h-10 border-[4px] border-border bg-primary flex items-center justify-center">
-                <FileTextIcon className="h-5 w-5 text-primary-foreground" />
+          {/* Role selector */}
+          <FadeUp delay={1}>
+            <div className="flex flex-col gap-3">
+              <div className="flex flex-wrap gap-2">
+                {RESUME_OPTIONS.map((option) => {
+                  const active = selected.id === option.id;
+                  return (
+                    <motion.button
+                      key={option.id}
+                      type="button"
+                      onClick={() => setSelected(option)}
+                      whileTap={{ scale: 0.96 }}
+                      className={`flex items-center gap-2 rounded-sm border px-3 py-1.5 font-mono text-xs transition-colors ${
+                        active
+                          ? "border-[#e5e5e5] bg-[#e5e5e5] text-[#0a0a0a]"
+                          : "border-[#262626] text-[#8a8a8a] hover:border-[#3a3a3a] hover:text-[#e5e5e5]"
+                      }`}
+                      aria-pressed={active}
+                    >
+                      {option.icon}
+                      {option.label}
+                    </motion.button>
+                  );
+                })}
               </div>
-              <h1 className="font-black text-xl tracking-wider">
-                ADITYA VIKRAM &mdash; RESUME
-              </h1>
-            </div>
 
-            {/* Actions */}
-            <div className="flex items-center gap-3">
-              <a
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.p
+                  key={selected.id}
+                  className="text-sm text-[#8a8a8a]"
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.25, ease: EASE }}
+                >
+                  {selected.description}
+                </motion.p>
+              </AnimatePresence>
+            </div>
+          </FadeUp>
+
+          {/* Actions */}
+          <FadeUp delay={2}>
+            <div className="flex flex-wrap items-center gap-4 font-mono text-xs">
+              <AnimatedLink
                 href={selected.file}
                 download={`Aditya_Vikram_${selected.id === "general" ? "Resume" : `Resume_${selected.id.toUpperCase()}`}.pdf`}
-                className="flex items-center gap-2 border-[4px] border-border bg-primary px-4 py-2 font-black text-sm uppercase tracking-wider text-primary-foreground shadow-[4px_4px_0px_0px_var(--border)] transition-all hover:shadow-[2px_2px_0px_0px_var(--border)] hover:translate-x-[2px] hover:translate-y-[2px]"
+                className="gap-2 text-[#b0b0b0] transition-colors hover:text-[#e5e5e5]"
               >
-                <DownloadIcon className="h-4 w-4" />
-                <span className="hidden sm:inline">DOWNLOAD</span>
-              </a>
-
-              <a
+                <DownloadIcon className="size-3.5" />
+                download pdf
+              </AnimatedLink>
+              <AnimatedLink
                 href={selected.file}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 border-[4px] border-border bg-background px-4 py-2 font-black text-sm uppercase tracking-wider shadow-[4px_4px_0px_0px_var(--border)] transition-all hover:shadow-[2px_2px_0px_0px_var(--border)] hover:translate-x-[2px] hover:translate-y-[2px]"
+                external
+                className="gap-2 text-[#b0b0b0] transition-colors hover:text-[#e5e5e5]"
               >
-                <ExternalLinkIcon className="h-4 w-4" />
-                <span className="hidden sm:inline">OPEN</span>
-              </a>
+                <ExternalLinkIcon className="size-3.5" />
+                open in new tab
+              </AnimatedLink>
             </div>
-          </div>
-        </div>
-      </header>
+          </FadeUp>
 
-      {/* Main Content */}
-      <main className="relative">
-        {/* Decorative Elements */}
-        <div className="absolute top-8 left-8 w-24 h-24 border-[4px] border-foreground bg-primary rotate-12 hidden lg:block" />
-        <div className="absolute top-8 right-8 w-20 h-20 border-[4px] border-foreground bg-background -rotate-6 hidden lg:block" />
-
-        <div className="mx-auto max-w-6xl px-4 md:px-6 py-8">
-          {/* Role Selector */}
-          <div className="mb-8">
-            <h2 className="font-black text-sm uppercase tracking-wider text-muted-foreground mb-4">
-              Select a role
-            </h2>
-            <div className="flex flex-wrap gap-3">
-              {RESUME_OPTIONS.map((option) => (
-                <button
-                  key={option.id}
-                  onClick={() => setSelected(option)}
-                  className={`flex items-center gap-2 border-[4px] px-4 py-3 font-black text-sm uppercase tracking-wider transition-all ${
-                    selected.id === option.id
-                      ? "border-border bg-primary text-primary-foreground shadow-[4px_4px_0px_0px_var(--border)]"
-                      : "border-border bg-background text-foreground shadow-[2px_2px_0px_0px_var(--border)] hover:shadow-[4px_4px_0px_0px_var(--border)] hover:-translate-x-[1px] hover:-translate-y-[1px]"
-                  }`}
-                >
-                  {option.icon}
-                  {option.label}
-                </button>
-              ))}
+          {/* PDF viewer */}
+          <FadeUp delay={3}>
+            <div className="overflow-hidden rounded-sm border border-[#262626] bg-[#141414]">
+              <div className="relative aspect-[8.5/11] w-full">
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.iframe
+                    key={selected.id}
+                    src={selected.file}
+                    className="absolute inset-0 h-full w-full"
+                    title={`Aditya Vikram Resume — ${selected.label}`}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3, ease: EASE }}
+                  />
+                </AnimatePresence>
+              </div>
             </div>
-            <p className="mt-3 font-bold text-xs text-muted-foreground">
-              {selected.description}
+          </FadeUp>
+
+          {/* Contact */}
+          <FadeUp delay={4}>
+            <p className="text-sm leading-relaxed text-[#8a8a8a]">
+              Interested in working together?{" "}
+              <AnimatedLink
+                href={`mailto:${siteConfig.email}`}
+                className="inline text-[#e5e5e5]"
+              >
+                Get in touch
+              </AnimatedLink>
+              .
             </p>
-          </div>
-
-          {/* PDF Viewer */}
-          <div className="border-[6px] border-border bg-background shadow-[12px_12px_0px_0px_var(--border)]">
-            {/* PDF Container */}
-            <div className="relative aspect-[8.5/11] w-full bg-muted">
-              <iframe
-                key={selected.id}
-                src={selected.file}
-                className="absolute inset-0 w-full h-full"
-                title={`Aditya Vikram Resume — ${selected.label}`}
-              />
-            </div>
-          </div>
-
-          {/* Info Section */}
-          <div className="mt-8 grid md:grid-cols-2 gap-6">
-            <div className="border-[4px] border-border bg-background p-6 shadow-[6px_6px_0px_0px_var(--border)]">
-              <h2 className="font-black text-xl mb-4 border-b-[3px] border-border pb-2">
-                ABOUT THIS RESUME
-              </h2>
-              <p className="font-bold text-sm leading-relaxed text-muted-foreground">
-                This resume is tailored for the{" "}
-                <span className="text-foreground">{selected.label}</span>{" "}
-                role. Download or open it in full screen for better
-                readability. Switch between roles above to see the
-                relevant version.
-              </p>
-            </div>
-
-            <div className="border-[4px] border-border bg-primary p-6 shadow-[6px_6px_0px_0px_var(--border)]">
-              <h2 className="font-black text-xl mb-4 text-primary-foreground border-b-[3px] border-primary-foreground/30 pb-2">
-                GET IN TOUCH
-              </h2>
-              <p className="font-bold text-sm leading-relaxed text-primary-foreground mb-4">
-                Interested in working together? Let&apos;s discuss your project!
-              </p>
-              <Link
-                href="/#contact"
-                className="inline-flex items-center gap-2 border-[3px] border-primary-foreground bg-background px-4 py-2 font-black text-sm uppercase tracking-wider text-foreground shadow-[3px_3px_0px_0px_rgba(0,0,0,0.2)] transition-all hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,0.2)] hover:translate-x-[2px] hover:translate-y-[2px]"
-              >
-                CONTACT ME
-                <ArrowLeftIcon className="h-4 w-4 rotate-180" />
-              </Link>
-            </div>
-          </div>
+          </FadeUp>
         </div>
+        <IdentityFooter />
       </main>
-
-      {/* Footer */}
-      <footer className="border-t-[6px] border-border bg-muted mt-12">
-        <div className="mx-auto max-w-7xl px-4 md:px-6 py-6">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="font-black text-sm">
-              &copy; {new Date().getFullYear()} ADITYA VIKRAM
-            </p>
-            <p className="font-bold text-xs text-muted-foreground uppercase tracking-wider">
-              Full Stack Developer
-            </p>
-          </div>
-        </div>
-      </footer>
-    </div>
+    </MotionRoot>
   );
 }
