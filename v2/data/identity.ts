@@ -26,8 +26,8 @@ export interface SelectedProject {
 
 export const heroCopy = {
   greeting: "Hi, I'm Aditya Vikram",
-  role: 'Full Stack Developer',
-  status: 'Building digital products · Available for projects',
+  role: 'Engineer and Open Source Creator',
+  status: 'Building Open Source Sauce ',
 };
 
 export const bioParagraphs: BioSegment[][] = [
