@@ -37,11 +37,7 @@ export const bioParagraphs: BioSegment[][] = [
     },
   ],
   [
-    { text: 'At Woxsen University I served as ' },
-    {
-      text: 'Technical Secretary of the Student Council',
-      href: 'https://studentcouncil.woxsen.edu.in/',
-    },
+    { text: 'At Woxsen University I served as Technical Secretary of the Student Council' },
     {
       text: ', building platforms for 600+ students and migrating campus infrastructure in-house. Previously I interned at the Woxsen AI Research Center, shipping ERP systems for 6,000+ users.',
     },
