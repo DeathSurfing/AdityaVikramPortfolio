@@ -2,11 +2,12 @@ import type { Metadata } from 'next';
 
 export const siteMetadata: Metadata = {
   title: {
-    default: 'Aditya Vikram — Full Stack Developer | TypeScript & React',
+    default: 'Aditya Vikram — Full Stack Developer | TypeScript, React & Kubernetes',
     template: '%s | Aditya Vikram',
   },
   description:
-    'Full stack developer specializing in TypeScript, React, and modern web technologies. Explore my projects and digital products.',
+    'Full stack developer building digital products with Next.js, TypeScript, and Rust. Web agency operator, Kubernetes hobbyist, and Student Council Technical Secretary.',
+
   applicationName: 'Aditya Vikram Portfolio',
 
   metadataBase: new URL('https://adityavikram.dev'),
@@ -19,7 +20,10 @@ export const siteMetadata: Metadata = {
     'full stack developer',
     'TypeScript',
     'React',
+    'Next.js',
     'web development',
+    'Kubernetes',
+    'Rust',
     'portfolio',
   ],
 
@@ -28,9 +32,9 @@ export const siteMetadata: Metadata = {
   publisher: 'Aditya Vikram',
 
   openGraph: {
-    title: 'Aditya Vikram — Full Stack Developer | TypeScript & React',
+    title: 'Aditya Vikram — Full Stack Developer',
     description:
-      'Full stack developer creating modern web applications with TypeScript and React.',
+      'Full stack developer building digital products with Next.js, TypeScript, and Rust.',
     url: 'https://adityavikram.dev',
     siteName: 'Aditya Vikram',
     locale: 'en_US',
@@ -47,9 +51,9 @@ export const siteMetadata: Metadata = {
 
   twitter: {
     card: 'summary_large_image',
-    title: 'Aditya Vikram — Full Stack Developer | TypeScript & React',
+    title: 'Aditya Vikram — Full Stack Developer',
     description:
-      'Exploring full stack development, modern technologies, and digital innovation.',
+      'Building digital products with Next.js, TypeScript, Rust, and Kubernetes.',
     images: ['/opengraph-image'],
   },
 
@@ -82,5 +86,5 @@ export const siteConfig = {
     url: 'https://www.linkedin.com/in/aditya-vikram-mahendru/',
   },
   description:
-    'Full Stack Developer crafting scalable digital experiences with modern technologies.',
+    'Full Stack Developer building digital products — Next.js, TypeScript, Rust, and Kubernetes.',
 };
