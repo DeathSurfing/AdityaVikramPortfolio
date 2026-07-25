@@ -7,10 +7,49 @@ import {
   DownloadIcon,
   ExternalLinkIcon,
   FileTextIcon,
+  PersonIcon,
+  RocketIcon,
+  GearIcon,
 } from "@radix-ui/react-icons";
+
+type ResumeOption = {
+  id: string;
+  label: string;
+  icon: React.ReactNode;
+  file: string;
+  description: string;
+};
+
+const RESUME_OPTIONS: ResumeOption[] = [
+  {
+    id: "general",
+    label: "General",
+    icon: <PersonIcon className="h-4 w-4" />,
+    file: "/uploads/Resume.pdf",
+    description:
+      "Full-stack development, software engineering, and technical leadership.",
+  },
+  {
+    id: "ai-ml",
+    label: "AI / ML Intern",
+    icon: <RocketIcon className="h-4 w-4" />,
+    file: "/uploads/Resume-AI-ML.pdf",
+    description:
+      "Machine learning, deep learning, NLP, and AI research experience.",
+  },
+  {
+    id: "devops",
+    label: "DevOps Intern",
+    icon: <GearIcon className="h-4 w-4" />,
+    file: "/uploads/Resume-DevOps.pdf",
+    description:
+      "Kubernetes, CI/CD, infrastructure automation, and cloud deployment.",
+  },
+];
 
 export default function ResumePage() {
   const [mounted, setMounted] = useState(false);
+  const [selected, setSelected] = useState<ResumeOption>(RESUME_OPTIONS[0]);
 
   useEffect(() => {
     setMounted(true);
@@ -19,7 +58,7 @@ export default function ResumePage() {
   if (!mounted) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-2xl font-black">Loading…</div>
+        <div className="text-2xl font-black">Loading&hellip;</div>
       </div>
     );
   }
@@ -53,15 +92,15 @@ export default function ResumePage() {
                 <FileTextIcon className="h-5 w-5 text-primary-foreground" />
               </div>
               <h1 className="font-black text-xl tracking-wider">
-                ADITYA VIKRAM - RESUME
+                ADITYA VIKRAM &mdash; RESUME
               </h1>
             </div>
 
             {/* Actions */}
             <div className="flex items-center gap-3">
               <a
-                href="/uploads/Resume.pdf"
-                download="Aditya_Vikram_Resume.pdf"
+                href={selected.file}
+                download={`Aditya_Vikram_${selected.id === "general" ? "Resume" : `Resume_${selected.id.toUpperCase()}`}.pdf`}
                 className="flex items-center gap-2 border-[4px] border-border bg-primary px-4 py-2 font-black text-sm uppercase tracking-wider text-primary-foreground shadow-[4px_4px_0px_0px_var(--border)] transition-all hover:shadow-[2px_2px_0px_0px_var(--border)] hover:translate-x-[2px] hover:translate-y-[2px]"
               >
                 <DownloadIcon className="h-4 w-4" />
@@ -69,7 +108,7 @@ export default function ResumePage() {
               </a>
 
               <a
-                href="/uploads/Resume.pdf"
+                href={selected.file}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 border-[4px] border-border bg-background px-4 py-2 font-black text-sm uppercase tracking-wider shadow-[4px_4px_0px_0px_var(--border)] transition-all hover:shadow-[2px_2px_0px_0px_var(--border)] hover:translate-x-[2px] hover:translate-y-[2px]"
@@ -88,15 +127,42 @@ export default function ResumePage() {
         <div className="absolute top-8 left-8 w-24 h-24 border-[4px] border-foreground bg-primary rotate-12 hidden lg:block" />
         <div className="absolute top-8 right-8 w-20 h-20 border-[4px] border-foreground bg-background -rotate-6 hidden lg:block" />
 
-        {/* PDF Viewer */}
         <div className="mx-auto max-w-6xl px-4 md:px-6 py-8">
+          {/* Role Selector */}
+          <div className="mb-8">
+            <h2 className="font-black text-sm uppercase tracking-wider text-muted-foreground mb-4">
+              Select a role
+            </h2>
+            <div className="flex flex-wrap gap-3">
+              {RESUME_OPTIONS.map((option) => (
+                <button
+                  key={option.id}
+                  onClick={() => setSelected(option)}
+                  className={`flex items-center gap-2 border-[4px] px-4 py-3 font-black text-sm uppercase tracking-wider transition-all ${
+                    selected.id === option.id
+                      ? "border-border bg-primary text-primary-foreground shadow-[4px_4px_0px_0px_var(--border)]"
+                      : "border-border bg-background text-foreground shadow-[2px_2px_0px_0px_var(--border)] hover:shadow-[4px_4px_0px_0px_var(--border)] hover:-translate-x-[1px] hover:-translate-y-[1px]"
+                  }`}
+                >
+                  {option.icon}
+                  {option.label}
+                </button>
+              ))}
+            </div>
+            <p className="mt-3 font-bold text-xs text-muted-foreground">
+              {selected.description}
+            </p>
+          </div>
+
+          {/* PDF Viewer */}
           <div className="border-[6px] border-border bg-background shadow-[12px_12px_0px_0px_var(--border)]">
             {/* PDF Container */}
             <div className="relative aspect-[8.5/11] w-full bg-muted">
               <iframe
-                src="/uploads/Resume.pdf"
+                key={selected.id}
+                src={selected.file}
                 className="absolute inset-0 w-full h-full"
-                title="Aditya Vikram Resume"
+                title={`Aditya Vikram Resume — ${selected.label}`}
               />
             </div>
           </div>
@@ -108,9 +174,11 @@ export default function ResumePage() {
                 ABOUT THIS RESUME
               </h2>
               <p className="font-bold text-sm leading-relaxed text-muted-foreground">
-                This resume contains my professional experience, skills, and
-                achievements. Feel free to download it or view it in full screen
-                for better readability.
+                This resume is tailored for the{" "}
+                <span className="text-foreground">{selected.label}</span>{" "}
+                role. Download or open it in full screen for better
+                readability. Switch between roles above to see the
+                relevant version.
               </p>
             </div>
 
@@ -119,7 +187,7 @@ export default function ResumePage() {
                 GET IN TOUCH
               </h2>
               <p className="font-bold text-sm leading-relaxed text-primary-foreground mb-4">
-                Interested in working together? Let's discuss your project!
+                Interested in working together? Let&apos;s discuss your project!
               </p>
               <Link
                 href="/#contact"
@@ -138,7 +206,7 @@ export default function ResumePage() {
         <div className="mx-auto max-w-7xl px-4 md:px-6 py-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="font-black text-sm">
-              © {new Date().getFullYear()} ADITYA VIKRAM
+              &copy; {new Date().getFullYear()} ADITYA VIKRAM
             </p>
             <p className="font-bold text-xs text-muted-foreground uppercase tracking-wider">
               Full Stack Developer
