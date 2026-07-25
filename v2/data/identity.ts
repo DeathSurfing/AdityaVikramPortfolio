@@ -119,21 +119,13 @@ export const selectedProjects: SelectedProject[] = [
     github: 'https://github.com/DeathSurfing/EssetAI',
   },
   {
-    name: 'Woxsen Student Council Portal',
-    status: 'live',
-    description:
-      'Full-stack platform for 600+ students — CRM dashboard, real-time analytics, centralised payments, and role-based access.',
-    tags: ['Next.js', 'MongoDB', 'Redis', 'Tailwind CSS', 'Umami'],
-    live: 'https://studentcouncil.woxsen.edu.in/',
-    image: '/card/woxsenstudentcouncil.png',
-  },
-  {
     name: 'Bare-Metal Kubernetes Cluster',
     status: 'building',
     description:
       'High-availability compute cluster running K3s on Raspberry Pis and recycled hardware — MetalLB load balancing, Proxmox VMs, self-hosted services.',
     tags: ['Kubernetes', 'K3s', 'Proxmox', 'MetalLB', 'Docker'],
     image: '/card/kubernetes.png',
+    live: '/blog/bare-metal-kubernetes-cluster',
   },
   {
     name: 'CNN From Scratch',

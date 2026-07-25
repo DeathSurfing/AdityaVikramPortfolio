@@ -24,7 +24,7 @@ export default function IdentityHeader() {
           href="/"
           className="font-mono text-sm tracking-tight text-[#e5e5e5] transition-colors hover:text-white"
         >
-          aditya<span className="text-[#8a8a8a]">.</span>
+          Vikk<span className="text-[#8a8a8a]">.</span>
         </Link>
         <nav className="flex items-center gap-6 font-mono text-xs text-[#8a8a8a]">
           <AnimatedLink href="/blog" className="transition-colors hover:text-[#e5e5e5]">
