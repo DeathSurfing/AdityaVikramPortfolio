@@ -22,7 +22,7 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-RUN groupadd --system bun && useradd --system --no-create-home -g bun bun
+# bun user already exists in the base image
 
 COPY --from=builder /app/public ./public
 COPY --from=builder --chown=bun:bun /app/.next/standalone ./
