@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { motion, useAnimationControls, useReducedMotion, type Variants } from 'motion/react';
-import { lenisStore } from '@/lib/lenis-store';
 import { EASE } from './motion-primitives';
 
 /* Greyscale curtain panels — lightest leads the wipe */
@@ -93,7 +92,7 @@ export default function PageWipe() {
       setBlocking(true);
       controls.start('cover').then(() => {
         pendingRef.current = true;
-        lenisStore.lenis?.scrollTo(0, { immediate: true });
+        window.scrollTo(0, 0);
         router.push(url.pathname + url.search);
         // Safety: if the route never changes, lift the curtain anyway
         setTimeout(() => {

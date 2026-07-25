@@ -1,20 +1,11 @@
 'use client';
 
 import { motion } from 'motion/react';
-import { lenisStore } from '@/lib/lenis-store';
 import { AnimatedLink, FadeUp } from './motion-primitives';
 
 export default function IdentityFooter() {
   const scrollToTop = () => {
-    const lenis = lenisStore.lenis;
-    if (lenis) {
-      lenis.scrollTo(0, {
-        duration: 1.2,
-        easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      });
-    } else {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (

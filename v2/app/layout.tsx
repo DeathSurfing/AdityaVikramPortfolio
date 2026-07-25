@@ -9,9 +9,6 @@ import "./globals.css";
 
 import IdentityHeader from "@/components/identity/IdentityHeader";
 import PageWipe from "@/components/identity/PageWipe";
-import { ThemeProvider } from "@/components/theme-provider";
-import LenisProvider from "@/providers/LenisProvider";
-import LenisHashHandler from "@/providers/LenisHashHandler";
 import { siteMetadata, siteConfig } from "@/data/site";
 
 const jsonLd = {
@@ -104,14 +101,9 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        <ThemeProvider>
-          <LenisProvider>
-            <LenisHashHandler />
-            <IdentityHeader />
-            {children}
-            <PageWipe />
-          </LenisProvider>
-        </ThemeProvider>
+        <IdentityHeader />
+        {children}
+        <PageWipe />
       </body>
     </html>
   );
