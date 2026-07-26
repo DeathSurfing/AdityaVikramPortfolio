@@ -35,7 +35,7 @@ export const bioParagraphs: BioSegment[][] = [
     {
       text: "I build open source tools and digital products — from Rust libraries to full-stack web platforms. I'm also the founder of ",
     },
-    { text: 'LexContra', href: 'https://lexcontra.com/' },
+    { text: 'LexContra', href: 'https://tech.lexcontra.com/' },
     {
       text: ', a corporate law firm, and run a web agency on retainer-based pricing. I\'m also DPO certified — the rare mix of law and engineering that makes me the perfect fit for a Data Protection Officer role.',
     },
