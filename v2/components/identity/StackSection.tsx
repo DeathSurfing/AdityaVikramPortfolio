@@ -13,7 +13,7 @@ export default function StackSection() {
     <section className="flex flex-col gap-5">
       <SectionHeading>// tools i use</SectionHeading>
 
-      <FadeUp as="p" className="text-base leading-relaxed text-[#b0b0b0]">
+      <FadeUp as="p" className="text-base leading-relaxed text-muted-foreground">
         {stackSummary}
       </FadeUp>
 
@@ -22,7 +22,7 @@ export default function StackSection() {
           type="button"
           onClick={() => setExpanded((v) => !v)}
           whileTap={{ scale: 0.96 }}
-          className="group flex items-center gap-2 self-start font-mono text-xs text-[#8a8a8a] transition-colors hover:text-[#e5e5e5]"
+          className="group flex items-center gap-2 self-start font-mono text-xs text-muted-foreground transition-colors hover:text-foreground"
           aria-expanded={expanded}
         >
           <motion.span
@@ -46,7 +46,7 @@ export default function StackSection() {
             transition={{ duration: 0.4, ease: EASE }}
             className="overflow-hidden"
           >
-            <div className="flex flex-col gap-5 border-l border-[#1f1f1f] pl-5">
+            <div className="flex flex-col gap-5 border-l border-border pl-5">
               {skillCategories.map((category, i) => (
                 <motion.div
                   key={category.name}
@@ -55,14 +55,14 @@ export default function StackSection() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.35, ease: EASE, delay: 0.1 + i * 0.06 }}
                 >
-                  <span className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-[#666]">
+                  <span className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground">
                     {category.name}
                   </span>
                   <div className="flex flex-wrap gap-1.5">
                     {category.skills.map((skill) => (
                       <span
                         key={skill}
-                        className="rounded-sm border border-[#262626] bg-[#141414] px-2 py-0.5 font-mono text-xs text-[#b0b0b0]"
+                        className="rounded-sm border border-border bg-card px-2 py-0.5 font-mono text-xs text-muted-foreground"
                       >
                         {skill}
                       </span>

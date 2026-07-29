@@ -9,11 +9,11 @@ export default function IdentityFooter() {
   };
 
   return (
-    <FadeUp as="div" className="border-t border-[#1f1f1f]">
-      <footer className="mx-auto flex max-w-2xl items-center justify-between px-6 py-8 font-mono text-xs text-[#666]">
+    <FadeUp as="div" className="border-t border-border">
+      <footer className="mx-auto flex max-w-2xl items-center justify-between px-6 py-8 font-mono text-xs text-muted-foreground">
         <span>© 2026 Aditya Vikram</span>
         <div className="flex items-center gap-5">
-          <AnimatedLink href="/sitemap.xml" className="transition-colors hover:text-[#b0b0b0]">
+          <AnimatedLink href="/sitemap.xml" className="transition-colors hover:text-muted-foreground">
             sitemap
           </AnimatedLink>
           <motion.button
@@ -21,7 +21,7 @@ export default function IdentityFooter() {
             onClick={scrollToTop}
             whileHover={{ y: -2 }}
             whileTap={{ scale: 0.95 }}
-            className="transition-colors hover:text-[#b0b0b0]"
+            className="transition-colors hover:text-muted-foreground"
           >
             top ↑
           </motion.button>

@@ -7,7 +7,7 @@ import { FadeUp, AnimatedLink } from './motion-primitives';
 export default function ContactLinks() {
   return (
     <section className="flex flex-col gap-5">
-      <FadeUp as="p" className="text-lg font-medium tracking-tight text-[#e5e5e5]">
+      <FadeUp as="p" className="text-lg font-medium tracking-tight text-foreground">
         {ctaLine}
       </FadeUp>
       <FadeUp delay={1}>
@@ -19,7 +19,7 @@ export default function ContactLinks() {
                 <AnimatedLink
                   href={url}
                   external={external}
-                  className="flex items-center gap-2 font-mono text-sm text-[#8a8a8a] transition-colors hover:text-[#e5e5e5]"
+                  className="flex items-center gap-2 font-mono text-sm text-muted-foreground transition-colors hover:text-foreground"
                 >
                   <Icon className="size-3.5" />
                   {name}

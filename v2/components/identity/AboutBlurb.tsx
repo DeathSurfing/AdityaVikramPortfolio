@@ -11,7 +11,7 @@ export default function AboutBlurb() {
           key={i}
           as="p"
           delay={i + 1}
-          className="text-base leading-relaxed text-[#b0b0b0]"
+          className="text-base leading-relaxed text-muted-foreground"
         >
           {segments.map((seg, j) =>
             seg.href ? (
@@ -20,7 +20,7 @@ export default function AboutBlurb() {
                 href={seg.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[#e5e5e5] underline decoration-[#3a3a3a] underline-offset-4 transition-colors hover:decoration-[#e5e5e5]"
+                className="text-foreground underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground"
               >
                 {seg.text}
               </a>

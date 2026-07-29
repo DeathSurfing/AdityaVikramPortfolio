@@ -7,9 +7,23 @@ import {
 
 import "./globals.css";
 
-import IdentityHeader from "@/components/identity/IdentityHeader";
+import StaggeredMenu from "@/components/identity/StaggeredMenu";
 import PageWipe from "@/components/identity/PageWipe";
 import { siteMetadata, siteConfig } from "@/data/site";
+
+const menuItems = [
+  { label: "Home", ariaLabel: "Go to home page", link: "/" },
+  { label: "Blog", ariaLabel: "Read the blog", link: "/blog" },
+  { label: "Resume", ariaLabel: "View resume", link: "/resume" },
+];
+
+const socialItems = [
+  {
+    label: "LinkedIn",
+    link: "https://www.linkedin.com/in/aditya-vikram-mahendru/",
+  },
+  { label: "GitHub", link: "https://github.com/deathSurfing" },
+];
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -93,7 +107,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${archivoBlack.variable} ${spaceGrotesk.variable} ${plexMono.variable}`}
+      className={`dark ${archivoBlack.variable} ${spaceGrotesk.variable} ${plexMono.variable}`}
       style={{ colorScheme: "dark" }}
     >
       <body className="bg-background text-foreground antialiased">
@@ -101,7 +115,14 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        <IdentityHeader />
+        <StaggeredMenu
+          isFixed
+          items={menuItems}
+          socialItems={socialItems}
+          displaySocials={true}
+          displayItemNumbering={false}
+          closeOnClickAway={true}
+        />
         {children}
         <PageWipe />
       </body>
