@@ -33,11 +33,11 @@ export const heroCopy = {
 export const bioParagraphs: BioSegment[][] = [
   [
     {
-      text: "I build open source tools and digital products — from Rust libraries to full-stack web platforms. I'm also the founder of ",
+      text: "I build open source tools and digital products, from Rust libraries to full-stack web platforms. I'm also the founder of ",
     },
     { text: 'LexContra', href: 'https://tech.lexcontra.com/' },
     {
-      text: ', a corporate law firm, and run a web agency on retainer-based pricing. I\'m also DPO certified — the rare mix of law and engineering that makes me the perfect fit for a Data Protection Officer role.',
+      text: ', a corporate law firm, and run a web agency on retainer-based pricing. I\'m also DPO certified, the rare mix of law and engineering that makes me the perfect fit for a Data Protection Officer role.',
     },
   ],
   [
@@ -48,11 +48,11 @@ export const bioParagraphs: BioSegment[][] = [
   ],
   [
     {
-      text: "Outside college I'm an AI Engineering Intern working on Kubernetes infrastructure, and maintaining ",
+      text: "I'm a Forward Deployed ML Intern at iGlobus, embedded with US client teams to turn DPDP duties into working product controls, and I maintain ",
     },
-    { text: 'featrs', href: 'https://github.com/DeathSurfing/featrs' },
+    { text: 'featrs', href: 'https://github.com/featrs/featrs' },
     {
-      text: ', a Polars-native feature engineering library for Rust. I also run a bare-metal K3s cluster on Raspberry Pis and recycled hardware — best way to learn infra is to break your own.',
+      text: ', a Polars-native feature engineering library for Rust. I also run a bare-metal K3s cluster on Raspberry Pis and recycled hardware.',
     },
   ],
 ];
@@ -64,31 +64,49 @@ export const stackSummary =
 
 export const experiences: Experience[] = [
   {
-    role: 'AI Engineering Intern',
-    company: 'Stealth Startup',
-    duration: 'Apr 2026 — Present',
+    role: 'Forward Deployed ML Intern',
+    company: 'iGlobus Corporate Consulting',
+    duration: 'Aug 2026 — Present',
     location: 'Hyderabad, India',
     type: 'Internship',
     summary:
-      'Infrastructure automation, Kubernetes orchestration, and scalable deployment systems for AI workloads — CI/CD pipelines, containerization, and cluster management.',
+      'DPDP compliance across 5 client engagements with US teams - 2 readiness assessments and 3 PII ML discovery projects. Found personal data clients did not know they held by running rules plus ML classification over databases, logs, tickets, and backups.',
+  },
+  {
+    role: 'Founder',
+    company: 'LexContra',
+    duration: '2025 — Present',
+    location: 'Hyderabad, India',
+    type: 'Founder',
+    summary:
+      'Corporate law practice with the content and review tooling built in-house - a human-verified legal fact pack pipeline, a POI compliance portal, and a security-audited research stack.',
+  },
+  {
+    role: 'AI Engineering Intern',
+    company: 'Symboynt',
+    duration: 'May 2026 — Jul 2026',
+    location: 'Hyderabad, India',
+    type: 'Internship',
+    summary:
+      'Python backend services, REST APIs, and RAG pipelines integrating LLMs, SQL, and cloud infrastructure. Built multi-agent systems with LangGraph and LangChain, plus Kubernetes orchestration and CI/CD for AI workloads.',
   },
   {
     role: 'Technical Secretary',
     company: 'Woxsen Student Council',
-    duration: '2025 — 2026',
+    duration: 'Mar 2025 — Mar 2026',
     location: 'Hyderabad, India',
     type: 'Leadership',
     summary:
-      'Campus-wide digital transformation — 6 projects, 4 internal tools, and a 55% cut in hosting costs by moving vendor services in-house.',
+      'Campus-wide digital transformation - 6 projects, 4 internal tools, and a 55% cut in hosting costs by moving vendor services in-house. Platforms served 600+ students.',
   },
   {
     role: 'Software Engineering Intern',
-    company: 'Woxsen AI Research Center',
-    duration: 'Jan 2025 — Jun 2025',
+    company: 'Woxsen AI Research Centre, Woxsen University',
+    duration: 'Jan 2025 — Aug 2025',
     location: 'Hyderabad, India',
     type: 'Internship',
     summary:
-      'Production ERP systems for 6,000+ users — Flask REST APIs, PostgreSQL, Docker containers, and CI/CD with GitHub Actions.',
+      'Production ERP systems for 6,000+ users - Flask REST APIs, PostgreSQL, and a 50% cut in deployment time by containerizing three microservices and streamlining CI/CD with GitHub Actions.',
   },
 ];
 
@@ -97,15 +115,15 @@ export const selectedProjects: SelectedProject[] = [
     name: 'featrs',
     status: 'building',
     description:
-      'A Polars-native feature engineering library for Rust — scikit-learn inspired transforms, built for performance and composability.',
+      'A Polars-native feature engineering library for Rust - scikit-learn inspired transforms, built for performance and composability.',
     tags: ['Rust', 'Polars', 'Data Engineering', 'Machine Learning'],
-    github: 'https://github.com/DeathSurfing/featrs',
+    github: 'https://github.com/featrs/featrs',
   },
   {
     name: '69k.lol',
     status: 'live',
     description:
-      'End-to-end digital product platform — secure auth via WorkOS, subscription billing with Stripe, and a real-time Convex backend.',
+      'End-to-end digital product platform - secure auth via WorkOS, subscription billing with Stripe, and a real-time Convex backend.',
     tags: ['Next.js', 'Convex', 'Stripe', 'WorkOS', 'TypeScript'],
     live: 'https://69k.lol',
     image: '/card/69k.lol.png',
@@ -114,15 +132,39 @@ export const selectedProjects: SelectedProject[] = [
     name: 'EssetAI',
     status: 'building',
     description:
-      'AI website builder that generates complete sites from Google Maps business links — Next.js 16, React 19, and TypeScript.',
+      'AI website builder that generates complete sites from Google Maps business links - Next.js 16, React 19, and TypeScript.',
     tags: ['Next.js', 'TypeScript', 'AI', 'React', 'Tailwind'],
     github: 'https://github.com/DeathSurfing/EssetAI',
+  },
+  {
+    name: 'pre-mortem',
+    status: 'building',
+    description:
+      'Memory-backed reviewer for business decisions - cites your own past decisions by id, says no_precedent instead of guessing.',
+    tags: ['Python', 'Postgres', 'pgvector', 'FastAPI', 'Next.js'],
+    github: 'https://github.com/DeathSurfing/pre-mortem',
+  },
+  {
+    name: 'kronos-vs-alphazerobeta',
+    status: 'building',
+    description:
+      'Leakage-free benchmark: a financial foundation model against a CNN-GRU recurrent-PPO portfolio agent on the S&P 500.',
+    tags: ['Python', 'Reinforcement Learning', 'Quant', 'Backtesting'],
+    github: 'https://github.com/DeathSurfing/kronos-vs-alphazerobeta',
+  },
+  {
+    name: 'aiter-commerce',
+    status: 'building',
+    description:
+      'Rust-first agentic commerce - makes any merchant catalog AI-buyable with spend caps, signed requests, and an audit log.',
+    tags: ['Rust', 'Axum', 'Ed25519', 'Razorpay'],
+    github: 'https://github.com/DeathSurfing/aiter-commerce',
   },
   {
     name: 'Bare-Metal Kubernetes Cluster',
     status: 'building',
     description:
-      'High-availability compute cluster running K3s on Raspberry Pis and recycled hardware — MetalLB load balancing, Proxmox VMs, self-hosted services.',
+      'High-availability compute cluster running K3s on Raspberry Pis and recycled hardware - MetalLB load balancing, Proxmox VMs, self-hosted services.',
     tags: ['Kubernetes', 'K3s', 'Proxmox', 'MetalLB', 'Docker'],
     image: '/card/kubernetes.png',
     live: '/blog/bare-metal-kubernetes-cluster',
@@ -131,16 +173,8 @@ export const selectedProjects: SelectedProject[] = [
     name: 'CNN From Scratch',
     status: 'building',
     description:
-      'Convolutional neural network built entirely in Rust — no ML frameworks, just linear algebra and matrix operations from scratch.',
+      'Convolutional neural network built entirely in Rust - no ML frameworks, just linear algebra and matrix operations from scratch.',
     tags: ['Rust', 'Neural Networks', 'Deep Learning', 'Linear Algebra'],
     github: 'https://github.com/DeathSurfing/CNN-From-Scratch',
-  },
-  {
-    name: 'Slang Translator',
-    status: 'building',
-    description:
-      'AI-powered slang translator using LLaMA 3.1 — converts informal language and internet slang into standard English.',
-    tags: ['LLaMA 3.1', 'NLP', 'Python', 'AI'],
-    github: 'https://github.com/DeathSurfing/Slang-Translator',
   },
 ];

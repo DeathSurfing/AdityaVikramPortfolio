@@ -17,7 +17,7 @@ export const skillCategories: SkillCategory[] = [
   },
   {
     name: 'AI & MACHINE LEARNING',
-    skills: ['Python', 'LLaMA 3.1', 'Neural Networks', 'Deep Learning', 'NLP', 'Machine Learning'],
+    skills: ['Python', 'PyTorch', 'LLM APIs', 'RAG', 'Neural Networks', 'NLP'],
     color: 'bg-purple-400',
   },
   {

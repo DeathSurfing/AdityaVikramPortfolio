@@ -2,11 +2,11 @@ import type { Metadata } from 'next';
 
 export const siteMetadata: Metadata = {
   title: {
-    default: 'Aditya Vikram — Full Stack Developer | TypeScript, React & Kubernetes',
+    default: 'Aditya Vikram - Full Stack Developer | TypeScript, React & Kubernetes',
     template: '%s | Aditya Vikram',
   },
   description:
-    'Full stack developer building digital products with Next.js, TypeScript, and Rust. Web agency operator, Kubernetes hobbyist, and Student Council Technical Secretary.',
+    'Full stack developer building digital products with Next.js, TypeScript, and Rust. Founder of LexContra, web agency operator, and Kubernetes hobbyist.',
 
   applicationName: 'Aditya Vikram Portfolio',
 
@@ -32,7 +32,7 @@ export const siteMetadata: Metadata = {
   publisher: 'Aditya Vikram',
 
   openGraph: {
-    title: 'Aditya Vikram — Full Stack Developer',
+    title: 'Aditya Vikram - Full Stack Developer',
     description:
       'Full stack developer building digital products with Next.js, TypeScript, and Rust.',
     url: 'https://adityavikram.dev',
@@ -44,14 +44,14 @@ export const siteMetadata: Metadata = {
         url: '/opengraph-image',
         width: 1200,
         height: 630,
-        alt: 'Aditya Vikram — Full Stack Developer',
+        alt: 'Aditya Vikram - Full Stack Developer',
       },
     ],
   },
 
   twitter: {
     card: 'summary_large_image',
-    title: 'Aditya Vikram — Full Stack Developer',
+    title: 'Aditya Vikram - Full Stack Developer',
     description:
       'Building digital products with Next.js, TypeScript, Rust, and Kubernetes.',
     images: ['/opengraph-image'],
@@ -86,5 +86,5 @@ export const siteConfig = {
     url: 'https://www.linkedin.com/in/aditya-vikram-mahendru/',
   },
   description:
-    'Full Stack Developer building digital products — Next.js, TypeScript, Rust, and Kubernetes.',
+    'Full Stack Developer building digital products - Next.js, TypeScript, Rust, and Kubernetes.',
 };

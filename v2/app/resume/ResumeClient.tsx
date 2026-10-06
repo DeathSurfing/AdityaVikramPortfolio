@@ -8,6 +8,7 @@ import {
   GearIcon,
   PersonIcon,
   RocketIcon,
+  TargetIcon,
 } from "@radix-ui/react-icons";
 import MotionRoot from "@/components/identity/MotionRoot";
 import IdentityFooter from "@/components/identity/IdentityFooter";
@@ -29,28 +30,36 @@ type ResumeOption = {
 
 const RESUME_OPTIONS: ResumeOption[] = [
   {
-    id: "general",
-    label: "General",
+    id: "fullstack",
+    label: "Full Stack Engineer",
     icon: <PersonIcon className="size-3.5" />,
-    file: "/uploads/Resume.pdf",
+    file: "/uploads/Resume-FullStack.pdf",
     description:
-      "Full-stack development, software engineering, and technical leadership.",
+      "General software engineering: full-stack, backend, and technical leadership.",
   },
   {
     id: "ai-ml",
-    label: "AI / ML Intern",
+    label: "AI / ML Engineer",
     icon: <RocketIcon className="size-3.5" />,
     file: "/uploads/Resume-AI-ML.pdf",
     description:
       "Machine learning, deep learning, NLP, and AI research experience.",
   },
   {
-    id: "devops",
-    label: "DevOps Intern",
+    id: "mlops",
+    label: "MLOps Engineer",
     icon: <GearIcon className="size-3.5" />,
-    file: "/uploads/Resume-DevOps.pdf",
+    file: "/uploads/Resume-MLOps.pdf",
     description:
-      "Kubernetes, CI/CD, infrastructure automation, and cloud deployment.",
+      "Kubernetes, CI/CD, infrastructure automation, and deployment of AI workloads.",
+  },
+  {
+    id: "forward-deployed",
+    label: "Forward Deployed Engineer",
+    icon: <TargetIcon className="size-3.5" />,
+    file: "/uploads/Resume-Forward-Deployed.pdf",
+    description:
+      "Embedded, client-facing engineering - privacy compliance and PII ML discovery.",
   },
 ];
 
@@ -118,7 +127,7 @@ export default function ResumeClient() {
             <div className="flex flex-wrap items-center gap-4 font-mono text-xs">
               <AnimatedLink
                 href={selected.file}
-                download={`Aditya_Vikram_${selected.id === "general" ? "Resume" : `Resume_${selected.id.toUpperCase()}`}.pdf`}
+                download={`Aditya_Vikram_Mahendru_${selected.label.replace(/[^A-Za-z0-9]+/g, "_")}.pdf`}
                 className="gap-2 text-[#b0b0b0] transition-colors hover:text-[#e5e5e5]"
               >
                 <DownloadIcon className="size-3.5" />
