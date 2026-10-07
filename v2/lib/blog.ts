@@ -74,3 +74,30 @@ export function getAllTags(): string[] {
   posts.forEach((post) => post.tags.forEach((tag) => tags.add(tag)))
   return Array.from(tags).sort()
 }
+
+// Related posts, ranked by shared tags. Tie-broken by recency so the list is
+// deterministic rather than filesystem-order dependent.
+//
+// pruned: no manual "related" field in frontmatter. Tags already encode the
+// relationships, and every post carries them, so this needs no per-post work.
+export function getRelatedPosts(slug: string, limit = 3): BlogPost[] {
+  const current = getPostBySlug(slug)
+  if (!current) return []
+
+  const tags = new Set(current.tags)
+
+  return getAllPosts()
+    .filter((post) => post.slug !== slug)
+    .map((post) => ({
+      post,
+      shared: post.tags.filter((tag) => tags.has(tag)).length,
+    }))
+    .filter((entry) => entry.shared > 0)
+    .sort(
+      (a, b) =>
+        b.shared - a.shared ||
+        new Date(b.post.date).getTime() - new Date(a.post.date).getTime(),
+    )
+    .slice(0, limit)
+    .map((entry) => entry.post)
+}

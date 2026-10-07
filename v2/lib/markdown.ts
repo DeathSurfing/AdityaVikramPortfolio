@@ -2,7 +2,7 @@ import { skillCategories } from "@/data/skills"
 import { bioParagraphs, experiences } from "@/data/identity"
 import { profile } from "@/data/profile"
 import { getProject, projects, type Project } from "@/data/projects"
-import { getAllPosts, getPostBody, getPostBySlug } from "@/lib/blog"
+import { getAllPosts, getPostBody, getPostBySlug, getRelatedPosts } from "@/lib/blog"
 import { siteConfig } from "@/data/site"
 
 // Every markdown/text representation the site exposes is rendered here, from
@@ -169,6 +169,14 @@ export function postMarkdown(slug: string): string | null {
 
   const tags = post.tags.length > 0 ? `\nTags: ${post.tags.join(", ")}\n` : ""
 
+  const related = getRelatedPosts(slug)
+  const relatedBlock =
+    related.length > 0
+      ? `\n## Related\n\n${related
+          .map((r) => `- [${r.title}](${siteConfig.url}/blog/${r.slug})`)
+          .join("\n")}\n`
+      : ""
+
   return `# ${post.title}
 
 ${post.description}
@@ -176,7 +184,7 @@ ${post.description}
 ${post.author} - ${post.date} - ${post.readingTime}
 ${tags}
 ${body}
-
+${relatedBlock}
 ---
 
 Source: ${siteConfig.url}/blog/${slug}

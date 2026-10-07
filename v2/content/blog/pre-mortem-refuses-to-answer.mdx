@@ -2,7 +2,7 @@
 title: "I built a decision reviewer that refuses to answer, and that was the hard part"
 description: "Every company has already made the decision you are about to make. Making a system reliably withhold an answer, and making the refusal read as deliberate rather than broken, took several times longer than the retrieval."
 date: "2026-09-29"
-tags: ["ai", "rag", "postgres", "product-engineering", "pre-mortem"]
+tags: ["ai", "rag", "postgresql", "product-engineering", "machine-learning"]
 coverImage: "https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=1200&h=630&fit=crop"
 author: "Aditya Vikram Mahendru"
 ---
@@ -79,7 +79,7 @@ Documentation lies in a specific way: it describes intent. All three were found 
 
 The route that ate its neighbour. I mounted the new history router at /api/biz/prompts, where a different endpoint already lived. Mine shadowed it, the preset list began receiving a store object instead of an array, and the interface crashed during hydration. The fix was a non-colliding prefix; the lesson was to check for an existing route before naming a new one.
 
-The insert that lost the prompt. Recording a prompt whose embedding had failed raised IndeterminateDatatype, because Postgres cannot infer the type of a bare NULL parameter inside a CASE WHEN. The row meant to be kept with a null vector was rejected outright. The path most likely to run when something else is already broken was the one that silently dropped data.
+The insert that lost the prompt. Recording a prompt whose embedding had failed raised IndeterminateDatatype, because [Postgres cannot infer the type](/blog/postgres-can-replace-your-whole-stack) of a bare NULL parameter inside a CASE WHEN. The row meant to be kept with a null vector was rejected outright. The path most likely to run when something else is already broken was the one that silently dropped data.
 
 The 429 the browser could not read. The rate limiter builds its response in middleware, which bypasses the CORS middleware. The refusal arrived without Access-Control-Allow-Origin, so the browser blocked it and fetch rejected with an opaque TypeError. The frontend could not distinguish “you are out of free reviews” from “the server is down”, so the paywall never opened and the user saw Failed to fetch. Adding the header fixed it. The deeper lesson: middleware ordering is a correctness concern, not an implementation detail.
 

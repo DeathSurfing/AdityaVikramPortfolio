@@ -257,7 +257,7 @@ The entire cluster idles at ~73W and ~$15/month in electricity:
 ## Lessons Learned
 
 1. **SD cards die** — always boot Raspberry Pis from USB SSDs
-2. **ARM images are evolving** — not every Docker image supports `linux/arm64`
+2. **ARM images are evolving** — not every [Docker image](/blog/docker-for-frontend-developers) supports `linux/arm64`
 3. **Network reliability matters** — a flaky switch will cause node flapping
 4. **K3s upgrades are smooth** — `apt upgrade` + `systemctl restart k3s` works
 5. **Mixed architectures are manageable** — build multi-arch images or use emulation

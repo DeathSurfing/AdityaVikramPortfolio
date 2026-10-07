@@ -11,7 +11,7 @@ import matter from "gray-matter"
 import readingTime from "reading-time"
 
 import { mdxComponents } from "@/components/blog/MDXComponents"
-import { getPostBySlug } from "@/lib/blog"
+import { getPostBySlug, getRelatedPosts } from "@/lib/blog"
 import MotionRoot from "@/components/identity/MotionRoot"
 import IdentityFooter from "@/components/identity/IdentityFooter"
 import { FadeUp } from "@/components/identity/motion-primitives"
@@ -76,6 +76,7 @@ export default async function BlogPostPage({ params }: PageProps) {
   const source = fs.readFileSync(filePath, "utf8")
   const { data, content } = matter(source)
   const stats = readingTime(source)
+  const related = getRelatedPosts(slug)
 
   const { content: mdxContent } = await compileMDX({
     source: content,
@@ -188,6 +189,29 @@ export default async function BlogPostPage({ params }: PageProps) {
           <FadeUp delay={2}>
             <div className="prose-custom">{mdxContent}</div>
           </FadeUp>
+
+          {related.length > 0 && (
+            <section className="mt-16 border-t border-[#1f1f1f] pt-8">
+              <h2 className="font-mono text-xs uppercase tracking-[0.25em] text-muted-foreground">
+                // related
+              </h2>
+              <ul className="mt-4 flex flex-col gap-3">
+                {related.map((r) => (
+                  <li key={r.slug}>
+                    <Link
+                      href={`/blog/${r.slug}`}
+                      className="text-sm leading-relaxed text-[#b0b0b0] transition-colors hover:text-[#e5e5e5]"
+                    >
+                      {r.title}
+                    </Link>
+                    <span className="mt-0.5 block font-mono text-xs text-[#6a6a6a]">
+                      {r.tags.slice(0, 3).join(" · ")}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
 
           <footer className="mt-16 border-t border-[#1f1f1f] pt-8">
             <Link
