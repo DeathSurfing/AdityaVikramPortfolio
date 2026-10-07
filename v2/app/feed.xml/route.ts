@@ -31,7 +31,7 @@ ${post.tags.map((tag) => `      <category>${esc(tag)}</category>`).join("\n")}
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Aditya Vikram - Blog</title>
+    <title>${esc(siteConfig.name)} - Blog</title>
     <link>${siteConfig.url}/blog</link>
     <description>Thoughts on web development, TypeScript, React, and building better software.</description>
     <language>en</language>

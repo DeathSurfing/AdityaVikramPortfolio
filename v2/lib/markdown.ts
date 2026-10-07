@@ -1,91 +1,142 @@
 import { skillCategories } from "@/data/skills"
-import { bioParagraphs, experiences, selectedProjects } from "@/data/identity"
+import { bioParagraphs, experiences } from "@/data/identity"
+import { profile } from "@/data/profile"
+import { getProject, projects, type Project } from "@/data/projects"
 import { getAllPosts, getPostBody, getPostBySlug } from "@/lib/blog"
 import { siteConfig } from "@/data/site"
 
-const headline = `${siteConfig.name} - ${siteConfig.title}`
+// Every markdown/text representation the site exposes is rendered here, from
+// the canonical data modules. Nothing restates a fact by hand.
+//
+// Consumed by middleware.ts (markdown content negotiation) and the /llms.txt
+// and /llms-full.txt routes.
 
-// Markdown for Agents: requests with `Accept: text/markdown` get a plain-text
-// representation instead of the styled HTML. See the negotiation route in
-// app/[...path]/route.ts, which serves these bodies.
-
-// Links are flattened to text: the HTML site is a client-heavy React tree, and
-// a flattened rendering has no anchor values left to resolve.
+// Links are flattened to text in the bio: the HTML site is a client-heavy
+// React tree, and flattening leaves no anchor values to resolve.
 function inline(segments: { text: string }[]): string {
   return segments.map((seg) => seg.text).join("")
 }
 
-export function homeMarkdown(): string {
-  const bio = bioParagraphs.map(inline).join("\n\n")
+export function projectLinks(project: Project): string {
+  const links = [
+    project.live && `[live](${project.live})`,
+    project.repository && `[repository](${project.repository})`,
+    project.registry && `[registry](${project.registry})`,
+  ].filter(Boolean)
 
-  const skills = skillCategories
-    .map((cat) => `- **${cat.name}:** ${cat.skills.join(", ")}`)
-    .join("\n")
+  return links.length > 0 ? ` Links: ${links.join(", ")}` : ""
+}
 
-  const work = experiences
+function experiencesMarkdown(): string {
+  return experiences
     .map(
       (exp) =>
         `- **${exp.role}**, ${exp.company} (${exp.duration}, ${exp.location}) - ${exp.summary}`,
     )
     .join("\n")
+}
 
-  const projects = selectedProjects
-    .map((p) => {
-      const links = [p.live, p.github].filter(Boolean).join(", ")
-      return `- **${p.name}** (${p.status}): ${p.description}${
-        links ? ` Links: ${links}` : ""
-      }`
-    })
+function skillsMarkdown(): string {
+  return skillCategories
+    .map((cat) => `- **${cat.name}:** ${cat.skills.join(", ")}`)
     .join("\n")
+}
 
-  const posts = getAllPosts()
+function projectsMarkdown(): string {
+  return projects
+    .map(
+      (p) =>
+        `- [${p.name}](${siteConfig.url}/projects/${p.slug}) - ${p.description}${projectLinks(p)}`,
+    )
+    .join("\n")
+}
+
+function postsMarkdown(): string {
+  return getAllPosts()
     .map((p) => `- [${p.title}](${siteConfig.url}/blog/${p.slug}) - ${p.description}`)
     .join("\n")
+}
 
-  return `# ${headline}
+function contactMarkdown(): string {
+  return `- Email: ${profile.email}
+- GitHub: ${profile.sameAs[0]}
+- LinkedIn: ${profile.sameAs[1]}
+- Resume (PDF): ${siteConfig.url}/resume`
+}
+
+export function homeMarkdown(): string {
+  const bio = bioParagraphs.map(inline).join("\n\n")
+
+  return `# ${profile.headline}
 
 ${bio}
 
 ## Work
 
-${work}
+${experiencesMarkdown()}
 
 ## Projects
 
-${projects}
+${projectsMarkdown()}
 
 ## Skills
 
-${skills}
+${skillsMarkdown()}
 
 ## Writing
 
-${posts}
+${postsMarkdown()}
 
 ## Contact
 
-- Email: ${siteConfig.email}
-- GitHub: ${siteConfig.github.url}
-- LinkedIn: ${siteConfig.linkedin.url}
-- Resume (PDF): ${siteConfig.url}/resume
+${contactMarkdown()}
 
-Source of truth: ${siteConfig.url}
+Source of truth: ${profile.url}
+`
+}
+
+export function projectMarkdown(slug: string): string | null {
+  const project = getProject(slug)
+  if (!project) return null
+
+  const highlights =
+    project.highlights && project.highlights.length > 0
+      ? `\n## Details\n\n${project.highlights.map((h) => `- ${h}`).join("\n")}\n`
+      : ""
+
+  return `# ${project.name}
+
+${project.description}
+${highlights}
+- Status: ${project.status}
+- Type: ${project.type}
+- Technologies: ${project.technologies.join(", ")}
+${project.live ? `- Live: ${project.live}\n` : ""}${project.repository ? `- Repository: ${project.repository}\n` : ""}${project.registry ? `- Registry: ${project.registry}\n` : ""}
+By [${project.author.name}](${project.author.url}).
+
+---
+
+Source: ${siteConfig.url}/projects/${project.slug}
+`
+}
+
+export function projectsIndexMarkdown(): string {
+  return `# Projects by ${profile.name}
+
+${profile.shortBio}
+
+${projectsMarkdown()}
+
+Source: ${siteConfig.url}/projects
 `
 }
 
 export function blogIndexMarkdown(): string {
-  const posts = getAllPosts()
-    .map(
-      (p) =>
-        `- [${p.title}](${siteConfig.url}/blog/${p.slug}) (${p.date}, ${p.readingTime}) - ${p.description}`,
-    )
-    .join("\n")
-
-  return `# Writing by ${siteConfig.name}
+  return `# Writing by ${profile.name}
 
 Thoughts on web development, TypeScript, React, machine learning, and building better software.
 
-${posts}
+${postsMarkdown()}
 `
 }
 
@@ -111,35 +162,101 @@ Source: ${siteConfig.url}/blog/${slug}
 }
 
 export function resumeMarkdown(): string {
-  const work = experiences
-    .map(
-      (exp) =>
-        `- **${exp.role}**, ${exp.company} (${exp.duration}, ${exp.location}) - ${exp.summary}`,
-    )
-    .join("\n")
+  return `# Resume - ${profile.name}
 
-  const skills = skillCategories
-    .map((cat) => `- **${cat.name}:** ${cat.skills.join(", ")}`)
-    .join("\n")
-
-  return `# Resume - ${siteConfig.name}
-
-${siteConfig.name} is a full stack developer and machine learning engineer.
+${profile.name} is a ${profile.title.toLowerCase()}.
 
 Downloadable role-specific PDFs: ${siteConfig.url}/resume
 
 ## Work
 
-${work}
+${experiencesMarkdown()}
 
 ## Skills
 
-${skills}
+${skillsMarkdown()}
 
 ## Contact
 
-- Email: ${siteConfig.email}
-- GitHub: ${siteConfig.github.url}
-- LinkedIn: ${siteConfig.linkedin.url}
+${contactMarkdown()}
 `
+}
+
+// llms.txt - the index agents fetch first. Short, link-following, cheap to
+// read. See https://llmstxt.org/
+export function llmsTxt(): string {
+  return `# ${profile.name}
+
+> ${profile.shortBio}
+
+${profile.name} is a software engineer based in ${profile.location.city}, ${profile.location.country}. This file indexes the canonical, machine-readable views of his work.
+
+## Core
+
+- [Homepage](${profile.url}): bio, work history, skills, and selected projects
+- [About](${profile.url}/#about): background and current work
+- [Resume](${profile.url}/resume): role-specific PDF downloads
+- [Profile JSON](${profile.url}/api/profile): this profile as JSON
+
+## Projects
+
+${projectsMarkdown()}
+
+- [All projects](${profile.url}/projects): index of every project with status and technologies
+- [Projects JSON](${profile.url}/api/projects): machine-readable project list
+
+## Writing
+
+${postsMarkdown()}
+
+- [Blog index](${profile.url}/blog): all posts
+- [RSS feed](${profile.url}/feed.xml): subscribe to new posts
+
+## Contact
+
+${contactMarkdown()}
+
+## Optional
+
+- [Full corpus](${profile.url}/llms-full.txt): every page's content in one file
+- [Sitemap](${profile.url}/sitemap.xml): all indexable URLs
+- [Experience JSON](${profile.url}/api/experience): work history as JSON
+
+Every representation here is generated from one canonical data source, so nothing is stale.
+`
+}
+
+// llms-full.txt - the whole corpus in one request, for agents that would
+// rather not follow links.
+export function llmsFullTxt(): string {
+  const steps = [
+    `# ${profile.name} - full corpus
+> ${profile.shortBio}
+
+Generated from the canonical data source. One page = one section.
+
+---
+
+`,
+    homeMarkdown(),
+    "\n---\n\n",
+    projectsIndexMarkdown(),
+    "\n---\n\n",
+  ]
+
+  for (const project of projects) {
+    const body = projectMarkdown(project.slug)
+    if (body) steps.push(body, "\n---\n\n")
+  }
+
+  steps.push(blogIndexMarkdown(), "\n---\n\n")
+
+  for (const post of getAllPosts()) {
+    const body = postMarkdown(post.slug)
+    if (body) steps.push(body, "\n---\n\n")
+  }
+
+  steps.push(resumeMarkdown())
+
+  return steps.join("")
 }

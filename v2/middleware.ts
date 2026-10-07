@@ -3,7 +3,11 @@ import { NextRequest, NextResponse } from "next/server"
 import {
   blogIndexMarkdown,
   homeMarkdown,
+  llmsFullTxt,
+  llmsTxt,
   postMarkdown,
+  projectMarkdown,
+  projectsIndexMarkdown,
   resumeMarkdown,
 } from "@/lib/markdown"
 
@@ -17,7 +21,16 @@ import {
 // Node runtime is required because markdown rendering reads the .mdx files.
 export const config = {
   runtime: "nodejs",
-  matcher: ["/", "/blog", "/resume", "/blog/:slug"],
+  matcher: [
+    "/",
+    "/blog",
+    "/blog/:slug",
+    "/resume",
+    "/projects",
+    "/projects/:slug",
+    "/llms.txt",
+    "/llms-full.txt",
+  ],
 }
 
 // ~4 chars per token, the usual rough estimate agents expect.
@@ -37,27 +50,39 @@ function markdownResponse(body: string): NextResponse {
   })
 }
 
-// HTML responses from Next already vary on rsc and Accept-Encoding but not on
-// Accept, so add it there too and keep the cache key honest in both directions.
-function passthrough(): NextResponse {
-  const response = NextResponse.next()
-  const vary = response.headers.get("Vary")
-  response.headers.set("Vary", vary ? `${vary}, Accept` : "Accept")
-  return response
+function textResponse(body: string): NextResponse {
+  return new NextResponse(body, {
+    headers: { "Content-Type": "text/plain; charset=utf-8", Vary: "Accept" },
+  })
 }
 
 export function middleware(request: NextRequest) {
   const accept = request.headers.get("accept") ?? ""
-  if (!accept.includes("text/markdown")) return passthrough()
-
+  const wantsMarkdown = accept.includes("text/markdown")
   const path = request.nextUrl.pathname
+
+  // llms.txt is plain text by convention, served regardless of Accept.
+  if (path === "/llms.txt") return textResponse(llmsTxt())
+  if (path === "/llms-full.txt") return textResponse(llmsFullTxt())
+
+  if (!wantsMarkdown) return NextResponse.next()
 
   if (path === "/") return markdownResponse(homeMarkdown())
   if (path === "/blog") return markdownResponse(blogIndexMarkdown())
   if (path === "/resume") return markdownResponse(resumeMarkdown())
+  if (path === "/projects") return markdownResponse(projectsIndexMarkdown())
 
-  const body = postMarkdown(path.replace(/^\/blog\//, ""))
-  if (body) return markdownResponse(body)
+  const projectPrefix = "/projects/"
+  if (path.startsWith(projectPrefix)) {
+    const body = projectMarkdown(path.slice(projectPrefix.length))
+    if (body) return markdownResponse(body)
+  }
 
-  return passthrough()
+  const postPrefix = "/blog/"
+  if (path.startsWith(postPrefix)) {
+    const body = postMarkdown(path.slice(postPrefix.length))
+    if (body) return markdownResponse(body)
+  }
+
+  return NextResponse.next()
 }

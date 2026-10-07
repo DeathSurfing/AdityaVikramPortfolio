@@ -1,26 +1,48 @@
+// Site config and Next.js metadata, derived from the canonical profile record.
+// Nothing here restates a fact by hand: edit data/profile.ts instead.
+
 import type { Metadata } from 'next';
+
+import { profile } from './profile';
+
+export const siteConfig = {
+  name: profile.name,
+  title: profile.title,
+  url: profile.url,
+  email: profile.email,
+  github: {
+    username: 'deathSurfing',
+    url: profile.sameAs[0],
+  },
+  linkedin: {
+    username: 'aditya-vikram-mahendru',
+    url: profile.sameAs[1],
+  },
+  description: profile.shortBio,
+};
 
 export const siteMetadata: Metadata = {
   title: {
-    default: 'Aditya Vikram | Full Stack Developer and Machine Learning Engineer',
-    template: '%s | Aditya Vikram',
+    default: profile.headline,
+    template: `%s | ${profile.alternateNames[0]}`,
   },
-  description:
-    'Aditya Vikram is a full stack developer and machine learning engineer. Next.js, TypeScript, and Rust on the web; Python, PyTorch, and MLOps for ML systems. Open source maintainer and founder of LexContra.',
+  description: profile.shortBio,
 
-  applicationName: 'Aditya Vikram Portfolio',
+  applicationName: `${profile.name} Portfolio`,
 
-  metadataBase: new URL('https://adityavikram.dev'),
+  metadataBase: new URL(profile.url),
   alternates: {
     canonical: '/',
     types: {
       'application/rss+xml': '/feed.xml',
+      'text/markdown': '/',
     },
   },
 
   keywords: [
-    'Aditya Vikram',
-    'Aditya Vikram Mahendru',
+    profile.alternateNames[0],
+    profile.name,
+    profile.alternateNames[2],
     'full stack developer',
     'machine learning engineer',
     'ML engineer',
@@ -36,16 +58,15 @@ export const siteMetadata: Metadata = {
     'open source',
   ],
 
-  authors: [{ name: 'Aditya Vikram' }],
-  creator: 'Aditya Vikram',
-  publisher: 'Aditya Vikram',
+  authors: [{ name: profile.name, url: profile.url }],
+  creator: profile.name,
+  publisher: profile.name,
 
   openGraph: {
-    title: 'Aditya Vikram - Full Stack Developer and ML Engineer',
-    description:
-      'Full stack developer and machine learning engineer. Next.js, TypeScript, and Rust on the web; Python, PyTorch, and MLOps for ML systems.',
-    url: 'https://adityavikram.dev',
-    siteName: 'Aditya Vikram',
+    title: profile.headline,
+    description: profile.shortBio,
+    url: profile.url,
+    siteName: profile.name,
     locale: 'en_US',
     type: 'website',
     images: [
@@ -53,16 +74,15 @@ export const siteMetadata: Metadata = {
         url: '/opengraph-image',
         width: 1200,
         height: 630,
-        alt: 'Aditya Vikram - Full Stack Developer and ML Engineer',
+        alt: profile.headline,
       },
     ],
   },
 
   twitter: {
     card: 'summary_large_image',
-    title: 'Aditya Vikram - Full Stack Developer and ML Engineer',
-    description:
-      'Building web products with Next.js, TypeScript, and Rust, and ML systems with Python, PyTorch, and MLOps.',
+    title: profile.headline,
+    description: profile.shortBio,
     images: ['/opengraph-image'],
   },
 
@@ -79,21 +99,4 @@ export const siteMetadata: Metadata = {
   },
 
   category: 'technology',
-};
-
-export const siteConfig = {
-  name: 'Aditya Vikram',
-  title: 'Full Stack Developer and ML Engineer',
-  url: 'https://adityavikram.dev',
-  email: 'jobs.aditya.vikram.mahendru@gmail.com',
-  github: {
-    username: 'deathSurfing',
-    url: 'https://github.com/deathSurfing',
-  },
-  linkedin: {
-    username: 'aditya-vikram-mahendru',
-    url: 'https://www.linkedin.com/in/aditya-vikram-mahendru/',
-  },
-  description:
-    'Aditya Vikram is a full stack developer and machine learning engineer - Next.js, TypeScript, Rust, Python, PyTorch, MLOps, and Kubernetes.',
 };
