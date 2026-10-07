@@ -61,6 +61,13 @@ export function getPostBySlug(slug: string): BlogPost | null {
   return posts.find((p) => p.slug === slug) || null
 }
 
+// Raw MDX body without frontmatter, for markdown content negotiation.
+export function getPostBody(slug: string): string | null {
+  const file = path.join(blogDir, `${slug}.mdx`)
+  if (!fs.existsSync(file)) return null
+  return matter(fs.readFileSync(file, "utf8")).content.trim()
+}
+
 export function getAllTags(): string[] {
   const posts = getAllPosts()
   const tags = new Set<string>()
