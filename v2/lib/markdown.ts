@@ -80,6 +80,7 @@ function contactMarkdown(): string {
   return `- Email: ${profile.email}
 - GitHub: ${profile.sameAs[0]}
 - LinkedIn: ${profile.sameAs[1]}
+- Substack: ${profile.sameAs[2]}
 - Resume (PDF): ${siteConfig.url}/resume`
 }
 

@@ -27,6 +27,7 @@ const socialItems = [
     link: profile.sameAs[1],
   },
   { label: "GitHub", link: profile.sameAs[0] },
+  { label: "Substack", link: profile.sameAs[2] },
 ];
 
 const archivoBlack = Archivo_Black({

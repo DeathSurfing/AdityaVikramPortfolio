@@ -52,6 +52,7 @@ export const profile = {
   sameAs: [
     'https://github.com/deathSurfing',
     'https://www.linkedin.com/in/aditya-vikram-mahendru/',
+    'https://substack.com/@adityavikramdev',
   ],
 
   // Employer / project entities the person is tied to.
@@ -64,6 +65,7 @@ export const profile = {
 export const profileLinks: ProfileLink[] = [
   { label: 'GitHub', url: 'https://github.com/deathSurfing' },
   { label: 'LinkedIn', url: 'https://www.linkedin.com/in/aditya-vikram-mahendru/' },
+  { label: 'Substack', url: 'https://substack.com/@adityavikramdev' },
   { label: 'Email', url: `mailto:${profile.email}` },
   { label: 'Resume', url: '/resume' },
 ];

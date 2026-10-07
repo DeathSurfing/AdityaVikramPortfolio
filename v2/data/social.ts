@@ -3,6 +3,7 @@ import {
   GitHubLogoIcon,
   EnvelopeClosedIcon,
   FileTextIcon,
+  ReaderIcon,
 } from '@radix-ui/react-icons';
 
 export interface SocialLink {
@@ -26,6 +27,13 @@ export const socialLinks: SocialLink[] = [
     icon: GitHubLogoIcon,
     url: 'https://github.com/deathSurfing',
     color: 'bg-[#24292e]',
+    category: 'professional',
+  },
+  {
+    name: 'Substack',
+    icon: ReaderIcon,
+    url: 'https://substack.com/@adityavikramdev',
+    color: 'bg-[#FF6719]',
     category: 'professional',
   },
   {

@@ -1,0 +1,102 @@
+---
+title: "I built a decision reviewer that refuses to answer, and that was the hard part"
+description: "Every company has already made the decision you are about to make. Making a system reliably withhold an answer, and making the refusal read as deliberate rather than broken, took several times longer than the retrieval."
+date: "2026-09-29"
+tags: ["ai", "rag", "postgres", "product-engineering", "pre-mortem"]
+coverImage: "https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=1200&h=630&fit=crop"
+author: "Aditya Vikram Mahendru"
+---
+
+Every company has already made the decision you are about to make. Nobody can find it. It is in a Slack thread from eighteen months ago, a document nobody reopens, or a postmortem that says “this has happened before” with nothing behind it.
+
+I built pre-mortem to fix that for myself. You describe a decision you are weighing, and it searches what the organisation actually did in comparable situations, flags the ones that went badly, and cites each past decision by ID. If the history has nothing to say, it says so.
+
+That last sentence is the whole article. Retrieval is the part everyone has seen; making a system reliably withhold an answer, and making the refusal read as deliberate rather than broken, took several times longer. This is a write-up of the four places that fight happened, and the bugs that only appeared once I stopped reasoning about the code and started running it.
+
+## How it hangs together
+
+Four components, no overlap: a small local classifier returns an area, a reversibility reading and two probability signals, with no network call. The memory layer returns comparable past decisions with exact source text. A deterministic ranker computes risk from the recorded outcomes of those precedents, and no model chooses the verdict. A language model then writes prose in which every sentence carries a decision ID.
+
+The separation is the point. If the model chose the verdict, this would be an opinion with citations stapled on. Instead the risk number is a function of what actually happened to similar decisions before, so it is auditable: check the arithmetic by reading the records it cites.
+
+## Fighting the model’s instinct to be helpful
+
+### 1. A decision that has not happened has no outcome
+
+You can add decisions your organisation made, and the interface pre-drafts the record from the review you just looked at. The obvious implementation is to let the model fill the fields. That is a trap: the most common case is a decision the user is still weighing, which has no result and may never have one.
+
+If the model invents a result, you have written a fabricated precedent into the exact store the product reasons over. Six months later the ranker cites it as evidence, and a reader cannot tell it was invented.
+
+So drafting is explicitly forbidden from producing a result, and the stored document states the absence out loud:
+
+```
+parts.append(f"Result: {result or 'not yet known; this decision had not been carried out when recorded'}")
+# ...and, when there is no outcome, say so in words:
+parts.append("Note: no outcome is recorded for this decision yet. Do not treat it as having gone "
+             "well or badly. It is context, not evidence of a result.")
+
+```
+The ranker treats a missing outcome as neither good nor bad, so an unresolved record can support a review as context but never move the risk. I tested this in both directions:
+
+- a proposal with no result yet → result: '', outcome: ''
+- a prompt that states a past cost → result: 'It cost 6 points of margin.', outcome: 'bad'
+The second case is the one that scares me more. Told “last year we gave a 30% discount without a volume commitment and it cost us 6 points”, the model inferred the outcome correctly. That is the behaviour you want, and it is indistinguishable from the behaviour you fear until you test both.
+
+### 2. Everything the user types is not a fact
+
+The product vectors every prompt so it can cross-reference what you have asked before. Paste a renewal question and it shows you asked a near-identical one last week: on real text, a paraphrase matched an earlier question at 0.907 cosine similarity.
+
+The tempting design is to treat those prompts as knowledge. More data, better recall, right?
+
+No. A prompt the user typed is not company knowledge. If prompts are retained they become retrievable evidence, and unreviewed text gets cited by the ranker. So prompts live in a separate store and reach the decision bank only through a human action.
+
+The guarantee is checkable by reading one file. Retaining happens in exactly two places, both user-initiated:
+
+```
+# record_and_crossref() runs on EVERY prompt. It has no import of the memory client:
+#   from . import config, hindsight   <- absent, deliberately.
+# So it cannot retain, rather than merely choosing not to.
+
+```
+
+```
+POST /api/biz/history/commit    # adding a decision, on a human yes
+POST /api/biz/history/resolve   # recording its outcome
+
+```
+
+### 3. A refusal has to look confident
+
+The first version of the no-precedent state looked broken: it said “I don’t know” in the same visual register as a system error, so it read as a bug rather than a finding.
+
+A refusal is the strongest evidence the system is not a black box, so it now carries the same weight as a real risk card: how many neighbouring decisions were considered and declined, and a statement that no analogy was stretched. Only then does a fenced guess follow, labelled “not from your company’s history — general practice only, no precedent cited”, with any ID it invents stripped out. Weak matches get the same treatment rather than being dropped, because a first-of-its-kind decision needs to show what it was compared against.
+
+The rule that emerged: the refusal is the answer, and anything after it is opt-in extra.
+
+## Four things that only appeared when I ran it
+
+Documentation lies in a specific way: it describes intent. All three were found by driving the real thing.
+
+The route that ate its neighbour. I mounted the new history router at /api/biz/prompts, where a different endpoint already lived. Mine shadowed it, the preset list began receiving a store object instead of an array, and the interface crashed during hydration. The fix was a non-colliding prefix; the lesson was to check for an existing route before naming a new one.
+
+The insert that lost the prompt. Recording a prompt whose embedding had failed raised IndeterminateDatatype, because Postgres cannot infer the type of a bare NULL parameter inside a CASE WHEN. The row meant to be kept with a null vector was rejected outright. The path most likely to run when something else is already broken was the one that silently dropped data.
+
+The 429 the browser could not read. The rate limiter builds its response in middleware, which bypasses the CORS middleware. The refusal arrived without Access-Control-Allow-Origin, so the browser blocked it and fetch rejected with an opaque TypeError. The frontend could not distinguish “you are out of free reviews” from “the server is down”, so the paywall never opened and the user saw Failed to fetch. Adding the header fixed it. The deeper lesson: middleware ordering is a correctness concern, not an implementation detail.
+
+Every endpoint was public. With no auth, a cost endpoint that spends a large batch of paid extractions was reachable by anyone with the URL, and a write endpoint could let a stranger pollute the memory the product cites. Both are closed now: those endpoints are disabled in production, and the rest are capped per visitor. That guards against a scraped public URL, not a distributed attacker.
+
+## What I would tell someone building this
+
+Separating “what a model thinks” from “what the records say” is the whole design. It is mechanical if you do it up front, and nearly impossible to retrofit once the model is choosing verdicts.
+
+Enforce honesty constraints in code, not in prompts. A prompt is a request. Three of the four honesty rules here are enforced by types, validation, or the absence of an import. Only one is a prompt, and I test that one adversarially.
+
+Constrain generated labels to an existing taxonomy, and measure the control case. Model output is mapped onto a closed list of areas and types: a label outside it would be stored but never match on recall, making the decision unretrievable. A silently useless record is worse than a rejected one. The same discipline applies to claims: the 0.907 above is a paraphrase matching its source, and what made it trustworthy was checking that an unrelated prompt matched nothing.
+
+One limitation I have not solved, and it is the interesting one: a decision that is added and never followed up can support a review forever without ever becoming evidence. I added a queue that asks, at the right moment, what actually happened, but the loop only closes if a person closes it. Designing for the moment someone will actually answer is a UX problem, and it is the next one.
+
+Built on Hindsight for the memory layer. Its documentation is worth reading if you are thinking about agent memory seriously, because the interesting design questions there are about consolidation and provenance rather than vector search.
+
+---
+
+Originally published on [Substack](https://adityavikramdev.substack.com/p/i-built-a-decision-reviewer-that). Live demo: [premortem.lexcontra.com](https://premortem.lexcontra.com/). Code: [DeathSurfing/pre-mortem](https://github.com/DeathSurfing/pre-mortem).
