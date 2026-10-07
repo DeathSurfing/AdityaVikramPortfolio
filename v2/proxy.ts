@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 
 import {
   blogIndexMarkdown,
+  experiencePageMarkdown,
   homeMarkdown,
   llmsFullTxt,
   llmsTxt,
@@ -29,6 +30,7 @@ export const config = {
     "/resume",
     "/projects",
     "/projects/:slug",
+    "/experience",
     "/llms.txt",
     "/llms-full.txt",
   ],
@@ -72,6 +74,7 @@ export function proxy(request: NextRequest) {
   if (path === "/blog") return markdownResponse(blogIndexMarkdown())
   if (path === "/resume") return markdownResponse(resumeMarkdown())
   if (path === "/projects") return markdownResponse(projectsIndexMarkdown())
+  if (path === "/experience") return markdownResponse(experiencePageMarkdown())
 
   const projectPrefix = "/projects/"
   if (path.startsWith(projectPrefix)) {

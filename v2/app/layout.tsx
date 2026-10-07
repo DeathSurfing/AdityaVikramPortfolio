@@ -16,6 +16,7 @@ import { siteJsonLd } from "@/lib/schema";
 const menuItems = [
   { label: "Home", ariaLabel: "Go to home page", link: "/" },
   { label: "Projects", ariaLabel: "View projects", link: "/projects" },
+  { label: "Experience", ariaLabel: "View experience", link: "/experience" },
   { label: "Blog", ariaLabel: "Read the blog", link: "/blog" },
   { label: "Resume", ariaLabel: "View resume", link: "/resume" },
 ];

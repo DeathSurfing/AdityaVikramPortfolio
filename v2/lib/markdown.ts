@@ -27,13 +27,32 @@ export function projectLinks(project: Project): string {
   return links.length > 0 ? ` Links: ${links.join(", ")}` : ""
 }
 
-function experiencesMarkdown(): string {
+export function experienceMarkdown(): string {
   return experiences
     .map(
       (exp) =>
-        `- **${exp.role}**, ${exp.company} (${exp.duration}, ${exp.location}) - ${exp.summary}`,
+        `### ${exp.role} - ${exp.company}\n\n${exp.duration} · ${exp.location} · ${exp.type}\n\n${exp.summary}`,
     )
-    .join("\n")
+    .join("\n\n")
+}
+
+export function experiencePageMarkdown(): string {
+  return `# Experience - ${profile.name}
+
+${profile.name} is a ${profile.title.toLowerCase()} based in ${profile.location.city}, ${profile.location.country}. Roles in order, most recent first.
+
+${experienceMarkdown()}
+
+## Skills
+
+${skillsMarkdown()}
+
+## Contact
+
+${contactMarkdown()}
+
+Source: ${siteConfig.url}/experience
+`
 }
 
 function skillsMarkdown(): string {
@@ -73,7 +92,7 @@ ${bio}
 
 ## Work
 
-${experiencesMarkdown()}
+${experienceMarkdown()}
 
 ## Projects
 
@@ -127,6 +146,8 @@ ${profile.shortBio}
 
 ${projectsMarkdown()}
 
+See the full work history at ${siteConfig.url}/experience.
+
 Source: ${siteConfig.url}/projects
 `
 }
@@ -170,7 +191,7 @@ Downloadable role-specific PDFs: ${siteConfig.url}/resume
 
 ## Work
 
-${experiencesMarkdown()}
+${experienceMarkdown()}
 
 ## Skills
 
@@ -195,6 +216,7 @@ ${profile.name} is a software engineer based in ${profile.location.city}, ${prof
 
 - [Homepage](${profile.url}): bio, work history, skills, and selected projects
 - [About](${profile.url}/#about): background and current work
+- [Experience](${profile.url}/experience): full work history, roles in order
 - [Resume](${profile.url}/resume): role-specific PDF downloads
 - [Profile JSON](${profile.url}/api/profile): this profile as JSON
 
@@ -241,6 +263,8 @@ Generated from the canonical data source. One page = one section.
     homeMarkdown(),
     "\n---\n\n",
     projectsIndexMarkdown(),
+    "\n---\n\n",
+    experiencePageMarkdown(),
     "\n---\n\n",
   ]
 

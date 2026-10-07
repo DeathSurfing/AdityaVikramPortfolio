@@ -3,6 +3,7 @@
 
 import { profile } from '@/data/profile'
 import { projects, type Project } from '@/data/projects'
+import { experiences } from '@/data/identity'
 import { siteConfig } from '@/data/site'
 
 const person = {
@@ -78,6 +79,29 @@ export function projectJsonLd(project: Project) {
     author: { '@id': `${profile.url}/#person` },
     ...(project.live ? { sameAs: project.live } : {}),
     ...(project.registry ? { installUrl: project.registry } : {}),
+  }
+}
+
+export function experienceJsonLd() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ProfilePage',
+    '@id': `${siteConfig.url}/experience/#profilepage`,
+    url: `${siteConfig.url}/experience`,
+    name: `Experience - ${profile.name}`,
+    about: { '@id': `${profile.url}/#person` },
+    isPartOf: { '@id': `${profile.url}/#website` },
+    mainEntity: experiences.map((exp) => ({
+      '@type': 'EmployeeRole',
+      roleName: exp.role,
+      description: exp.summary,
+      startDate: exp.startDate,
+      ...(exp.endDate ? { endDate: exp.endDate } : {}),
+      worksFor: {
+        '@type': 'Organization',
+        name: exp.company,
+      },
+    })),
   }
 }
 

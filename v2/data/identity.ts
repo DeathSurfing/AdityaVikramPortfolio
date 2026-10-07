@@ -12,6 +12,10 @@ export interface Experience {
   location: string;
   type: string;
   summary: string;
+  // ISO 8601, for schema.org. `endDate` is omitted while the role is current.
+  // `duration` stays the human-readable form the UI renders.
+  startDate: string;
+  endDate?: string;
 }
 
 export const heroCopy = {
@@ -57,6 +61,7 @@ export const experiences: Experience[] = [
     role: 'Forward Deployed ML Intern',
     company: 'iGlobus Corporate Consulting',
     duration: 'Aug 2026 - Present',
+    startDate: '2026-08',
     location: 'Hyderabad, India',
     type: 'Internship',
     summary:
@@ -66,6 +71,7 @@ export const experiences: Experience[] = [
     role: 'Founder',
     company: 'LexContra',
     duration: '2025 - Present',
+    startDate: '2025-01',
     location: 'Hyderabad, India',
     type: 'Founder',
     summary:
@@ -75,6 +81,8 @@ export const experiences: Experience[] = [
     role: 'AI Engineering Intern',
     company: 'Symboynt',
     duration: 'May 2026 - Jul 2026',
+    startDate: '2026-05',
+    endDate: '2026-07',
     location: 'Hyderabad, India',
     type: 'Internship',
     summary:
@@ -84,6 +92,8 @@ export const experiences: Experience[] = [
     role: 'Technical Secretary',
     company: 'Woxsen Student Council',
     duration: 'Mar 2025 - Mar 2026',
+    startDate: '2025-03',
+    endDate: '2026-03',
     location: 'Hyderabad, India',
     type: 'Leadership',
     summary:
@@ -93,6 +103,8 @@ export const experiences: Experience[] = [
     role: 'Software Engineering Intern',
     company: 'Woxsen AI Research Centre, Woxsen University',
     duration: 'Jan 2025 - Aug 2025',
+    startDate: '2025-01',
+    endDate: '2025-08',
     location: 'Hyderabad, India',
     type: 'Internship',
     summary:
