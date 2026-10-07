@@ -41,6 +41,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     description: post.description,
     alternates: {
       canonical: `/blog/${slug}`,
+      types: {
+        "text/markdown": `/blog/${slug}`,
+      },
     },
     openGraph: {
       title: `${post.title} | Aditya Vikram`,

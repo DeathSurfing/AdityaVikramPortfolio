@@ -1,0 +1,109 @@
+---
+title: "Kronos vs AlphaZeroBeta: Benchmarking a Forecast Model Against a Decision Model"
+description: "A controlled, leakage-free comparison of a financial foundation model and a reinforcement-learning portfolio agent on 22 walk-forward folds, including an honest account of what failed to reproduce."
+date: "2026-10-07"
+tags: ["machine-learning", "reinforcement-learning", "quant", "backtesting", "reproducibility"]
+coverImage: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1200&h=630&fit=crop"
+author: "Aditya Vikram Mahendru"
+---
+
+Most financial ML comparisons are not comparisons. One paper reports forecast error on price series, another reports risk-adjusted return on a portfolio, and both get summarised as "beats the baseline." The metrics are not commensurable, so the results cannot be ranked. That is the gap this project tries to close.
+
+The full code, generated tables, and methodology are at [github.com/DeathSurfing/kronos-vs-alphazerobeta](https://github.com/DeathSurfing/kronos-vs-alphazerobeta). Every number in this post is emitted from the run artefacts in `results/`; nothing is hand-typed.
+
+## The two systems are different kinds of object
+
+This asymmetry drives the entire design.
+
+**Kronos** is a decoder-only transformer pre-trained on large collections of K-line records. A specialised tokenizer quantises OHLCV-style bars into discrete tokens, and the transformer is pre-trained autoregressively over them. It is evaluated here **zero-shot** with the released `Kronos-small` checkpoint: 24,741,376 parameters, 512-token context, no fine-tuning. It forecasts.
+
+**AlphaZeroBeta** is a CNN-GRU actor-critic trained with recurrent PPO. A multi-resolution observation, daily and weekly and monthly bars stacked on the channel axis, passes through `Conv1d(32,8,4) -> Conv1d(64,4,2) -> Conv1d(64,3,1) -> GRU(512) -> FC(512)` into policy and value heads. The policy emits dollar-neutral portfolio weights directly. Its reward balances risk-adjusted excess return against a benchmark-correlation penalty and a turnover penalty. It decides.
+
+Kronos produces a forecast and needs a separate rule to convert that into positions. AlphaZeroBeta produces positions and never emits a forecast. So the forecasting arm is scored against a random walk, the decision arms are scored on risk-adjusted return with interval estimates, and no attempt is made to manufacture a forecast for the agent that does not produce one.
+
+## The protocol
+
+One evaluation harness, applied identically to every model.
+
+| | |
+|---|---|
+| Market | S&P 500, `^GSPC` benchmark |
+| Sample | 2013-06-03 .. 2025-01-14, 476 tickers |
+| Out-of-sample | 22 non-overlapping 6-month walk-forward folds, Jan 2014 .. Dec 2024 |
+| Investable set | top 100 names by trailing 60-day dollar volume, identical for all arms |
+| Costs | 5 / 15 bps per side, 30 bps/yr borrow; sensitivity at 0x, 1x, 2x |
+| Constraints | `sum w = 0`, `sum abs(w) <= 1`, `w_i in [-1, 1]` |
+| Seeds | RL arm: 1 seed across all 22 folds, 3 seeds on a fold subset |
+
+The execution rule is the part that matters most for honesty: weights formed from information available at `t-1` earn the return of `t`. No fold sees its own future, and the RL arm is retrained per fold rather than trained once on the full history.
+
+## Results
+
+Baseline costs, full out-of-sample period:
+
+| Model | CAGR | Vol | Sharpe | Sortino | Max DD | Beta |
+|---|---|---|---|---|---|---|
+| Momentum (12-1) | -0.028 | 0.126 | -0.160 | -0.197 | -0.363 | -0.060 |
+| Ridge (walk-forward) | -0.155 | 0.110 | -1.478 | -2.104 | -0.819 | 0.004 |
+| Equal weight | 0.131 | 0.185 | 0.756 | 0.913 | -0.352 | -0.127 |
+| Max-Sharpe | 0.194 | 0.238 | 0.864 | 1.122 | -0.325 | -0.129 |
+| Min-correlation | 0.184 | 0.217 | 0.887 | 1.151 | -0.380 | -0.109 |
+| Kronos (zero-shot) | -0.236 | 0.088 | -3.010 | -4.874 | -0.921 | 0.010 |
+| S&P 500 buy-and-hold | 0.115 | 0.171 | 0.725 | 0.859 | -0.339 | 1.000 |
+| AlphaZeroBeta | -0.036 | 0.068 | -0.497 | -0.620 | -0.371 | -0.024 |
+
+The headline is not flattering to either model, and that is the point.
+
+**Kronos zero-shot lost badly**, with a Sharpe of -3.010 and a 92% drawdown. A foundation model pre-trained on price bars, used without fine-tuning, did not produce a usable cross-sectional signal on this universe and period. That is a real result, not a broken run: the pipeline is the same one that produces sensible numbers for every other arm.
+
+**AlphaZeroBeta also lost**, at -0.497 Sharpe, though with the lowest volatility in the table (0.068) and near-zero beta. It was market-neutral and it stayed market-neutral; the risk controls worked even though the returns did not.
+
+**Neither beat the index.** Buy-and-hold returned a 0.725 Sharpe with a 0.115 CAGR. Two of the simplest constructed portfolios, min-correlation and max-Sharpe, beat both learned models. That is worth sitting with rather than burying.
+
+## The reproduction gap
+
+AlphaZeroBeta has published S&P 500 results. I reproduced the study and the numbers did not match:
+
+| Metric | Published | Reproduced | Difference |
+|---|---|---|---|
+| Sharpe | 1.61 | -0.497 | **-130.9%** |
+| Max drawdown | -0.26 | -0.371 | -42.8% |
+| Correlation | 0.15 | -0.060 | -140.1% |
+| Index buy-and-hold Sharpe | 0.72 | 0.725 | +0.7% |
+
+The last row is the one that gives me confidence the harness is sound. Buy-and-hold Sharpe reproduced to within 0.7%, so the data, costs, and backtest mechanics are correct. The divergence is specific to the RL arm.
+
+The most likely explanations, all documented in `docs/reproduction.md`: a reduced compute budget relative to the source study, one seed on the full fold set instead of a seed ensemble, a price-and-volume-only feature set where the source used a vendor panel including fundamentals and analyst revisions, and an encoder that treats assets independently rather than flattening them into one joint observation.
+
+I am reporting the gap rather than tuning until it closes. Adjusting hyperparameters until a number matches a published figure is how you produce a result that means nothing.
+
+## Statistical tests
+
+Sharpe differences use bootstrap confidence intervals rather than point estimates alone:
+
+| Comparison | Diff | 95% CI | p |
+|---|---|---|---|
+| Kronos vs AlphaZeroBeta | -2.518 | [-3.536, -1.564] | 0.000 |
+| Kronos vs index | -3.738 | [-4.888, -2.890] | 0.000 |
+| AlphaZeroBeta vs index | -1.231 | [-2.243, -0.319] | 0.008 |
+| AlphaZeroBeta vs momentum | -0.350 | [-1.202, 0.540] | 0.393 |
+
+Kronos underperforming is unambiguous: the interval is far from zero and the p-value is 0.000. AlphaZeroBeta underperforming the index is also statistically supported at p=0.008. But against momentum, the interval straddles zero at p=0.393, so there is no evidence of a difference. Three of these four comparisons support a claim; one does not, and it is reported as such.
+
+## What I would tell someone reading the table
+
+**A foundation model is not automatically a better signal.** Kronos is a genuinely impressive piece of engineering, and zero-shot use of it here produced the worst risk-adjusted result in the table. Pre-training on price bars does not hand you a cross-sectional alpha signal, because the task it was trained on and the task the portfolio needs are different.
+
+**Market neutrality is not alpha.** AlphaZeroBeta achieved what it was built to achieve: 0.068 volatility, -0.024 beta, controlled drawdown. It still lost money on a risk-adjusted basis. Getting the risk profile right and getting the return right are separate problems.
+
+**Simple baselines are hard to beat.** Min-correlation at 0.887 Sharpe beat both learned models. Any comparison that omits it is incomplete.
+
+**Reproduction failures are results.** The 130.9% Sharpe gap is the most informative number in this project, and it would have been easy to hide by tuning.
+
+## Limitations
+
+One market, one decade, daily frequency, one currency. Current index membership, so survivorship bias is present and cannot be removed with public data. Price and volume only, no fundamentals, analyst revisions, or sentiment. The RL arm trains under a reduced compute budget with one seed on the full fold set and three on a subset. Kronos is evaluated zero-shot only. The RL encoder treats assets independently. Costs are a fixed per-side schedule plus a flat borrow rate, with no market-impact model.
+
+The conclusion is deliberately narrow: this study does not identify a universally dominant method. It reports what happened under one protocol, with the reproduction gap disclosed rather than adjusted away, and makes claims only where the statistics support them.
+
+Code, generated tables, and the full methodology: **[github.com/DeathSurfing/kronos-vs-alphazerobeta](https://github.com/DeathSurfing/kronos-vs-alphazerobeta)**

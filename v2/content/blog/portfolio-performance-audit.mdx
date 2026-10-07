@@ -1,0 +1,129 @@
+---
+title: "How I Cut My Portfolio's JavaScript by 35% and Its Images by 914 KB"
+description: "A measurement-first performance pass on adityavikram.dev: what Lighthouse flagged, what was actually wrong, and the three fixes that moved the numbers."
+date: "2026-10-07"
+tags: ["performance", "nextjs", "lighthouse", "web-vitals", "css"]
+coverImage: "/blog/web-vitals.png"
+author: "Aditya Vikram Mahendru"
+---
+
+Performance work goes wrong when you start from the audit rather than the cause. Lighthouse told me to "remove unused JavaScript" and "avoid legacy polyfills." Both were true and both were useless, because neither was the actual problem. Here is what measurement found instead.
+
+## The numbers
+
+| Metric | Before | After | Change |
+|---|---|---|---|
+| Image transfer (3 files) | 929,852 B | 16,075 B | **-913,777 B** |
+| Initial module JS | 1,011,755 B | 658,621 B | **-353,134 B** |
+| JS chunks on first load | 13 | 11 | -2 |
+| Source images served | 5 | 3 resized | -2 |
+
+Every figure here is a byte count from `curl` against the built server, not an estimate.
+
+## Fix 1: the images were never being resized
+
+Lighthouse reported 907 KiB of image savings. The cause was not oversized files in the repo. It was that the deployed container was serving **originals** instead of resized variants.
+
+A 64-pixel avatar was shipping its 5759x5881 source. Two 64-pixel project thumbnails were shipping 2878x1800 and 723x702 PNGs.
+
+The tell was comparing the optimizer's output across two widths:
+
+```bash
+# Both returned 555480 bytes - the untouched source
+curl -s -o /dev/null -w '%{size_download}\n' \
+  "https://adityavikram.dev/_next/image?url=%2FAdityaVikram.webp&w=64&q=75"
+curl -s -o /dev/null -w '%{size_download}\n' \
+  "https://adityavikram.dev/_next/image?url=%2FAdityaVikram.webp&w=256&q=75"
+```
+
+Identical output at two widths means no resizing happened. Locally the same request returned 1,135 bytes, so the code was correct and the deployment was not.
+
+I fixed it at the source instead of chasing the mechanism, because the mechanism was unverifiable from where I was working. Resizing to 256px (4x DPR headroom for a 64px element) gave:
+
+| Image | Before | After |
+|---|---|---|
+| `AdityaVikram.webp` | 555,480 B | 5,960 B |
+| `card/69k.lol.png` | 311,458 B | 4,891 B |
+| `card/kubernetes.png` | 62,914 B | 5,224 B |
+
+**913,777 bytes saved.** Fast whether or not the container's image optimizer works.
+
+## Fix 2: an animation library loaded before the animation was needed
+
+`gsap` was in the initial bundle on every page. It exists for exactly one thing: the open and close choreography of the navigation menu.
+
+The observation that made this safe: nothing on first paint depends on it. The panel, the curtain layers, and the panel labels all start hidden via CSS. `gsap` only animates them once you click the toggle. So it could load on first interaction.
+
+```ts
+let gsapPromise: Promise<Gsap> | null = null;
+function loadGsap(): Promise<Gsap> {
+  gsapPromise ??= import('gsap').then((m) => m.gsap);
+  return gsapPromise;
+}
+```
+
+The animation callbacks take the `gsap` instance as a parameter rather than closing over the module, and the toggle handler awaits it before animating.
+
+**69,242 bytes off the initial load**, with `gsap` now living in its own chunk that no initial chunk references.
+
+One trap worth recording. The plus icon in the menu toggle was formed by `gsap` setting `rotate: 90` on a second line element. There was no CSS rule for it, so without `gsap` eager the toggle would have rendered as a dash. The fix was adding the CSS rule with the same angle, so the pre- and post-load states match.
+
+## Fix 3: removing the animation runtime entirely
+
+The biggest remaining item was `motion`, the animation library behind the scroll reveals, hover effects, and page transition. It accounted for roughly 165 KB across several chunks.
+
+I replaced it with CSS. Everything it was doing had a native equivalent:
+
+| Was | Now |
+|---|---|
+| A motion instance per reveal element | One `IntersectionObserver` adding a class |
+| `whileHover` lift on project rows | CSS `:hover` transform |
+| Animated `height: auto` drawer | `grid-template-rows: 0fr -> 1fr` |
+| `useScroll` / `useTransform` header | `animation-timeline: scroll()` |
+| Per-day motion fade (~371 instances) | Plain divs |
+| Motion timeline page curtain | CSS keyframes on data attributes |
+
+The scroll-driven header is the neatest swap. `useScroll` registers a scroll listener and recomputes transforms on every frame. CSS scroll-driven animations do the same interpolation on the compositor with no JavaScript at all:
+
+```css
+.scroll-chrome {
+  animation: scroll-chrome linear both;
+  animation-timeline: scroll();
+  animation-range: 0 48px;
+}
+```
+
+**171,298 bytes saved**, and `motion` is now absent from the bundle entirely.
+
+The drawer is the other one worth stealing. Animating `height: auto` normally needs JavaScript to measure the content first. A grid wrapper does it declaratively:
+
+```css
+.stack-drawer { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.4s; }
+.stack-drawer[data-open='true'] { grid-template-rows: 1fr; }
+```
+
+## What I did not fix, and why
+
+Three Lighthouse items are still there. I deliberately left all of them.
+
+**"Legacy JavaScript - 24 KiB."** This is Next's polyfill chunk, and it is already gated correctly:
+
+```html
+<script src="/_next/static/chunks/0cz1d0mv5g_q7.js" noModule=""></script>
+```
+
+Modern browsers never fetch a `noModule` script. I confirmed the app code is not being downleveled either: grepping every shipped chunk for transpilation helpers (`__awaiter`, `__spreadArray`, `_createForOfIteratorHelper`) returns nothing, while 111 optional-chaining and 32 nullish-coalescing operators pass through untouched.
+
+**"Reduce unused JavaScript - 51 KiB,"** of which 27.4 KiB is one chunk. That chunk is React DOM: 201 KB of its 231 KB. "Unused" here means the coverage tool did not observe those internals executing. You cannot remove React DOM from a React application.
+
+**"Avoid long main-thread tasks."** The bulk is React hydration. The only way to reduce it is to ship less React, which means a different framework, not a different configuration.
+
+## What I learned
+
+**Compare two inputs to find a passthrough.** Identical output at two different widths is the cheapest possible test for "is this transformation running at all," and it found the largest problem on the site.
+
+**Check whether the flagged thing is actually loaded.** The polyfill chunk is named in the audit and never downloaded. Chasing it would have been pure waste.
+
+**A config flag is not a fix for an architectural problem.** Nearly 900 KB of JavaScript was going to the browser for what amounts to fades, a lift on hover, and a curtain. That was a decision, not a setting, and it needed a rewrite rather than a `browserslist` entry.
+
+**Verify bytes, not impressions.** Every number above came from `curl` and `stat` against the built output. Several of my initial hypotheses, including two about the image optimizer, were wrong and measurement is what caught them.
