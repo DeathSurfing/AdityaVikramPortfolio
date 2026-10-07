@@ -33,22 +33,22 @@ export const heroCopy = {
 export const bioParagraphs: BioSegment[][] = [
   [
     {
-      text: "I build open source tools and digital products, from Rust libraries to full-stack web platforms. I'm also the founder of ",
+      text: "I'm a full stack developer and machine learning engineer. I build open source tools and digital products, from Rust libraries to web platforms with Next.js and TypeScript. I'm also the founder of ",
     },
     { text: 'LexContra', href: 'https://tech.lexcontra.com/' },
     {
-      text: ', a corporate law firm, and run a web agency on retainer-based pricing. I\'m also DPO certified, the rare mix of law and engineering that makes me the perfect fit for a Data Protection Officer role.',
+      text: ", a corporate law firm, and run a web agency on retainer-based pricing. I'm also DPO certified, the rare mix of law and engineering that makes me the perfect fit for a Data Protection Officer role.",
     },
   ],
   [
     { text: 'At Woxsen University I served as Technical Secretary of the Student Council' },
     {
-      text: ', building platforms for 600+ students and migrating campus infrastructure in-house. Previously I interned at the Woxsen AI Research Center, shipping ERP systems for 6,000+ users.',
+      text: ', building platforms for 600+ students and migrating campus infrastructure in-house. Previously I interned at the Woxsen AI Research Center, shipping ML-backed ERP systems for 6,000+ users.',
     },
   ],
   [
     {
-      text: "I'm a Forward Deployed ML Intern at iGlobus, embedded with US client teams to turn DPDP duties into working product controls, and I maintain ",
+      text: "I'm a Forward Deployed ML Intern at iGlobus, embedded with US client teams to turn DPDP duties into working product controls. My machine learning work runs on Python and PyTorch, with MLOps practices for training, evaluation, and deployment. I maintain ",
     },
     { text: 'featrs', href: 'https://github.com/featrs/featrs' },
     {
@@ -66,7 +66,7 @@ export const experiences: Experience[] = [
   {
     role: 'Forward Deployed ML Intern',
     company: 'iGlobus Corporate Consulting',
-    duration: 'Aug 2026 — Present',
+    duration: 'Aug 2026 - Present',
     location: 'Hyderabad, India',
     type: 'Internship',
     summary:
@@ -75,7 +75,7 @@ export const experiences: Experience[] = [
   {
     role: 'Founder',
     company: 'LexContra',
-    duration: '2025 — Present',
+    duration: '2025 - Present',
     location: 'Hyderabad, India',
     type: 'Founder',
     summary:
@@ -84,7 +84,7 @@ export const experiences: Experience[] = [
   {
     role: 'AI Engineering Intern',
     company: 'Symboynt',
-    duration: 'May 2026 — Jul 2026',
+    duration: 'May 2026 - Jul 2026',
     location: 'Hyderabad, India',
     type: 'Internship',
     summary:
@@ -93,7 +93,7 @@ export const experiences: Experience[] = [
   {
     role: 'Technical Secretary',
     company: 'Woxsen Student Council',
-    duration: 'Mar 2025 — Mar 2026',
+    duration: 'Mar 2025 - Mar 2026',
     location: 'Hyderabad, India',
     type: 'Leadership',
     summary:
@@ -102,7 +102,7 @@ export const experiences: Experience[] = [
   {
     role: 'Software Engineering Intern',
     company: 'Woxsen AI Research Centre, Woxsen University',
-    duration: 'Jan 2025 — Aug 2025',
+    duration: 'Jan 2025 - Aug 2025',
     location: 'Hyderabad, India',
     type: 'Internship',
     summary:

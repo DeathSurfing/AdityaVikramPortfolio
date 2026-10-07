@@ -5,6 +5,16 @@ import readingTime from "reading-time"
 
 const blogDir = path.join(process.cwd(), "content/blog")
 
+// Static pages share one stable lastmod. Deriving it from the newest post date
+// (instead of new Date()) keeps the sitemap from claiming every page changed on
+// each build, which Google ignores as an unreliable freshness signal.
+export function getLatestPostDate(): Date {
+  const stamps = getAllPosts()
+    .map((post) => Date.parse(post.date))
+    .filter((t) => !Number.isNaN(t))
+  return new Date(stamps.length > 0 ? Math.max(...stamps) : Date.UTC(2026, 0, 1))
+}
+
 export interface BlogPost {
   slug: string
   title: string

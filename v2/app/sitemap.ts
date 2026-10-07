@@ -1,26 +1,28 @@
 import type { MetadataRoute } from "next"
-import { getAllPosts } from "@/lib/blog"
+import { getAllPosts, getLatestPostDate } from "@/lib/blog"
 import { siteConfig } from "@/data/site"
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = siteConfig.url
+  // Pages change when their content does, not when a build runs.
+  const siteLastMod = getLatestPostDate()
 
   const staticPages: MetadataRoute.Sitemap = [
     {
       url: baseUrl,
-      lastModified: new Date(),
+      lastModified: siteLastMod,
       changeFrequency: "monthly",
       priority: 1,
     },
     {
       url: `${baseUrl}/blog`,
-      lastModified: new Date(),
+      lastModified: siteLastMod,
       changeFrequency: "weekly",
       priority: 0.9,
     },
     {
       url: `${baseUrl}/resume`,
-      lastModified: new Date(),
+      lastModified: siteLastMod,
       changeFrequency: "monthly",
       priority: 0.6,
     },

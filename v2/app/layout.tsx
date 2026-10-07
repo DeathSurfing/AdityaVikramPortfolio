@@ -33,7 +33,7 @@ const jsonLd = {
       name: "Aditya Vikram Mahendru",
       url: siteConfig.url,
       image: `${siteConfig.url}/AdityaVikram.webp`,
-      jobTitle: "Full Stack Developer",
+      "jobTitle": ["Full Stack Developer", "Machine Learning Engineer"],
       email: `mailto:${siteConfig.email}`,
       sameAs: [
         siteConfig.linkedin.url,
@@ -47,6 +47,11 @@ const jsonLd = {
         "PostgreSQL",
         "Docker",
         "Kubernetes",
+        "Machine Learning",
+        "MLOps",
+        "Python",
+        "PyTorch",
+        "Rust",
       ],
     },
     {

@@ -72,12 +72,16 @@ export default function ResumeClient() {
         <div className="mx-auto flex max-w-3xl flex-col gap-8 px-6 pt-32 pb-20">
           {/* Heading */}
           <div className="flex flex-col gap-5">
-            <SectionHeading>// resume</SectionHeading>
+            <h1 className="font-mono text-xs uppercase tracking-[0.25em] text-muted-foreground">
+              // resume - Aditya Vikram
+            </h1>
             <FadeUp
               as="p"
               className="text-base leading-relaxed text-[#b0b0b0]"
             >
-              Pick a role — the PDF below swaps to the tailored version.
+              Aditya Vikram is a full stack developer and machine learning
+              engineer. Pick a role and the PDF below swaps to the tailored
+              version.
             </FadeUp>
           </div>
 

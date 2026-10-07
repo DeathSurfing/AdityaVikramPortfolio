@@ -16,8 +16,8 @@ export const skillCategories: SkillCategory[] = [
     color: 'bg-blue-400',
   },
   {
-    name: 'AI & MACHINE LEARNING',
-    skills: ['Python', 'PyTorch', 'LLM APIs', 'RAG', 'Neural Networks', 'NLP'],
+    name: 'MLOPS, MACHINE LEARNING & AI',
+    skills: ['PyTorch', 'Python', 'MLOps', 'Model Evaluation', 'Neural Networks', 'RAG', 'NLP'],
     color: 'bg-purple-400',
   },
   {
