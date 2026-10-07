@@ -377,7 +377,7 @@ export function StaggeredMenu({
           ));
         })()}
       </div>
-      <header className="staggered-menu-header" aria-label="Main navigation header">
+      <header className="staggered-menu-header">
         <button
           ref={toggleBtnRef}
           className="sm-toggle"
@@ -407,12 +407,15 @@ export function StaggeredMenu({
         id="staggered-menu-panel"
         ref={panelRef}
         className="staggered-menu-panel"
+        aria-label="Main navigation"
         aria-hidden={!open}
+        // aria-hidden alone leaves the links focusable, which is an
+        // axe "aria-hidden-focus" violation and yields a malformed tree.
+        inert={!open}
       >
         <div className="sm-panel-inner">
           <ul
             className="sm-panel-list"
-            role="list"
             data-numbering={displayItemNumbering || undefined}
           >
             {items && items.length ? (
@@ -443,8 +446,8 @@ export function StaggeredMenu({
           </ul>
           {displaySocials && socialItems && socialItems.length > 0 && (
             <div className="sm-socials" aria-label="Social links">
-              <h3 className="sm-socials-title">Socials</h3>
-              <ul className="sm-socials-list" role="list">
+              <p className="sm-socials-title">Socials</p>
+              <ul className="sm-socials-list">
                 {socialItems.map((s, i) => (
                   <li key={s.label + i} className="sm-socials-item">
                     <a

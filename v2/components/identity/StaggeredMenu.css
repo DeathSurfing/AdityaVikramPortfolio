@@ -194,6 +194,8 @@
   font-size: 1rem;
   font-weight: 500;
   color: var(--sm-accent, #ffcc00);
+  /* Was an h3. Now a p, so reset the UA default margin and match h3 sizing. */
+  line-height: 1.2;
 }
 
 .sm-socials-list {

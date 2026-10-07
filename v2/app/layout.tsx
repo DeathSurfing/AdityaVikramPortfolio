@@ -80,6 +80,10 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(siteJsonLd) }}
         />
+        {children}
+        {/* Rendered after the page content so the page's h1 is the first
+            heading in the accessibility tree. The menu is position: fixed,
+            so visual order is unchanged. */}
         <StaggeredMenu
           isFixed
           items={menuItems}
@@ -88,7 +92,6 @@ export default function RootLayout({
           displayItemNumbering={false}
           closeOnClickAway={true}
         />
-        {children}
         <PageWipe />
       </body>
     </html>
