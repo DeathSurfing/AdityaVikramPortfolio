@@ -1,38 +1,29 @@
 'use client';
 
-import { motion, type Variants } from 'motion/react';
 import type { ReactNode } from 'react';
 
-/* Shared easing — soft ease-out used across the identity page */
+/* Shared easing — soft ease-out used across the identity page. Kept as a CSS
+   custom property so the same curve is used everywhere. */
 export const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
-export const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 16 },
-  visible: (i: number = 0) => ({
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.5, ease: EASE, delay: i * 0.08 },
-  }),
-};
+// pruned: the reveal-on-scroll animation is now CSS-driven. Elements start
+// hidden and the `is-visible` class (added by the observer in MotionRoot)
+// fades them in. One shared observer replaces one motion instance per element.
 
 interface FadeUpProps {
   children: ReactNode;
   delay?: number;
   className?: string;
-  as?: 'div' | 'section' | 'p' | 'header' | 'article';
+  as?: 'div' | 'section' | 'p' | 'header' | 'article' | 'h1' | 'h2' | 'h3';
 }
 
 /** Fade + rise into view once, when scrolled into the viewport. */
 export function FadeUp({ children, delay = 0, className, as = 'div' }: FadeUpProps) {
-  const Tag = motion[as];
+  const Tag = as;
   return (
     <Tag
-      className={className}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, margin: '-64px' }}
-      variants={fadeUp}
-      custom={delay}
+      className={`fade-up${className ? ` ${className}` : ''}`}
+      style={delay ? ({ '--fade-delay': `${delay * 80}ms` } as React.CSSProperties) : undefined}
     >
       {children}
     </Tag>
@@ -42,10 +33,10 @@ export function FadeUp({ children, delay = 0, className, as = 'div' }: FadeUpPro
 /** Small mono section label, e.g. "// story so far". */
 export function SectionHeading({ children }: { children: ReactNode }) {
   return (
-    <FadeUp>
-      <h2 className="font-mono text-xs uppercase tracking-[0.25em] text-muted-foreground">
+    <FadeUp as="h2">
+      <span className="font-mono text-xs uppercase tracking-[0.25em] text-muted-foreground">
         {children}
-      </h2>
+      </span>
     </FadeUp>
   );
 }
@@ -58,29 +49,20 @@ interface AnimatedLinkProps {
   download?: boolean | string;
 }
 
-/** Text link with a motion-driven underline sweep on hover. */
+/** Text link with an underline sweep on hover, driven by CSS. */
 export function AnimatedLink({ href, children, className, external, download }: AnimatedLinkProps) {
   return (
-    <motion.a
+    <a
       href={href}
       download={download}
       {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-      className={`relative inline-flex items-center ${className ?? ''}`}
-      initial="rest"
-      whileHover="hover"
-      whileTap={{ scale: 0.97 }}
-      animate="rest"
+      className={`link-sweep relative inline-flex items-center ${className ?? ''}`}
     >
       {children}
-      <motion.span
+      <span
         aria-hidden
-        className="absolute -bottom-0.5 left-0 h-px w-full bg-current"
-        variants={{
-          rest: { scaleX: 0, originX: 0 },
-          hover: { scaleX: 1, originX: 0 },
-        }}
-        transition={{ duration: 0.3, ease: EASE }}
+        className="link-sweep-bar absolute -bottom-0.5 left-0 h-px w-full bg-current"
       />
-    </motion.a>
+    </a>
   );
 }

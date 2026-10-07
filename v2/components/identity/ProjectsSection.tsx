@@ -2,17 +2,16 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { motion } from 'motion/react';
 import { projects, type Project } from '@/data/projects';
-import { EASE, FadeUp, SectionHeading } from './motion-primitives';
+import { FadeUp, SectionHeading } from './motion-primitives';
 
 function StatusBadge({ status }: { status: Project['status'] }) {
   return (
     <span className="flex items-center gap-1.5 rounded-sm border border-border bg-card px-1.5 py-0.5 font-mono text-[0.65rem] text-muted-foreground">
-      <motion.span
-        className="inline-block size-1 rounded-full bg-muted-foreground"
-        animate={status === 'building' ? { opacity: [1, 0.25, 1] } : undefined}
-        transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
+      <span
+        className={`inline-block size-1 rounded-full bg-muted-foreground${
+          status === 'building' ? ' badge-dot' : ''
+        }`}
       />
       {status}
     </span>
@@ -22,11 +21,7 @@ function StatusBadge({ status }: { status: Project['status'] }) {
 function ProjectRow({ project, index }: { project: Project; index: number }) {
   return (
     <FadeUp delay={index}>
-      <motion.article
-        className="group flex gap-4 rounded-md border border-transparent p-3 -mx-3 transition-colors duration-[250ms] hover:border-border hover:bg-card"
-        whileHover={{ y: -3 }}
-        transition={{ duration: 0.25, ease: EASE }}
-      >
+      <article className="project-row group flex gap-4 rounded-md border border-transparent p-3 -mx-3 hover:border-border hover:bg-card">
         {project.image && (
           <div className="relative mt-1 hidden size-16 shrink-0 overflow-hidden rounded-sm border border-border sm:block">
             <Image
@@ -85,7 +80,7 @@ function ProjectRow({ project, index }: { project: Project; index: number }) {
             )}
           </div>
         </div>
-      </motion.article>
+      </article>
     </FadeUp>
   );
 }

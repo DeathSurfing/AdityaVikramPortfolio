@@ -2,65 +2,43 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { motion, useAnimationControls, useReducedMotion, type Variants } from 'motion/react';
-import { EASE } from './motion-primitives';
 
 /* Greyscale curtain panels — lightest leads the wipe */
 const PANELS = ['#e5e5e5', '#b0b0b0', '#8a8a8a', '#5c5c5c', '#333333'];
-const STAGGER = 0.045;
-const DURATION = 0.35;
+const STAGGER = 45; // ms, matches the old 0.045s
+const DURATION = 350; // ms, matches the old 0.35s
 
-const panelVariants: Variants = {
-  hidden: { scaleY: 0 },
-  cover: (i: number) => ({
-    scaleY: 1,
-    originY: 1, // rise from the bottom
-    transition: { duration: DURATION, ease: EASE, delay: i * STAGGER },
-  }),
-  reveal: (i: number) => ({
-    scaleY: 0,
-    originY: 0, // lift away toward the top
-    transition: {
-      duration: DURATION,
-      ease: EASE,
-      delay: (PANELS.length - 1 - i) * STAGGER,
-    },
-  }),
-};
-
+/**
+ * Page-transition curtain. Driven by CSS animations on data attributes rather
+ * than a motion timeline, so it costs no JS runtime.
+ *
+ * pruned: the old version drove this with useAnimationControls and awaited
+ * each tween. Now it sets a state, lets the CSS animation run, and uses one
+ * timeout of the same total duration to know when the curtain is done.
+ */
 export default function PageWipe() {
   const router = useRouter();
   const pathname = usePathname();
-  const controls = useAnimationControls();
-  const reduceMotion = useReducedMotion();
 
   const pathnameRef = useRef(pathname);
   const pendingRef = useRef(false);
   const busyRef = useRef(false);
+  const [phase, setPhase] = useState<'idle' | 'cover' | 'reveal'>('idle');
   const [blocking, setBlocking] = useState(false);
-
-  const reveal = () => {
-    controls
-      .start('reveal')
-      .then(() => {
-        busyRef.current = false;
-        setBlocking(false);
-        controls.set('hidden');
-      })
-      .catch(() => {
-        busyRef.current = false;
-        setBlocking(false);
-      });
-  };
 
   /* Reveal once the new route has mounted */
   useEffect(() => {
     pathnameRef.current = pathname;
     if (pendingRef.current) {
       pendingRef.current = false;
-      reveal();
+      setPhase('reveal');
+      const total = DURATION + STAGGER * (PANELS.length - 1);
+      window.setTimeout(() => {
+        busyRef.current = false;
+        setBlocking(false);
+        setPhase('idle');
+      }, total);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
   /* Intercept internal link clicks → cover → navigate */
@@ -83,6 +61,7 @@ export default function PageWipe() {
       e.preventDefault();
       if (busyRef.current) return;
 
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       if (reduceMotion) {
         router.push(url.pathname + url.search);
         return;
@@ -90,42 +69,51 @@ export default function PageWipe() {
 
       busyRef.current = true;
       setBlocking(true);
-      controls.start('cover').then(() => {
+      setPhase('cover');
+
+      const total = DURATION + STAGGER * (PANELS.length - 1);
+      window.setTimeout(() => {
         pendingRef.current = true;
         window.scrollTo(0, 0);
         router.push(url.pathname + url.search);
         // Safety: if the route never changes, lift the curtain anyway
-        setTimeout(() => {
+        window.setTimeout(() => {
           if (pendingRef.current) {
             pendingRef.current = false;
-            reveal();
+            setPhase('reveal');
+            window.setTimeout(() => {
+              busyRef.current = false;
+              setBlocking(false);
+              setPhase('idle');
+            }, total);
           }
         }, 1500);
-      });
+      }, total);
     };
 
     document.addEventListener('click', onClick, true);
     return () => document.removeEventListener('click', onClick, true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reduceMotion, router]);
+  }, [router]);
 
   return (
-    <motion.div
+    <div
       aria-hidden
       className="fixed inset-0 z-[100] flex"
       style={{ pointerEvents: blocking ? 'auto' : 'none' }}
     >
-      {PANELS.map((color, i) => (
-        <motion.div
-          key={color}
-          className="h-full flex-1"
-          style={{ backgroundColor: color }}
-          custom={i}
-          variants={panelVariants}
-          initial="hidden"
-          animate={controls}
-        />
-      ))}
-    </motion.div>
+      {PANELS.map((color, i) => {
+        const delay = `${(phase === 'reveal' ? PANELS.length - 1 - i : i) * STAGGER}ms`;
+        return (
+          <div
+            key={color}
+            className="wipe-panel h-full flex-1"
+            style={{ backgroundColor: color, animationDelay: delay }}
+            data-cover={phase === 'cover'}
+            data-reveal={phase === 'reveal'}
+          />
+        );
+      })}
+    </div>
   );
 }

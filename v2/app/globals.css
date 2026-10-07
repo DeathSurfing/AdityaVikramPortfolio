@@ -279,3 +279,251 @@ body {
   }
 }
 
+/* ─────────────── CSS reveal + hover (replaces the motion runtime) ───────────────
+   The animation runtime was ~165 KB of JS on every page for what amounts to
+   fades, a rise, an underline sweep, and a marquee. These rules do the same
+   work on the compositor instead. `is-visible` is added by MotionRoot's
+   IntersectionObserver; `.fade-up` starts hidden so there is no flash. */
+
+.fade-up {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--fade-delay, 0ms);
+}
+
+.fade-up.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Underline sweep, was a motion variant on AnimatedLink. */
+.link-sweep-bar {
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.link-sweep:hover .link-sweep-bar,
+.link-sweep:focus-visible .link-sweep-bar {
+  transform: scaleX(1);
+}
+
+/* Hero portrait: was a motion initial/animate on opacity + scale. */
+.hero-avatar {
+  animation: hero-avatar-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes hero-avatar-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Hero status dot: was a repeating motion opacity tween. */
+.status-dot {
+  animation: status-dot-pulse 2s ease-in-out infinite;
+}
+
+@keyframes status-dot-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+
+/* Project "building" badge dot: was a repeating motion opacity tween. */
+.badge-dot {
+  animation: status-dot-pulse 1.6s ease-in-out infinite;
+}
+
+/* Project row lift on hover: was motion whileHover. */
+.project-row {
+  transition:
+    transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.25s ease,
+    background-color 0.25s ease;
+}
+
+.project-row:hover {
+  transform: translateY(-3px);
+}
+
+/* "+" toggle in the stack section: was an animated rotate. */
+.stack-plus {
+  display: inline-block;
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.stack-plus[data-open='true'] {
+  transform: rotate(45deg);
+}
+
+/* Expand/collapse of the skills grid: was AnimatePresence height auto.
+   grid-template-rows 0fr -> 1fr animates height without measuring it. */
+.stack-drawer {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition:
+    grid-template-rows 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  opacity: 0;
+}
+
+.stack-drawer[data-open='true'] {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.stack-drawer > * {
+  overflow: hidden;
+}
+
+/* Resume role description swap: was AnimatePresence mode="wait". */
+.role-fade {
+  animation: role-fade-in 0.25s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes role-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Resume PDF frame: was AnimatePresence opacity fade. */
+.pdf-fade {
+  animation: pdf-fade-in 0.3s ease both;
+}
+
+@keyframes pdf-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Page wipe curtain: was a gsap-free motion timeline. Pure CSS so the
+   transition costs nothing in JS. */
+.wipe-panel {
+  transform: scaleY(0);
+  transform-origin: 50% 100%;
+}
+
+.wipe-panel[data-cover='true'] {
+  animation: wipe-cover 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.wipe-panel[data-reveal='true'] {
+  transform-origin: 50% 0%;
+  animation: wipe-reveal 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes wipe-cover {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes wipe-reveal {
+  from {
+    transform: scaleY(1);
+  }
+  to {
+    transform: scaleY(0);
+  }
+}
+
+/* Header chrome that appeared on scroll via useScroll/useTransform. */
+.scroll-chrome {
+  animation: scroll-chrome linear both;
+  animation-timeline: scroll();
+  animation-range: 0 48px;
+}
+
+.scroll-chrome-bg {
+  --scroll-chrome-to: 0.8;
+}
+
+.scroll-chrome-border {
+  --scroll-chrome-to: 1;
+}
+
+@keyframes scroll-chrome {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: var(--scroll-chrome-to, 1);
+  }
+}
+
+
+/* Story rows: was motion whileHover x:6. */
+.story-row {
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.story-row:hover {
+  transform: translateX(6px);
+}
+
+/* Role buttons on /resume: was motion whileTap scale 0.96. */
+.role-tap {
+  transition: transform 0.12s ease;
+}
+
+.role-tap:active {
+  transform: scale(0.96);
+}
+
+/* Everything above is decoration. Honour the OS setting. */
+@media (prefers-reduced-motion: reduce) {
+  .fade-up,
+  .fade-up.is-visible {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .hero-avatar,
+  .status-dot,
+  .badge-dot,
+  .role-fade,
+  .pdf-fade,
+  .wipe-panel[data-cover='true'],
+  .wipe-panel[data-reveal='true'],
+  .scroll-chrome {
+    animation: none;
+  }
+
+  .scroll-chrome {
+    opacity: var(--scroll-chrome-to, 1);
+  }
+
+  .link-sweep-bar,
+  .project-row,
+  .stack-plus,
+  .stack-drawer {
+    transition: none;
+  }
+}

@@ -1,7 +1,6 @@
 'use client';
 
-import { motion } from 'motion/react';
-import { AnimatedLink, FadeUp } from './motion-primitives';
+import { FadeUp } from './motion-primitives';
 
 export default function IdentityFooter() {
   const scrollToTop = () => {
@@ -9,22 +8,27 @@ export default function IdentityFooter() {
   };
 
   return (
-    <FadeUp as="div" className="border-t border-border">
+    <FadeUp className="border-t border-border">
       <footer className="mx-auto flex max-w-2xl items-center justify-between px-6 py-8 font-mono text-xs text-muted-foreground">
         <span>© 2026 Aditya Vikram</span>
         <div className="flex items-center gap-5">
-          <AnimatedLink href="/sitemap.xml" className="transition-colors hover:text-muted-foreground">
+          <a
+            href="/sitemap.xml"
+            className="link-sweep relative inline-flex items-center transition-colors hover:text-muted-foreground"
+          >
             sitemap
-          </AnimatedLink>
-          <motion.button
+            <span
+              aria-hidden
+              className="link-sweep-bar absolute -bottom-0.5 left-0 h-px w-full bg-current"
+            />
+          </a>
+          <button
             type="button"
             onClick={scrollToTop}
-            whileHover={{ y: -2 }}
-            whileTap={{ scale: 0.95 }}
             className="transition-colors hover:text-muted-foreground"
           >
             top ↑
-          </motion.button>
+          </button>
         </div>
       </footer>
     </FadeUp>

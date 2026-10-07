@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { AnimatePresence, motion } from "motion/react";
 import {
   DownloadIcon,
   ExternalLinkIcon,
@@ -14,7 +13,6 @@ import MotionRoot from "@/components/identity/MotionRoot";
 import IdentityFooter from "@/components/identity/IdentityFooter";
 import {
   AnimatedLink,
-  EASE,
   FadeUp,
   SectionHeading,
 } from "@/components/identity/motion-primitives";
@@ -92,12 +90,11 @@ export default function ResumeClient() {
                 {RESUME_OPTIONS.map((option) => {
                   const active = selected.id === option.id;
                   return (
-                    <motion.button
+                    <button
                       key={option.id}
                       type="button"
                       onClick={() => setSelected(option)}
-                      whileTap={{ scale: 0.96 }}
-                      className={`flex items-center gap-2 rounded-sm border px-3 py-1.5 font-mono text-xs transition-colors ${
+                      className={`role-tap flex items-center gap-2 rounded-sm border px-3 py-1.5 font-mono text-xs transition-colors ${
                         active
                           ? "border-[#e5e5e5] bg-[#e5e5e5] text-[#0a0a0a]"
                           : "border-[#262626] text-[#8a8a8a] hover:border-[#3a3a3a] hover:text-[#e5e5e5]"
@@ -106,23 +103,14 @@ export default function ResumeClient() {
                     >
                       {option.icon}
                       {option.label}
-                    </motion.button>
+                    </button>
                   );
                 })}
               </div>
 
-              <AnimatePresence mode="wait" initial={false}>
-                <motion.p
-                  key={selected.id}
-                  className="text-sm text-[#8a8a8a]"
-                  initial={{ opacity: 0, y: 6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -6 }}
-                  transition={{ duration: 0.25, ease: EASE }}
-                >
-                  {selected.description}
-                </motion.p>
-              </AnimatePresence>
+              <p key={selected.id} className="role-fade text-sm text-[#8a8a8a]">
+                {selected.description}
+              </p>
             </div>
           </FadeUp>
 
@@ -152,18 +140,12 @@ export default function ResumeClient() {
           <FadeUp delay={3}>
             <div className="overflow-hidden rounded-sm border border-[#262626] bg-[#141414]">
               <div className="relative aspect-[8.5/11] w-full">
-                <AnimatePresence mode="wait" initial={false}>
-                  <motion.iframe
-                    key={selected.id}
-                    src={selected.file}
-                    className="absolute inset-0 h-full w-full"
-                    title={`Aditya Vikram Resume — ${selected.label}`}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.3, ease: EASE }}
-                  />
-                </AnimatePresence>
+                <iframe
+                  key={selected.id}
+                  src={selected.file}
+                  className="pdf-fade absolute inset-0 h-full w-full"
+                  title={`Aditya Vikram Resume — ${selected.label}`}
+                />
               </div>
             </div>
           </FadeUp>

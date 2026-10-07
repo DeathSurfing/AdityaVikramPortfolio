@@ -1,23 +1,21 @@
 'use client';
 
 import Link from 'next/link';
-import { motion, useScroll, useTransform } from 'motion/react';
 import { AnimatedLink } from './motion-primitives';
 
-/** Slim minimal header — landing page only. */
+/**
+ * Slim minimal header. The scroll-reactive background and hairline use a CSS
+ * scroll-driven animation (`animation-timeline: scroll()`) instead of
+ * useScroll/useTransform, so there is no scroll listener and no motion runtime.
+ * Browsers without scroll-driven animations simply show the header chrome at
+ * full opacity, which is a correct static state.
+ */
 export default function IdentityHeader() {
-  const { scrollY } = useScroll();
-  const borderOpacity = useTransform(scrollY, [0, 48], [0, 1]);
-  const bgOpacity = useTransform(scrollY, [0, 48], [0, 0.8]);
-
   return (
-    <motion.header className="fixed inset-x-0 top-0 z-50">
-      <motion.div
-        className="absolute inset-0 backdrop-blur-md"
-        style={{
-          opacity: bgOpacity,
-          backgroundColor: '#0a0a0a',
-        }}
+    <header className="fixed inset-x-0 top-0 z-50">
+      <div
+        className="scroll-chrome scroll-chrome-bg absolute inset-0 backdrop-blur-md"
+        style={{ backgroundColor: '#0a0a0a' }}
       />
       <div className="relative mx-auto flex h-14 max-w-2xl items-center justify-between px-6">
         <Link
@@ -35,10 +33,7 @@ export default function IdentityHeader() {
           </AnimatedLink>
         </nav>
       </div>
-      <motion.div
-        className="h-px w-full bg-[#1f1f1f]"
-        style={{ opacity: borderOpacity }}
-      />
-    </motion.header>
+      <div className="scroll-chrome scroll-chrome-border h-px w-full bg-[#1f1f1f]" />
+    </header>
   );
 }

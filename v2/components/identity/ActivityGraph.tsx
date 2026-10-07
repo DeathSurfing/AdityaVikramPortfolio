@@ -1,17 +1,11 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { motion } from 'motion/react';
 import { FadeUp, SectionHeading } from './motion-primitives';
 
 type Day = { date: string; count: number; level: string; color: string };
 type Month = { name: string; weekIndex: number };
 
-const FH = (i: number) => ({
-  opacity: 1,
-  y: 0,
-  transition: { delay: i * 0.003, duration: 0.25 },
-});
 
 const fmt = (s: string) =>
   new Date(s).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -134,14 +128,12 @@ export default function ActivityGraph() {
             {weeks.map((week, wi) => (
               <div key={wi} className="flex flex-col gap-[3px]">
                 {week.map((day, di) => (
-                  <motion.div
+                  <div
                     key={di}
                     className="size-2.5 rounded-[2px] cursor-pointer"
                     style={{ backgroundColor: day.color }}
                     onMouseMove={(e) => handleMove(e, day)}
                     onMouseLeave={() => setTooltip((p) => ({ ...p, show: false }))}
-                    initial={{ opacity: 0 }}
-                    animate={FH(wi * 7 + di)}
                   />
                 ))}
               </div>
