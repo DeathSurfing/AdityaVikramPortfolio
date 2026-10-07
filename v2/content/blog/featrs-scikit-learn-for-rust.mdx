@@ -1,0 +1,68 @@
+---
+title: "featrs: Bringing scikit-learn's Feature Engineering to Rust and Polars"
+description: "Why I built a feature engineering library for Rust, what AutoScaler decides per column, and the design choices that come from working on Polars expressions instead of NumPy arrays."
+date: "2026-10-07"
+tags: ["rust", "polars", "machine-learning", "data-engineering", "open-source"]
+coverImage: "https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=1200&h=630&fit=crop"
+author: "Aditya Vikram Mahendru"
+---
+
+Python's scikit-learn has the best-designed feature engineering API in existence. `fit`, then `transform`, then compose with a `Pipeline`. It is taught in every course and understood by everyone who has done a data science internship.
+
+Rust's data ecosystem has [Polars](https://pola.rs), which is fast and expressive. What it did not have was that API. [featrs](https://github.com/featrs/featrs) is my attempt to bring it over, and the interesting part is where the translation does not go smoothly.
+
+## The API survives the move
+
+The shape is deliberately familiar:
+
+```rust
+use featrs::prelude::*;
+
+let mut scaler = StandardScaler::new();
+scaler.fit(data.clone())?;
+let scaled = scaler.transform(data)?;
+```
+
+That is the whole point. If you have used scikit-learn, you already know how to use this. Every transform implements `fit` and `transform`, and they compose the same way: `Pipeline`, `ColumnTransformer`, and `FeatureUnion` all exist, so a preprocessing graph that took an afternoon in Python takes an afternoon here.
+
+`fit` takes a `DataFrame` by value and returns a `Result`, so a transform that cannot be fitted reports why instead of panicking halfway through your data.
+
+## What changes when your array is a DataFrame
+
+This is where it stops being a port.
+
+In scikit-learn a transform operates on a NumPy array, and column identity is a position you have to keep track of separately. In Polars a transform operates on named columns, and that changes the design in ways worth thinking about.
+
+**Column names are preserved through every transformation.** Not a convenience, a correctness property. The most common preprocessing bug is a silent column-order mismatch between training and inference, and it cannot happen if columns are addressed by name.
+
+**`AutoScaler` becomes possible.** This is the component I would point at first. Instead of you choosing a scaler per column, it inspects each column's own statistics, sparsity, outliers, skew, and kurtosis, and picks one. A sparse column full of zeros gets `MaxAbsScaler` because scaling it to `[0, 1]` would destroy the sparsity. A column with heavy outliers gets `RobustScaler` on median and IQR rather than a mean and standard deviation the outliers have already corrupted.
+
+Per-column decisions are natural when columns are named objects. Doing the same over a bare array means building a side table of column indices, which is exactly the kind of bookkeeping that drifts.
+
+**Nulls have somewhere to go.** In `Binarizer`, nulls and NaN in Float64 columns pass through as null rather than being coerced to `0`. Missing is not the same as zero, and conflating them is a bug that shows up as a model that is confident about absent data.
+
+## The components
+
+Scaling: `StandardScaler`, `MinMaxScaler`, `RobustScaler`, `MaxAbsScaler`, `AutoScaler`, plus `Winsorizer`, `OutlierClipper`, and `KBinsDiscretizer` for the cases where you want to bound or bin rather than rescale.
+
+Encoding: `OneHotEncoder`, `LabelEncoder`, `OrdinalEncoder`, `CountEncoder`, `FrequencyEncoder`. `OneHotEncoder` errors on unseen categories by default rather than silently emitting an all-zero row, which is a decision worth defending: a category your model has never seen is a fact about your data pipeline, and quietly turning it into "none of the above" hides it until production.
+
+Time series: lag features, rolling windows, and differencing, which are the three operations that turn a single series into a supervised learning problem.
+
+Plus `PolynomialFeatures` with a builder pattern, feature selection, `FeatureHasher`, cyclical encoding for periodic features, and a missing-value indicator.
+
+## Design decisions that came from the ecosystem
+
+**`Pipeline` over raw calls.** Composing transforms by hand means the fitted state has to travel with the data, and it is easy to apply a scaler fitted on training data to a differently-shaped inference frame. A pipeline owns the fitted state, so the sequence is enforced rather than remembered.
+
+**Errors over silent defaults.** `fit` returns `Result`. `OneHotEncoder` rejects unseen categories by default. `AutoScaler` reports which scaler it chose per column. The library is opinionated in the direction of telling you what it did.
+
+**Built for composition.** `ColumnTransformer` applies different transforms to different columns, and `FeatureUnion` runs transforms in parallel and concatenates. Those two are what make the library usable on real data, where a table has numeric columns that want scaling and categorical columns that want encoding, and you are not going to do that with a single scaler.
+
+## Where it is going
+
+The library is at 0.4 on [crates.io](https://crates.io/crates/featrs), and it is maintained in the open. Recent work added `AutoScaler`, which is the piece I am most interested in: the more the library can infer from the data itself, the less of the pipeline you have to specify by hand.
+
+The honest framing is that this is not trying to replace scikit-learn. It is for the case where the rest of your stack is already Rust and you do not want a Python process in the middle of your data path. Polars is fast, and paying for a Python boundary to get a familiar API is a tax worth avoiding if you can.
+
+Code: **[github.com/featrs/featrs](https://github.com/featrs/featrs)** · Docs: **[docs.rs/featrs](https://docs.rs/featrs)** · Registry: **[crates.io/crates/featrs](https://crates.io/crates/featrs)**
