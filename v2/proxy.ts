@@ -17,10 +17,11 @@ import {
 //
 // pruned: no second copy of the copy. Markdown is rendered from the same data
 // modules and raw .mdx bodies the HTML pages already use (see lib/markdown.ts).
-
-// Node runtime is required because markdown rendering reads the .mdx files.
+//
+// Proxy runs on the Node.js runtime by default, which is required here because
+// markdown rendering reads the .mdx files from disk. Do not add a `runtime`
+// option: it is not supported in proxy files and throws.
 export const config = {
-  runtime: "nodejs",
   matcher: [
     "/",
     "/blog",
@@ -56,7 +57,7 @@ function textResponse(body: string): NextResponse {
   })
 }
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const accept = request.headers.get("accept") ?? ""
   const wantsMarkdown = accept.includes("text/markdown")
   const path = request.nextUrl.pathname
