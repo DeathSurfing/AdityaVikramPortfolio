@@ -1,11 +1,13 @@
 ---
-title: "PostgreSQL Can Replace Your Whole Stack"
-description: "With extensions for vector search, messaging, caching, and document storage — PostgreSQL has evolved from a database into a complete platform that replaces Redis, MongoDB, Elasticsearch, and more."
+title: "I Replaced My Entire Stack with Postgres"
+description: "I replaced my entire stack with Postgres and kept it: one database now serves the queue, the cache, the vector store, the scheduler, and full-text search."
 date: "2026-07-03"
 tags: ["postgresql", "database", "architecture", "backend", "pgvector"]
 coverImage: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1200&h=630&fit=crop"
 author: "Aditya Vikram Mahendru"
 ---
+
+I replaced my entire stack with Postgres. Queues, cache, document store, embeddings, scheduled jobs, and search all run in the same database, which removed four services and their backup stories. Here is what Postgres actually absorbs, and the parts where it is still the wrong tool.
 
 ## The Database That Ate the World
 
@@ -263,3 +265,39 @@ Running in a single 4GB LXC container — it serves as:
 PostgreSQL's extension ecosystem has quietly transformed it from a relational database into an operating system for data. For most applications — especially startups, side projects, and internal tools — a single Postgres instance with the right extensions can replace your entire data infrastructure.
 
 Fewer services means fewer failure points, simpler deployments, and more time building features instead of managing databases.
+
+## Replacing a stack with Postgres, in questions
+
+### What can Postgres actually replace?
+
+A job queue (`SELECT ... FOR UPDATE SKIP LOCKED` plus `LISTEN`/`NOTIFY`), a cache
+(unlogged tables), a document store (JSONB with a GIN index), a vector store (pgvector), a
+scheduler (pg_cron), and full-text search (`tsvector` with a GIN index).
+
+### Is Stack Builder necessary for PostgreSQL?
+
+No. Stack Builder is an EDB add-on in the Windows installer that fetches extra drivers and
+tools. The server runs without it, and on Linux or macOS you install extensions from your
+package manager instead.
+
+### Which extensions are worth installing first?
+
+pgvector for embeddings, pg_cron for scheduled work, pg_trgm for fuzzy matching. Key
+generation needs nothing extra: `gen_random_uuid()` is built in.
+
+### Why does Postgres reject concat_ws in an index?
+
+`concat_ws` is marked STABLE, not IMMUTABLE, in `pg_proc`, because the result depends on
+type output functions. An index expression or a CHECK constraint must be immutable, so
+Postgres refuses it. Persist the value into a column, or use `||` concatenation.
+
+### Does this hold on a managed host like Stackit?
+
+The engine is the same, so the answer depends on which extensions the host allows. Check
+the extension list before designing around pgvector or pg_cron.
+
+### When is Postgres still the wrong answer?
+
+Large analytical scans, multi-region write scaling, and big binary objects. A warehouse, a
+distributed SQL database, and object storage are better at those. Treat the claim as a
+default, not a rule.

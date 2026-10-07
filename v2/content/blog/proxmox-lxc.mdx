@@ -1,11 +1,13 @@
 ---
-title: "Proxmox LXC Containers: Lightweight Virtualization Done Right"
-description: "Why LXC containers on Proxmox beat full VMs for most workloads — performance, density, and management walkthrough."
+title: "Proxmox LXC: System Containers Explained"
+description: "Proxmox LXC containers run a full Linux userspace on the host kernel: a real init system, its own filesystem, and its own SSH service, with no hypervisor in between."
 date: "2026-07-02"
 tags: ["proxmox", "lxc", "containers", "self-hosting", "devops"]
 coverImage: "https://images.unsplash.com/photo-1605745341112-85968b19335b?w=1200&h=630&fit=crop"
 author: "Aditya Vikram Mahendru"
 ---
+
+Proxmox LXC is the container runtime built into Proxmox VE. It starts a full operating system, not a single process, so a container behaves like a very small VM while sharing the host kernel. This is what LXC is, how it differs from Docker and from OpenVZ, and the parts that actually trip people up in production.
 
 ## VMs vs Containers on Proxmox
 
@@ -183,3 +185,40 @@ pct resize 100 rootfs +4G
 ## Conclusion
 
 LXC containers on Proxmox give you the density and performance of containers with the management experience of full VMs. For most Linux server workloads — web services, databases, DNS, monitoring — they're the right default choice.
+
+## Proxmox LXC questions I get most
+
+### Is Proxmox LXC the same as Docker?
+
+No. LXC containers are **system containers**: they run `systemd`, own a persistent
+filesystem, and are reached over SSH like a machine. Docker containers are single-process
+and rebuilt from an image, which is why they are disposable by design.
+
+### LXC vs OpenVZ?
+
+OpenVZ required a patched host kernel. Proxmox VE moved to LXC, which uses the mainline
+kernel's cgroup and namespace primitives, and dropped OpenVZ entirely in the 4.x line.
+Everything current is LXC.
+
+### How do I run Pihole, Scrypted, or an *arr stack as a container?
+
+Use the community-scripts (previously tteck) helpers from the Proxmox shell. Each script
+creates an unprivileged container, installs the app, and writes its own update cron. One
+container per app beats one shared Docker host for exactly this kind of service.
+
+### Where do the keyctl and nesting feature flags go?
+
+In `/etc/pve/lxc/<vmid>.conf`, under `features:`. `keyctl=1` is needed by software that
+uses the kernel keyring; `nesting=1` is needed by anything that runs a container runtime
+inside the container. Both are toggles in the container's Options tab.
+
+### How do I move a container's disk to another storage?
+
+`pct move-volume <vmid> <volume> --target-storage <storage>`, or Resources, then Move
+Volume in the UI. Stop the container first so the copy is consistent.
+
+### Which template should I start from?
+
+`pveam available` lists them. The Ubuntu 24.04 standard template
+(`ubuntu-24.04-standard_24.04-2_amd64.tar.zst`) or the Debian 12 equivalent covers almost
+everything.

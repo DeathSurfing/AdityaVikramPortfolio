@@ -20,6 +20,24 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+async redirects() {
+    // Old blog slugs that were retargeted to the query Google already showed
+    // them for. Kept as permanent redirects so the accumulated signals on the
+    // old URLs transfer instead of 404ing. Remove a pair only when the old URL
+    // has stopped receiving requests in Search Console.
+    const moved: [string, string][] = [
+      ["bare-metal-kubernetes-cluster", "k3s-bare-metal"],
+      ["clean-architecture-in-typescript", "typescript-clean-architecture"],
+      ["postgres-can-replace-your-whole-stack", "replaced-my-entire-stack-with-postgres"],
+      ["proxmox-lxc-containers", "proxmox-lxc"],
+      ["understanding-react-server-components", "what-are-react-server-components"],
+    ];
+    return moved.map(([from, to]) => ({
+      source: `/blog/${from}`,
+      destination: `/blog/${to}`,
+      permanent: true,
+    }));
+  },
 };
 
 export default nextConfig;

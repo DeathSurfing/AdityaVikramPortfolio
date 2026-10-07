@@ -1,11 +1,13 @@
 ---
-title: "Clean Architecture in TypeScript"
-description: "Applying clean architecture principles to TypeScript applications — separating concerns, managing dependencies, and writing testable code."
+title: "TypeScript Clean Architecture"
+description: "TypeScript clean architecture is one dependency rule: domain and use cases import no framework, and outer layers depend inward through ports the inner layers define."
 date: "2026-06-05"
 tags: ["typescript", "architecture", "patterns", "clean-code"]
 coverImage: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1200&h=630&fit=crop"
 author: "Aditya Vikram Mahendru"
 ---
+
+TypeScript clean architecture is a dependency rule before it is a folder layout: the domain and the service layer must not import a framework, and the framework depends inward through interfaces the domain owns. Here is how the layers map onto TypeScript, and where the pattern stops paying for itself.
 
 ## What Is Clean Architecture?
 
@@ -208,3 +210,33 @@ describe("CreateUser", () => {
 ## Conclusion
 
 Clean Architecture shines in complex, long-lived applications. For smaller projects, it's overkill — but the **separation of concerns** and **dependency inversion** principles apply at any scale. Start simple, and introduce layers as your application grows.
+
+## TypeScript clean architecture, in questions
+
+### Where does the service layer belong?
+
+In the use-case layer, not above it. A service orchestrates domain objects and calls out
+through ports (plain interfaces) and never imports the adapter that implements them, which
+is what keeps it testable without a database.
+
+### Do I need an interface for every class?
+
+No. Add a port only where an inner layer has to call outward. An interface with one
+implementation and no boundary being crossed is indirection you will pay for on every
+change.
+
+### How do I find dead code in a layered TypeScript repo?
+
+`knip`, or `ts-prune` for exports only. Layers help here: an unused adapter has no inbound
+imports, so it shows up immediately instead of hiding behind a barrel file.
+
+### Does this work with React?
+
+Yes, at the edge. Components are the outermost layer and own fetching and rendering;
+business rules stay in plain modules that unit test without a DOM.
+
+### How do I stop an inner layer importing infrastructure by accident?
+
+Path aliases plus an ESLint `no-restricted-imports` rule per layer. Aliases make the
+violation readable in review, and the lint rule makes it fail instead of relying on
+discipline.

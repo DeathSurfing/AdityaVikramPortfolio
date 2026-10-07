@@ -109,7 +109,7 @@ export const projects: Project[] = [
     type: 'open-source',
     technologies: ['Kubernetes', 'K3s', 'Proxmox', 'MetalLB', 'Docker'],
     // No repository: the write-up is the published artifact.
-    live: '/blog/bare-metal-kubernetes-cluster',
+    live: '/blog/k3s-bare-metal',
     image: '/card/kubernetes.png',
     author: { name: profile.name, url: profile.url },
   },

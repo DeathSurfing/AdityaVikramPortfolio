@@ -1,11 +1,13 @@
 ---
-title: "Building a Bare-Metal Kubernetes Cluster with K3s"
-description: "How I built a high-availability compute cluster using Raspberry Pis and recycled hardware, orchestrated with lightweight K3s."
+title: "K3s Bare Metal: Building a Small Kubernetes Cluster"
+description: "K3s bare metal means one ~70 MB binary that brings up a certified Kubernetes control plane, containerd, and a storage provisioner on hardware you own, with no cloud control-plane fee."
 date: "2026-06-30"
 tags: ["kubernetes", "k3s", "raspberry-pi", "self-hosting", "devops"]
 coverImage: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1200&h=630&fit=crop"
 author: "Aditya Vikram Mahendru"
 ---
+
+K3s bare metal is what I run instead of paying a per-hour control-plane fee on EKS, GKE, or AKS. One binary installs the control plane, containerd, flannel, Traefik, and the local-path provisioner. This is the setup, including how Ingress gets a real IP with MetalLB and where storage comes from.
 
 ## Why Bare-Metal Kubernetes?
 
@@ -265,3 +267,34 @@ The entire cluster idles at ~73W and ~$15/month in electricity:
 ## Conclusion
 
 A bare-metal K3s cluster is the most cost-effective way to learn Kubernetes at scale. For ~$300 in hardware and ~$15/month in electricity, you get a production-grade orchestrator running 10+ services on a mix of ARM and x86 nodes. It's not cloud — it's better, because it's yours.
+
+## K3s on bare metal, in questions
+
+### What does K3s need from a bare-metal host?
+
+A Linux host with swap disabled (or handled through the kubelet config), `/var/lib/kubelet`
+on a disk you control, a unique hostname per node, and the control-plane and node ports open
+between nodes. Containers are just processes on the kernel you own.
+
+### Why K3s instead of kubeadm?
+
+K3s ships the control plane, containerd, flannel, CoreDNS, Traefik, and a local-path
+provisioner in one binary. There is no certificate bootstrap or etcd setup to run by hand,
+which is the entire reason it fits a home or small-office cluster.
+
+### How do Ingress and services get an IP without a cloud provider?
+
+Install MetalLB and give it a free range on your LAN. Traefik's Service is type
+`LoadBalancer`, so MetalLB assigns it an address and advertises it; your Ingresses are then
+reachable at that IP.
+
+### What about persistent storage on bare metal?
+
+K3s bundles the local-path provisioner, which is fine on a single node. For volumes that
+survive a node loss use Longhorn; if you already have a NAS, an NFS-backed CSI driver is
+less to operate.
+
+### How do I add another node?
+
+Run the installer with `K3S_URL` and `K3S_TOKEN` pointing at the first server. The new node
+registers as an agent, and the control plane stays on the servers.
