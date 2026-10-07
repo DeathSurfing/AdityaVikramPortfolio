@@ -2,8 +2,24 @@
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { gsap } from 'gsap';
 import './StaggeredMenu.css';
+
+// gsap drives the menu's open/close choreography, but nothing on initial paint
+// depends on it: the panel, prelayers, and panel labels all start hidden via
+// CSS, and gsap only animates them once the toggle is used. Loading gsap with
+// the initial bundle cost ~81 KB of JS on every page view for an interaction
+// most visitors never trigger, so it is fetched on first interaction instead.
+// See initialise() for the first-paint state, which must stay in sync with
+// the .staggered-menu-panel / .sm-prelayers / .sm-prelayer rules in the CSS.
+import type { gsap as GsapInstance } from 'gsap';
+
+type Gsap = typeof GsapInstance;
+
+let gsapPromise: Promise<Gsap> | null = null;
+function loadGsap(): Promise<Gsap> {
+  gsapPromise ??= import('gsap').then((m) => m.gsap);
+  return gsapPromise;
+}
 
 interface StaggeredMenuItem {
   label: string;
@@ -67,46 +83,66 @@ export function StaggeredMenu({
   const [textLines, setTextLines] = useState(['Menu', 'Close']);
   const router = useRouter();
 
-  const openTlRef = useRef<gsap.core.Timeline | null>(null);
-  const closeTweenRef = useRef<gsap.core.Tween | null>(null);
-  const spinTweenRef = useRef<gsap.core.Tween | null>(null);
-  const textCycleAnimRef = useRef<gsap.core.Tween | null>(null);
-  const colorTweenRef = useRef<gsap.core.Tween | null>(null);
-  const itemEntranceTweenRef = useRef<gsap.core.Tween | null>(null);
+  const openTlRef = useRef<Gsap['timeline'] extends (...a: never[]) => infer R ? R : never | null>(null);
+  const closeTweenRef = useRef<Gsap['to'] extends (...a: never[]) => infer R ? R : never | null>(null);
+  const spinTweenRef = useRef<Gsap['to'] extends (...a: never[]) => infer R ? R : never | null>(null);
+  const textCycleAnimRef = useRef<Gsap['to'] extends (...a: never[]) => infer R ? R : never | null>(null);
+  const colorTweenRef = useRef<Gsap['to'] extends (...a: never[]) => infer R ? R : never | null>(null);
+  const itemEntranceTweenRef = useRef<Gsap['to'] extends (...a: never[]) => infer R ? R : never | null>(null);
   const busyRef = useRef(false);
+  const gsapRef = useRef<Gsap | null>(null);
 
-  useLayoutEffect(() => {
-    const ctx = gsap.context(() => {
-      const panel = panelRef.current;
-      const preContainer = preLayersRef.current;
-      const plusH = plusHRef.current;
-      const plusV = plusVRef.current;
-      const icon = iconRef.current;
-      const textInner = textInnerRef.current;
-      const toggleBtn = toggleBtnRef.current;
-      if (!panel || !plusH || !plusV || !icon || !textInner) return;
+  // Applies the state gsap would have set at first paint. Everything here is
+  // already hidden by CSS, so this is a no-op visually; it exists so the
+  // animations start from the same values they did when gsap was eager.
+  const initialise = useCallback((gsap: Gsap) => {
+    const panel = panelRef.current;
+    const preContainer = preLayersRef.current;
+    const plusH = plusHRef.current;
+    const plusV = plusVRef.current;
+    const icon = iconRef.current;
+    const textInner = textInnerRef.current;
+    const toggleBtn = toggleBtnRef.current;
+    if (!panel || !plusH || !plusV || !icon || !textInner) return;
 
-      let preLayers: Element[] = [];
-      if (preContainer) {
-        preLayers = Array.from(preContainer.querySelectorAll('.sm-prelayer'));
-      }
-      preLayerElsRef.current = preLayers;
+    const preLayers: Element[] = preContainer
+      ? Array.from(preContainer.querySelectorAll('.sm-prelayer'))
+      : [];
+    preLayerElsRef.current = preLayers;
 
-      const offscreen = position === 'left' ? -100 : 100;
-      gsap.set([panel, ...preLayers], { xPercent: offscreen, opacity: 1 });
-      if (preContainer) {
-        gsap.set(preContainer, { xPercent: 0, opacity: 1 });
-      }
-      gsap.set(plusH, { transformOrigin: '50% 50%', rotate: 0 });
-      gsap.set(plusV, { transformOrigin: '50% 50%', rotate: 90 });
-      gsap.set(icon, { rotate: 0, transformOrigin: '50% 50%' });
-      gsap.set(textInner, { yPercent: 0 });
-      if (toggleBtn) gsap.set(toggleBtn, { color: menuButtonColor });
-    });
-    return () => ctx.revert();
+    const offscreen = position === 'left' ? -100 : 100;
+    gsap.set([panel, ...preLayers], { xPercent: offscreen, opacity: 1 });
+    if (preContainer) {
+      gsap.set(preContainer, { xPercent: 0, opacity: 1 });
+    }
+    gsap.set(plusH, { transformOrigin: '50% 50%', rotate: 0 });
+    gsap.set(plusV, { transformOrigin: '50% 50%', rotate: 90 });
+    gsap.set(icon, { rotate: 0, transformOrigin: '50% 50%' });
+    gsap.set(textInner, { yPercent: 0 });
+    if (toggleBtn) gsap.set(toggleBtn, { color: menuButtonColor });
   }, [menuButtonColor, position]);
 
-  const buildOpenTimeline = useCallback(() => {
+  // gsap is only needed once the user actually interacts with the menu.
+  const ensureGsap = useCallback(async (): Promise<Gsap> => {
+    if (gsapRef.current) return gsapRef.current;
+    const gsap = await loadGsap();
+    gsapRef.current = gsap;
+    initialise(gsap);
+    return gsap;
+  }, [initialise]);
+
+  // Re-apply the gsap baseline if config changes after gsap has loaded.
+  // Before that, CSS already holds the correct first-paint state.
+  useLayoutEffect(() => {
+    const gsap = gsapRef.current;
+    if (!gsap) return;
+    const ctx = gsap.context(() => {
+      initialise(gsap);
+    });
+    return () => ctx.revert();
+  }, [initialise]);
+
+  const buildOpenTimeline = useCallback((gsap: Gsap) => {
     const panel = panelRef.current;
     const layers = preLayerElsRef.current;
     if (!panel) return null;
@@ -190,10 +226,10 @@ export function StaggeredMenu({
     return tl;
   }, [position]);
 
-  const playOpen = useCallback(() => {
+  const playOpen = useCallback((gsap: Gsap) => {
     if (busyRef.current) return;
     busyRef.current = true;
-    const tl = buildOpenTimeline();
+    const tl = buildOpenTimeline(gsap);
     if (tl) {
       tl.eventCallback('onComplete', () => { busyRef.current = false; });
       tl.play(0);
@@ -202,7 +238,7 @@ export function StaggeredMenu({
     }
   }, [buildOpenTimeline]);
 
-  const playClose = useCallback(() => {
+  const playClose = useCallback((gsap: Gsap) => {
     openTlRef.current?.kill();
     openTlRef.current = null;
     itemEntranceTweenRef.current?.kill();
@@ -235,7 +271,7 @@ export function StaggeredMenu({
     });
   }, [position]);
 
-  const animateIcon = useCallback((opening: boolean) => {
+  const animateIcon = useCallback((gsap: Gsap, opening: boolean) => {
     const icon = iconRef.current;
     if (!icon) return;
     spinTweenRef.current?.kill();
@@ -247,7 +283,7 @@ export function StaggeredMenu({
   }, []);
 
   const animateColor = useCallback(
-    (opening: boolean) => {
+    (gsap: Gsap, opening: boolean) => {
       const btn = toggleBtnRef.current;
       if (!btn) return;
       colorTweenRef.current?.kill();
@@ -262,8 +298,9 @@ export function StaggeredMenu({
   );
 
   useEffect(() => {
+    const gsap = gsapRef.current;
     const btn = toggleBtnRef.current;
-    if (!btn) return;
+    if (!gsap || !btn) return;
     if (changeMenuColorOnOpen) {
       const targetColor = openRef.current ? openMenuButtonColor : menuButtonColor;
       gsap.set(btn, { color: targetColor });
@@ -272,7 +309,7 @@ export function StaggeredMenu({
     }
   }, [changeMenuColorOnOpen, menuButtonColor, openMenuButtonColor]);
 
-  const animateText = useCallback((opening: boolean) => {
+  const animateText = useCallback((gsap: Gsap, opening: boolean) => {
     const inner = textInnerRef.current;
     if (!inner) return;
     textCycleAnimRef.current?.kill();
@@ -304,29 +341,41 @@ export function StaggeredMenu({
     const target = !openRef.current;
     openRef.current = target;
     setOpen(target);
-    if (target) {
-      onMenuOpen?.();
-      playOpen();
-    } else {
-      onMenuClose?.();
-      playClose();
-    }
-    animateIcon(target);
-    animateColor(target);
-    animateText(target);
-  }, [playOpen, playClose, animateIcon, animateColor, animateText, onMenuOpen, onMenuClose]);
+    void ensureGsap().then((gsap) => {
+      if (target) {
+        onMenuOpen?.();
+        playOpen(gsap);
+      } else {
+        onMenuClose?.();
+        playClose(gsap);
+      }
+      animateIcon(gsap, target);
+      animateColor(gsap, target);
+      animateText(gsap, target);
+    });
+  }, [
+    ensureGsap,
+    playOpen,
+    playClose,
+    animateIcon,
+    animateColor,
+    animateText,
+    onMenuOpen,
+    onMenuClose,
+  ]);
 
   const closeMenu = useCallback(() => {
-    if (openRef.current) {
-      openRef.current = false;
-      setOpen(false);
+    if (!openRef.current) return;
+    openRef.current = false;
+    setOpen(false);
+    void ensureGsap().then((gsap) => {
       onMenuClose?.();
-      playClose();
-      animateIcon(false);
-      animateColor(false);
-      animateText(false);
-    }
-  }, [playClose, animateIcon, animateColor, animateText, onMenuClose]);
+      playClose(gsap);
+      animateIcon(gsap, false);
+      animateColor(gsap, false);
+      animateText(gsap, false);
+    });
+  }, [ensureGsap, playClose, animateIcon, animateColor, animateText, onMenuClose]);
 
   useEffect(() => {
     if (!closeOnClickAway || !open) return;

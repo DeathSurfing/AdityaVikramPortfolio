@@ -121,6 +121,14 @@
   will-change: transform;
 }
 
+/* gsap sets rotate:90 on this line to form the plus, but gsap now loads on
+   first interaction. Without this rule the two lines overlap and the toggle
+   reads as a dash until then. gsap's transform replaces this one wholesale,
+   and it sets the same 90deg, so the two states match. */
+.sm-icon-line-v {
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
 .sm-line {
   display: none !important;
 }
