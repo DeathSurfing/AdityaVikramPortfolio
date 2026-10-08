@@ -49,6 +49,11 @@ export const siteJsonLd = {
       '@id': `${profile.url}/#profilepage`,
       url: profile.url,
       name: profile.headline,
+      // mainEntity is the property Google reads for the profile page rich
+      // result; about alone does not satisfy it. References the Person node
+      // by @id rather than inlining it, so the Person is defined once in the
+      // graph.
+      mainEntity: { '@id': `${profile.url}/#person` },
       about: { '@id': `${profile.url}/#person` },
       isPartOf: { '@id': `${profile.url}/#website` },
     },
