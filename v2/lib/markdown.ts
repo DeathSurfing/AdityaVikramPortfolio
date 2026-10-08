@@ -252,6 +252,8 @@ ${contactMarkdown()}
 - [Full corpus](${profile.url}/llms-full.txt): every page's content in one file
 - [Sitemap](${profile.url}/sitemap.xml): all indexable URLs
 - [Experience JSON](${profile.url}/api/experience): work history as JSON
+- [OpenAPI spec](${profile.url}/openapi.json): machine-readable description of every endpoint
+- [API catalog](${profile.url}/.well-known/api-catalog): RFC 9727 discovery document (application/linkset+json)
 
 Every representation here is generated from one canonical data source, so nothing is stale.
 `

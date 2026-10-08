@@ -2,6 +2,32 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: 'standalone',
+  // Link response headers for agent discovery, per RFC 8288 and RFC 9727
+  // section 3. Agents reading only the response headers can find the API
+  // catalog, the OpenAPI description, and the markdown representation without
+  // parsing HTML.
+  //
+  // pruned: no `describedby` header. It points at a resource describing the
+  // page, and the useful candidate is the machine-readable identity document,
+  // but a wrong relation is worse than an absent one, so only the registered
+  // relations that point at real resources here are declared.
+  async headers() {
+    return [
+      {
+        source: "/",
+        headers: [
+          {
+            key: "Link",
+            value: [
+              '</.well-known/api-catalog>; rel="api-catalog"',
+              '</openapi.json>; rel="service-desc"; type="application/json"',
+              '</llms.txt>; rel="service-doc"; type="text/plain"',
+            ].join(", "),
+          },
+        ],
+      },
+    ];
+  },
   images: {
     // Static assets in public/ never change in place: Next fingerprints the
     // build output, and these files are replaced by deploy, not by request.
@@ -19,24 +45,6 @@ const nextConfig: NextConfig = {
         hostname: 'opengraph.githubassets.com',
       },
     ],
-  },
-async redirects() {
-    // Old blog slugs that were retargeted to the query Google already showed
-    // them for. Kept as permanent redirects so the accumulated signals on the
-    // old URLs transfer instead of 404ing. Remove a pair only when the old URL
-    // has stopped receiving requests in Search Console.
-    const moved: [string, string][] = [
-      ["bare-metal-kubernetes-cluster", "k3s-bare-metal"],
-      ["clean-architecture-in-typescript", "typescript-clean-architecture"],
-      ["postgres-can-replace-your-whole-stack", "replaced-my-entire-stack-with-postgres"],
-      ["proxmox-lxc-containers", "proxmox-lxc"],
-      ["understanding-react-server-components", "what-are-react-server-components"],
-    ];
-    return moved.map(([from, to]) => ({
-      source: `/blog/${from}`,
-      destination: `/blog/${to}`,
-      permanent: true,
-    }));
   },
 };
 
