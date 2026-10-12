@@ -27,14 +27,14 @@ export const mdxComponents: MDXComponentsType = {
     if (children?.props?.className) {
       return (
         <div className="my-6 overflow-hidden rounded-sm border border-primary">
-          <pre className="!m-0 overflow-x-auto bg-card p-4 font-mono text-sm text-[#c9d1d9]">
+          <pre className="!m-0 overflow-x-auto bg-card p-4 font-mono text-sm text-border">
             <code className={children.props.className}>{children.props.children}</code>
           </pre>
         </div>
       )
     }
     return (
-      <pre className="my-6 overflow-x-auto rounded-sm border border-primary bg-card p-4 font-mono text-sm text-[#c9d1d9]">
+      <pre className="my-6 overflow-x-auto rounded-sm border border-primary bg-card p-4 font-mono text-sm text-border">
         {children}
       </pre>
     )
@@ -68,7 +68,7 @@ export const mdxComponents: MDXComponentsType = {
   ),
   blockquote: (props: any) => (
     <blockquote
-      className="my-6 border-l-2 border-[#3a3a3a] pl-4 italic text-muted-foreground"
+      className="my-6 border-l-2 border-border pl-4 italic text-muted-foreground"
       {...props}
     />
   ),

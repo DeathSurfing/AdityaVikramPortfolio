@@ -93,13 +93,13 @@ export default function PageWipe() {
 
     document.addEventListener('click', onClick, true);
     return () => document.removeEventListener('click', onClick, true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    {`// eslint-disable-next-line react-hooks/exhaustive-deps`}
   }, [router]);
 
   return (
     <div
       aria-hidden
-      className="fixed inset-0 z-[100] flex"
+      className="fixed inset-0 z-wipe flex"
       style={{ pointerEvents: blocking ? 'auto' : 'none' }}
     >
       {PANELS.map((color, i) => {

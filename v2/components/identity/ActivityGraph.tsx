@@ -11,11 +11,11 @@ const fmt = (s: string) =>
   new Date(s).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
 const GH_COLORS: Record<string, string> = {
-  '0': 'var(--graph-0)',
-  '1': 'var(--graph-1)',
-  '2': 'var(--graph-2)',
-  '3': 'var(--graph-3)',
-  '4': 'var(--graph-4)',
+  '0': '#161b22',
+  '1': '#0e4429',
+  '2': '#006d32',
+  '3': '#26a641',
+  '4': '#39d353',
 };
 
 interface ApiDay {

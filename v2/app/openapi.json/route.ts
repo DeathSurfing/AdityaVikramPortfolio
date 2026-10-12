@@ -1,4 +1,4 @@
-import { apiEndpoints, apiTags, apiBaseUrl } from "@/data/api"
+import { apiEndpoints, apiTags } from "@/data/api"
 import { profile } from "@/data/profile"
 
 export const dynamic = "force-static"

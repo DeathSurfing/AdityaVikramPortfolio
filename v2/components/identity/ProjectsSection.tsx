@@ -7,7 +7,7 @@ import { FadeUp, SectionHeading } from './motion-primitives';
 
 function StatusBadge({ status }: { status: Project['status'] }) {
   return (
-    <span className="flex items-center gap-1.5 rounded-sm border border-border bg-card px-1.5 py-0.5 font-mono text-[0.65rem] text-muted-foreground">
+    <span className="flex items-center gap-1.5 rounded-sm border border-border bg-card px-1.5 py-0.5 font-mono text-label text-muted-foreground">
       <span
         className={`inline-block size-1 rounded-full bg-muted-foreground${
           status === 'building' ? ' badge-dot' : ''

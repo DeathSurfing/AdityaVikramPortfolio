@@ -49,21 +49,21 @@ export default async function ProjectPage({ params }: PageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(projectJsonLd(project)) }}
       />
-      <main className="min-h-screen bg-[#0a0a0a] font-sans text-[#e5e5e5] selection:bg-[#e5e5e5] selection:text-[#0a0a0a]">
+      <main className="min-h-screen bg-background font-sans text-foreground selection:bg-foreground selection:text-background">
         <article className="mx-auto flex max-w-2xl flex-col gap-8 px-6 pt-32 pb-20">
           <div className="flex flex-col gap-5">
             <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
               {project.name}
             </h1>
-            <FadeUp as="p" className="text-base leading-relaxed text-[#b0b0b0]">
+            <FadeUp as="p" className="text-base leading-relaxed text-ring">
               {project.description}
             </FadeUp>
           </div>
 
           {project.highlights && project.highlights.length > 0 && (
             <section className="flex flex-col gap-3">
-              <h2 className="font-mono text-xs uppercase tracking-[0.25em] text-muted-foreground">
-                // details
+              <h2 className="font-mono text-xs uppercase tracking-heading text-muted-foreground">
+                {`// details`}
               </h2>
               <ul className="flex flex-col gap-2">
                 {project.highlights.map((highlight) => (
@@ -79,24 +79,24 @@ export default async function ProjectPage({ params }: PageProps) {
           )}
 
           <section className="flex flex-col gap-3">
-            <h2 className="font-mono text-xs uppercase tracking-[0.25em] text-muted-foreground">
-              // at a glance
+            <h2 className="font-mono text-xs uppercase tracking-heading text-muted-foreground">
+              {`// at a glance`}
             </h2>
             <dl className="flex flex-col gap-1.5 font-mono text-xs text-muted-foreground">
               <div className="flex gap-3">
-                <dt className="w-28 shrink-0 text-[#6a6a6a]">status</dt>
+                <dt className="w-28 shrink-0 text-muted-foreground">status</dt>
                 <dd>{project.status}</dd>
               </div>
               <div className="flex gap-3">
-                <dt className="w-28 shrink-0 text-[#6a6a6a]">type</dt>
+                <dt className="w-28 shrink-0 text-muted-foreground">type</dt>
                 <dd>{project.type}</dd>
               </div>
               <div className="flex gap-3">
-                <dt className="w-28 shrink-0 text-[#6a6a6a]">technologies</dt>
+                <dt className="w-28 shrink-0 text-muted-foreground">technologies</dt>
                 <dd>{project.technologies.join(", ")}</dd>
               </div>
               <div className="flex gap-3">
-                <dt className="w-28 shrink-0 text-[#6a6a6a]">author</dt>
+                <dt className="w-28 shrink-0 text-muted-foreground">author</dt>
                 <dd>
                   <Link href="/" className="underline underline-offset-4">
                     {project.author.name}

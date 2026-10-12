@@ -20,20 +20,20 @@ export default function IdentityHeader() {
       <div className="relative mx-auto flex h-14 max-w-2xl items-center justify-between px-6">
         <Link
           href="/"
-          className="font-mono text-sm tracking-tight text-[#e5e5e5] transition-colors hover:text-white"
+          className="font-mono text-sm tracking-tight text-foreground transition-colors hover:text-white"
         >
-          Vikk<span className="text-[#8a8a8a]">.</span>
+          Vikk<span className="text-muted-foreground">.</span>
         </Link>
-        <nav className="flex items-center gap-6 font-mono text-xs text-[#8a8a8a]">
-          <AnimatedLink href="/blog" className="transition-colors hover:text-[#e5e5e5]">
+        <nav className="flex items-center gap-6 font-mono text-xs text-muted-foreground">
+          <AnimatedLink href="/blog" className="transition-colors hover:text-foreground">
             blog
           </AnimatedLink>
-          <AnimatedLink href="/resume" className="transition-colors hover:text-[#e5e5e5]">
+          <AnimatedLink href="/resume" className="transition-colors hover:text-foreground">
             resume
           </AnimatedLink>
         </nav>
       </div>
-      <div className="scroll-chrome scroll-chrome-border h-px w-full bg-[#1f1f1f]" />
+      <div className="scroll-chrome scroll-chrome-border h-px w-full bg-border" />
     </header>
   );
 }

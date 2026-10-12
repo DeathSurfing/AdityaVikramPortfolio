@@ -30,13 +30,13 @@ export default function ExperiencePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(experienceJsonLd()) }}
       />
-      <main className="min-h-screen bg-[#0a0a0a] font-sans text-[#e5e5e5] selection:bg-[#e5e5e5] selection:text-[#0a0a0a]">
+      <main className="min-h-screen bg-background font-sans text-foreground selection:bg-foreground selection:text-background">
         <div className="mx-auto flex max-w-2xl flex-col gap-10 px-6 pt-32 pb-20">
           <div className="flex flex-col gap-5">
-            <h1 className="font-mono text-xs uppercase tracking-[0.25em] text-muted-foreground">
-              // experience - {profile.alternateNames[0]}
+            <h1 className="font-mono text-xs uppercase tracking-heading text-muted-foreground">
+              {`// experience - ${profile.alternateNames[0]}`}
             </h1>
-            <FadeUp as="p" className="text-base leading-relaxed text-[#b0b0b0]">
+            <FadeUp as="p" className="text-base leading-relaxed text-ring">
               {profile.name} is a {profile.title.toLowerCase()} based in{" "}
               {profile.location.city}, {profile.location.country}. Roles in
               order, most recent first.
@@ -53,7 +53,7 @@ export default function ExperiencePage() {
                   <p className="font-mono text-xs text-muted-foreground">
                     {exp.company} · {exp.duration} · {exp.location} · {exp.type}
                   </p>
-                  <p className="text-sm leading-relaxed text-[#b0b0b0]">
+                  <p className="text-sm leading-relaxed text-ring">
                     {exp.summary}
                   </p>
                 </article>
@@ -62,13 +62,13 @@ export default function ExperiencePage() {
           </section>
 
           <section className="flex flex-col gap-4">
-            <h2 className="font-mono text-xs uppercase tracking-[0.25em] text-muted-foreground">
-              // skills
+            <h2 className="font-mono text-xs uppercase tracking-heading text-muted-foreground">
+              {`// skills`}
             </h2>
             <ul className="flex flex-col gap-2">
               {skillCategories.map((category) => (
-                <li key={category.name} className="text-sm text-[#b0b0b0]">
-                  <span className="font-mono text-xs uppercase tracking-wider text-[#6a6a6a]">
+                <li key={category.name} className="text-sm text-ring">
+                  <span className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
                     {category.name}
                   </span>
                   <br />

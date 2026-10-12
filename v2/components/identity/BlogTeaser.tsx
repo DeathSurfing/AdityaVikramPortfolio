@@ -15,7 +15,7 @@ export default function BlogTeaser() {
             <li key={post.slug}>
               <Link
                 href={`/blog/${post.slug}`}
-                className="text-sm leading-relaxed text-[#b0b0b0] transition-colors hover:text-[#e5e5e5]"
+                className="text-sm leading-relaxed text-ring transition-colors hover:text-foreground"
               >
                 {post.title}
               </Link>

@@ -187,27 +187,24 @@ export default async function BlogPostPage({ params }: PageProps) {
           </FadeUp>
 
           <FadeUp delay={2}>
-            <div>{mdxContent}</div>
+            <div className="prose-custom">{mdxContent}</div>
           </FadeUp>
 
-<<<<<<< HEAD
-          <footer className="mt-16 border-t border-border pt-8">
-=======
           {related.length > 0 && (
-            <section className="mt-16 border-t border-[#1f1f1f] pt-8">
-              <h2 className="font-mono text-xs uppercase tracking-[0.25em] text-muted-foreground">
-                // related
+            <section className="mt-16 border-t border-border pt-8">
+              <h2 className="font-mono text-xs uppercase tracking-heading text-muted-foreground">
+                {`// related`}
               </h2>
               <ul className="mt-4 flex flex-col gap-3">
                 {related.map((r) => (
                   <li key={r.slug}>
                     <Link
                       href={`/blog/${r.slug}`}
-                      className="text-sm leading-relaxed text-[#b0b0b0] transition-colors hover:text-[#e5e5e5]"
+                      className="text-sm leading-relaxed text-ring transition-colors hover:text-foreground"
                     >
                       {r.title}
                     </Link>
-                    <span className="mt-0.5 block font-mono text-xs text-[#6a6a6a]">
+                    <span className="mt-0.5 block font-mono text-xs text-muted-foreground">
                       {r.tags.slice(0, 3).join(" · ")}
                     </span>
                   </li>
@@ -216,8 +213,7 @@ export default async function BlogPostPage({ params }: PageProps) {
             </section>
           )}
 
-          <footer className="mt-16 border-t border-[#1f1f1f] pt-8">
->>>>>>> b8ab252d651f2b97202be0ae75a26b7c8047c9f9
+          <footer className="mt-16 border-t border-border pt-8">
             <Link
               href="/blog"
               className="font-mono text-xs text-muted-foreground transition-colors hover:text-foreground"

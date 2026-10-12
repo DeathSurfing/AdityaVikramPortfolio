@@ -34,7 +34,7 @@ export function FadeUp({ children, delay = 0, className, as = 'div' }: FadeUpPro
 export function SectionHeading({ children }: { children: ReactNode }) {
   return (
     <FadeUp as="h2">
-      <span className="font-mono text-xs uppercase tracking-[0.25em] text-muted-foreground">
+      <span className="font-mono text-xs uppercase tracking-heading text-muted-foreground">
         {children}
       </span>
     </FadeUp>

@@ -7,8 +7,8 @@ export default function AboutBlurb() {
   return (
     <section className="flex flex-col gap-4">
       <div className="flex flex-col gap-4">
-        <h2 className="font-mono text-xs uppercase tracking-[0.25em] text-muted-foreground">
-          // about
+        <h2 className="font-mono text-xs uppercase tracking-heading text-muted-foreground">
+          {`// about`}
         </h2>
         {bioParagraphs.map((segments, i) => (
         <FadeUp

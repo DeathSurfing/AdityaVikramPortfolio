@@ -37,7 +37,7 @@ const eslintConfig = defineConfig([
       }],
       "shadcn/no-inline-styles": ["error", {
         // motion/gsap animate dynamic values via inline styles.
-        allow: ["opacity", "transform", "scaleY", "originY", "x", "y", "left", "top", "width", "pointerEvents", "backgroundColor", "background", "--*"],
+        allow: ["opacity", "transform", "scaleY", "originY", "x", "y", "left", "top", "width", "pointerEvents", "backgroundColor", "background", "animationDelay", "--*"],
       }],
       "shadcn/require-static-classes": "error",
     },

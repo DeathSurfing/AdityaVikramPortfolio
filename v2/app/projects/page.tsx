@@ -26,13 +26,13 @@ export default function ProjectsPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(projectsIndexJsonLd()) }}
       />
-      <main className="min-h-screen bg-[#0a0a0a] font-sans text-[#e5e5e5] selection:bg-[#e5e5e5] selection:text-[#0a0a0a]">
+      <main className="min-h-screen bg-background font-sans text-foreground selection:bg-foreground selection:text-background">
         <div className="mx-auto flex max-w-2xl flex-col gap-8 px-6 pt-32 pb-20">
           <div className="flex flex-col gap-5">
-            <h1 className="font-mono text-xs uppercase tracking-[0.25em] text-muted-foreground">
-              // projects by {profile.alternateNames[0]}
+            <h1 className="font-mono text-xs uppercase tracking-heading text-muted-foreground">
+              {`// projects by ${profile.alternateNames[0]}`}
             </h1>
-            <FadeUp as="p" className="text-base leading-relaxed text-[#b0b0b0]">
+            <FadeUp as="p" className="text-base leading-relaxed text-ring">
               Open source tools and digital products. Each project has a
               permanent page at its own URL.
             </FadeUp>
@@ -46,12 +46,12 @@ export default function ProjectsPage() {
                     <h2 className="text-base font-medium text-foreground">
                       <Link
                         href={`/projects/${project.slug}`}
-                        className="transition-colors hover:text-[#b0b0b0]"
+                        className="transition-colors hover:text-ring"
                       >
                         {project.name}
                       </Link>
                     </h2>
-                    <span className="rounded-sm border border-border bg-card px-1.5 py-0.5 font-mono text-[0.65rem] text-muted-foreground">
+                    <span className="rounded-sm border border-border bg-card px-1.5 py-0.5 font-mono text-label text-muted-foreground">
                       {project.status}
                     </span>
                   </div>

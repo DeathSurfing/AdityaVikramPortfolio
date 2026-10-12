@@ -305,7 +305,6 @@ body {
   }
 }
 
-<<<<<<< HEAD
 @utility text-label { font-size: 0.65rem; }
 @utility text-micro { font-size: 0.6rem; }
 @utility gap-cell { gap: 3px; }
@@ -316,10 +315,12 @@ body {
 @utility duration-sweep { transition-duration: 250ms; }
 @utility z-wipe { z-index: 100; }
 @utility aspect-a4 { aspect-ratio: 8.5 / 11; }
+@utility z-menu { z-index: 90; }
+@utility z-panel { z-index: 10000; }
+@utility duration-wipe { transition-duration: 350ms; animation-duration: 350ms; }
+@utility label-prefix { &::before { content: "// "; } }
 
-=======
 /* ─────────────── CSS reveal + hover (replaces the motion runtime) ───────────────
-   The animation runtime was ~165 KB of JS on every page for what amounts to
    fades, a rise, an underline sweep, and a marquee. These rules do the same
    work on the compositor instead. `is-visible` is added by MotionRoot's
    IntersectionObserver; `.fade-up` starts hidden so there is no flash. */
@@ -540,7 +541,6 @@ body {
   .fade-up,
   .fade-up.is-visible {
     opacity: 1;
-    transform: none;
     transition: none;
   }
 
@@ -548,7 +548,6 @@ body {
   .status-dot,
   .badge-dot,
   .role-fade,
-  .pdf-fade,
   .wipe-panel[data-cover='true'],
   .wipe-panel[data-reveal='true'],
   .scroll-chrome {
@@ -566,4 +565,3 @@ body {
     transition: none;
   }
 }
->>>>>>> b8ab252d651f2b97202be0ae75a26b7c8047c9f9

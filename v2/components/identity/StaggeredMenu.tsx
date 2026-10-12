@@ -40,7 +40,6 @@ interface StaggeredMenuProps {
   displaySocials?: boolean;
   displayItemNumbering?: boolean;
   className?: string;
-  logoUrl?: string;
   menuButtonColor?: string;
   openMenuButtonColor?: string;
   accentColor?: string;
@@ -59,10 +58,9 @@ export function StaggeredMenu({
   displaySocials = true,
   displayItemNumbering = true,
   className,
-  logoUrl = '/AFavicon.ico',
-  menuButtonColor = 'var(--foreground)',
-  openMenuButtonColor = 'var(--foreground)',
-  accentColor = 'var(--primary-hover)',
+  menuButtonColor = '#e5e5e5',
+  openMenuButtonColor = '#e5e5e5',
+  accentColor = '#ffcc00',
   changeMenuColorOnOpen = true,
   isFixed = false,
   closeOnClickAway = true,
