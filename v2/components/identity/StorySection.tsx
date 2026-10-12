@@ -1,8 +1,7 @@
 'use client';
 
-import { motion } from 'motion/react';
 import { experiences } from '@/data/identity';
-import { EASE, FadeUp, SectionHeading } from './motion-primitives';
+import { FadeUp, SectionHeading } from './motion-primitives';
 
 export default function StorySection() {
   return (
@@ -12,11 +11,7 @@ export default function StorySection() {
       <div className="flex flex-col">
         {experiences.map((exp, i) => (
           <FadeUp key={exp.company} delay={i}>
-            <motion.article
-              className="group flex flex-col gap-2 border-b border-border py-5 first:pt-0 last:border-b-0"
-              whileHover={{ x: 6 }}
-              transition={{ duration: 0.3, ease: EASE }}
-            >
+            <article className="story-row group flex flex-col gap-2 border-b border-border py-5 first:pt-0 last:border-b-0">
               <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
                 <h3 className="text-base font-medium text-foreground">
                   {exp.role}
@@ -28,7 +23,7 @@ export default function StorySection() {
                 {exp.location} · {exp.type}
               </span>
               <p className="text-sm leading-relaxed text-muted-foreground">{exp.summary}</p>
-            </motion.article>
+            </article>
           </FadeUp>
         ))}
       </div>

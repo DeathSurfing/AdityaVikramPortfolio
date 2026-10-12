@@ -1,0 +1,12 @@
+# Modern browsers only. Lighthouse flagged 24 KiB of "legacy JavaScript":
+# Next bundles the core-js polyfill chunk into polyfillFiles regardless, so
+# this list is what decides whether that chunk ships at all in future Next
+# versions and what syntax level the app targets. The target is evergreen
+# browsers without IE9-era fallbacks.
+#
+# Keep in sync with tsconfig "target" and the syntax actually emitted.
+last 2 chrome versions
+last 2 firefox versions
+last 2 safari versions
+last 2 edge versions
+not dead

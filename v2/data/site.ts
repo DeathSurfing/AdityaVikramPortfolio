@@ -1,42 +1,72 @@
+// Site config and Next.js metadata, derived from the canonical profile record.
+// Nothing here restates a fact by hand: edit data/profile.ts instead.
+
 import type { Metadata } from 'next';
+
+import { profile } from './profile';
+
+export const siteConfig = {
+  name: profile.name,
+  title: profile.title,
+  url: profile.url,
+  email: profile.email,
+  github: {
+    username: 'deathSurfing',
+    url: profile.sameAs[0],
+  },
+  linkedin: {
+    username: 'aditya-vikram-mahendru',
+    url: profile.sameAs[1],
+  },
+  description: profile.shortBio,
+};
 
 export const siteMetadata: Metadata = {
   title: {
-    default: 'Aditya Vikram — Full Stack Developer | TypeScript, React & Kubernetes',
-    template: '%s | Aditya Vikram',
+    default: profile.headline,
+    template: `%s | ${profile.alternateNames[0]}`,
   },
-  description:
-    'Full stack developer building digital products with Next.js, TypeScript, and Rust. Web agency operator, Kubernetes hobbyist, and Student Council Technical Secretary.',
+  description: profile.shortBio,
 
-  applicationName: 'Aditya Vikram Portfolio',
+  applicationName: `${profile.name} Portfolio`,
 
-  metadataBase: new URL('https://adityavikram.dev'),
+  metadataBase: new URL(profile.url),
   alternates: {
     canonical: '/',
+    types: {
+      'application/rss+xml': '/feed.xml',
+      'text/markdown': '/',
+    },
   },
 
   keywords: [
-    'Aditya Vikram',
+    profile.alternateNames[0],
+    profile.name,
+    profile.alternateNames[2],
     'full stack developer',
+    'machine learning engineer',
+    'ML engineer',
+    'MLOps',
+    'developer',
     'TypeScript',
     'React',
     'Next.js',
-    'web development',
+    'Python',
+    'PyTorch',
     'Kubernetes',
     'Rust',
-    'portfolio',
+    'open source',
   ],
 
-  authors: [{ name: 'Aditya Vikram' }],
-  creator: 'Aditya Vikram',
-  publisher: 'Aditya Vikram',
+  authors: [{ name: profile.name, url: profile.url }],
+  creator: profile.name,
+  publisher: profile.name,
 
   openGraph: {
-    title: 'Aditya Vikram — Full Stack Developer',
-    description:
-      'Full stack developer building digital products with Next.js, TypeScript, and Rust.',
-    url: 'https://adityavikram.dev',
-    siteName: 'Aditya Vikram',
+    title: profile.headline,
+    description: profile.shortBio,
+    url: profile.url,
+    siteName: profile.name,
     locale: 'en_US',
     type: 'website',
     images: [
@@ -44,16 +74,15 @@ export const siteMetadata: Metadata = {
         url: '/opengraph-image',
         width: 1200,
         height: 630,
-        alt: 'Aditya Vikram — Full Stack Developer',
+        alt: profile.headline,
       },
     ],
   },
 
   twitter: {
     card: 'summary_large_image',
-    title: 'Aditya Vikram — Full Stack Developer',
-    description:
-      'Building digital products with Next.js, TypeScript, Rust, and Kubernetes.',
+    title: profile.headline,
+    description: profile.shortBio,
     images: ['/opengraph-image'],
   },
 
@@ -70,21 +99,4 @@ export const siteMetadata: Metadata = {
   },
 
   category: 'technology',
-};
-
-export const siteConfig = {
-  name: 'Aditya Vikram',
-  title: 'Full Stack Developer',
-  url: 'https://adityavikram.dev',
-  email: 'jobs.aditya.vikram.mahendru@gmail.com',
-  github: {
-    username: 'deathSurfing',
-    url: 'https://github.com/deathSurfing',
-  },
-  linkedin: {
-    username: 'aditya-vikram-mahendru',
-    url: 'https://www.linkedin.com/in/aditya-vikram-mahendru/',
-  },
-  description:
-    'Full Stack Developer building digital products — Next.js, TypeScript, Rust, and Kubernetes.',
 };

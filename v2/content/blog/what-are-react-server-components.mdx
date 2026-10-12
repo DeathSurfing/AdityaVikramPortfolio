@@ -1,11 +1,13 @@
 ---
-title: "Understanding React Server Components"
-description: "A practical guide to React Server Components in Next.js App Router — when to use them and how they change the mental model of building web apps."
+title: "What Are React Server Components?"
+description: "What are React Server Components? They are React components that render only on the server and send their output to the client as data, so their code never enters the browser bundle."
 date: "2026-06-25"
 tags: ["react", "nextjs", "architecture", "frontend"]
 coverImage: "https://images.unsplash.com/photo-1555099962-4199c345e5dd?w=1200&h=630&fit=crop"
 author: "Aditya Vikram Mahendru"
 ---
+
+React Server Components (RSC) are components that run only on the server. Their code is never shipped to the browser and they are never hydrated, which is a different thing from server-side rendering. This covers what they are, how they relate to SSR and to React Router, and what streaming changes.
 
 ## The Shift in Mental Model
 
@@ -120,3 +122,35 @@ This means:
 ## Conclusion
 
 React Server Components aren't just a new feature — they're a new paradigm. Start with Server Components by default, reach for Client Components only when you need interactivity. Your users will thank you for the smaller bundles.
+
+## React Server Components, in questions
+
+### How are RSC different from SSR?
+
+SSR renders your component tree to HTML on the server but still ships the component code
+to the browser and hydrates it. A server component is never hydrated: only its output
+crosses the wire, so a heavy dependency used inside one costs the client nothing.
+
+### Are React Server Components the same as using React Router?
+
+No. RSC is a React capability; a framework implements the transport. React Router in
+framework mode has server components, and Next.js App Router has them. A plain
+client-side React Router app does not, and adding a `<Suspense>` boundary there will not
+create one.
+
+### What does streaming change?
+
+A server component is serialized as a stream, so the shell can be flushed first and a
+slow subtree patched in later. The page stops waiting on its slowest query before it
+starts rendering.
+
+### When does a component have to stay a client component?
+
+When it needs state, effects, event handlers, or a browser API. Mark those files with
+`"use client"` and push them to the leaves, so the server renders everything above them.
+
+### What is RSC like in TypeScript?
+
+It is the same React types. There is no separate server-component type, so TypeScript
+cannot stop you from calling a hook inside a server component. The `"use client"`
+boundary is enforced by the bundler, not the type checker.

@@ -9,10 +9,14 @@ import "./globals.css";
 
 import StaggeredMenu from "@/components/identity/StaggeredMenu";
 import PageWipe from "@/components/identity/PageWipe";
-import { siteMetadata, siteConfig } from "@/data/site";
+import { siteMetadata } from "@/data/site";
+import { profile } from "@/data/profile";
+import { siteJsonLd } from "@/lib/schema";
 
 const menuItems = [
   { label: "Home", ariaLabel: "Go to home page", link: "/" },
+  { label: "Projects", ariaLabel: "View projects", link: "/projects" },
+  { label: "Experience", ariaLabel: "View experience", link: "/experience" },
   { label: "Blog", ariaLabel: "Read the blog", link: "/blog" },
   { label: "Resume", ariaLabel: "View resume", link: "/resume" },
 ];
@@ -20,61 +24,16 @@ const menuItems = [
 const socialItems = [
   {
     label: "LinkedIn",
-    link: "https://www.linkedin.com/in/aditya-vikram-mahendru/",
+    link: profile.sameAs[1],
   },
-  { label: "GitHub", link: "https://github.com/deathSurfing" },
+  { label: "GitHub", link: profile.sameAs[0] },
+  { label: "Substack", link: profile.sameAs[2] },
 ];
-
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "Person",
-      name: "Aditya Vikram Mahendru",
-      url: siteConfig.url,
-      image: `${siteConfig.url}/AdityaVikram.webp`,
-      jobTitle: "Full Stack Developer",
-      email: `mailto:${siteConfig.email}`,
-      sameAs: [
-        siteConfig.linkedin.url,
-        siteConfig.github.url,
-      ],
-      knowsAbout: [
-        "TypeScript",
-        "React",
-        "Next.js",
-        "Node.js",
-        "PostgreSQL",
-        "Docker",
-        "Kubernetes",
-      ],
-    },
-    {
-      "@type": "WebSite",
-      name: "Aditya Vikram",
-      url: siteConfig.url,
-      author: {
-        "@type": "Person",
-        name: "Aditya Vikram Mahendru",
-      },
-    },
-  ],
-};
-
-export const viewport: Viewport = {
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
-    { media: '(prefers-color-scheme: dark)', color: '#0a0a0a' },
-  ],
-};
-
-
-/* ───────────────────────── Fonts ───────────────────────── */
 
 const archivoBlack = Archivo_Black({
   subsets: ["latin"],
   weight: "400",
-  variable: "--font-head",
+  variable: "--font-display",
   display: "swap",
 });
 
@@ -96,6 +55,13 @@ const plexMono = IBM_Plex_Mono({
 
 export const metadata: Metadata = siteMetadata;
 
+export const viewport: Viewport = {
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)', color: '#0a0a0a' },
+  ],
+};
+
 /* ─────────────────────── Layout ─────────────────────── */
 
 export default function RootLayout({
@@ -112,8 +78,12 @@ export default function RootLayout({
       <body className="bg-background text-foreground antialiased">
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(siteJsonLd) }}
         />
+        {children}
+        {/* Rendered after the page content so the page's h1 is the first
+            heading in the accessibility tree. The menu is position: fixed,
+            so visual order is unchanged. */}
         <StaggeredMenu
           isFixed
           items={menuItems}
@@ -122,7 +92,6 @@ export default function RootLayout({
           displayItemNumbering={false}
           closeOnClickAway={true}
         />
-        {children}
         <PageWipe />
       </body>
     </html>

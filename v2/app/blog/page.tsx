@@ -35,8 +35,15 @@ export default async function BlogPage({
       <main className="min-h-screen bg-background font-sans text-foreground selection:bg-foreground selection:text-background">
         <div className="mx-auto flex max-w-2xl flex-col gap-8 px-6 pt-32 pb-20">
           <div className="flex flex-col gap-5">
+<<<<<<< HEAD
             <SectionHeading>// writing</SectionHeading>
             <FadeUp as="p" className="text-base leading-relaxed text-ring">
+=======
+            <h1 className="font-mono text-xs uppercase tracking-[0.25em] text-muted-foreground">
+              // writing by Aditya Vikram
+            </h1>
+            <FadeUp as="p" className="text-base leading-relaxed text-[#b0b0b0]">
+>>>>>>> b8ab252d651f2b97202be0ae75a26b7c8047c9f9
               Thoughts on web development, TypeScript, React, and building
               better software.
             </FadeUp>

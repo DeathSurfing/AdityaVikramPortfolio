@@ -1,0 +1,76 @@
+---
+title: "Making a Merchant Agent-Buyable: Money-Safe Commerce in Rust"
+description: "What it takes to let an autonomous agent buy from an existing store: signed requests, per-agent spend caps, integer money, and webhook reconciliation that cannot double-credit an order."
+date: "2026-10-07"
+tags: ["rust", "axum", "payments", "razorpay", "agentic-commerce"]
+coverImage: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1200&h=630&fit=crop"
+author: "Aditya Vikram Mahendru"
+---
+
+If an AI agent is going to spend your money, three things have to be true: you must be able to tell which agent it is, you must be able to cap what it can spend, and you must be able to reconstruct afterwards exactly what it did. Everything else is a detail.
+
+[AITER COMMERCE](https://github.com/DeathSurfing/aiter-commerce) is my attempt at that. It wraps an existing storefront and payment provider in an agent-facing API, so an agent can discover products, build a cart, and complete a purchase, while the merchant keeps their current checkout. This is what the money-safety layer actually looks like in code.
+
+## Money is an integer, always
+
+Every amount in the system is in **minor units**. Cents for USD, paise for INR. `amount: 900` means $9.00.
+
+This is not a stylistic choice. Floating point cannot represent `0.1` exactly, and once you are summing and comparing amounts across a cart, a discount, a tax line, and a payment provider's response, those errors accumulate into real discrepancies. Integer minor units make the arithmetic exact and make equality checks meaningful.
+
+`aiter-core` holds this logic as pure functions with minimal dependencies, separate from `aiter-server`, which is a thin axum HTTP surface. The separation means the money rules are testable without starting a server, and there is exactly one place where a rounding decision can live.
+
+## Proving which agent is calling
+
+Writes are guarded by a `require_signed` middleware. A request must carry two headers:
+
+- `x-agent-id` identifies the agent
+- `x-request-signature` is an RFC 9421-style envelope signed with the agent's Ed25519 key
+
+The envelope covers the method, the target URI, a SHA-256 digest of the body, a timestamp, and the agent id. Covering all five is what makes it a signature rather than a decoration. If you sign only the body, an attacker can replay that body against a different endpoint. If you do not cover the timestamp, a captured request is valid forever.
+
+Missing, malformed, or invalid signatures are rejected. The signature is what makes per-agent spend caps enforceable at all: without a verified identity, "this agent has spent ₹5,000 today" is a claim about a header value anyone can set.
+
+## Public reads, signed writes
+
+The split is deliberate and worth copying.
+
+| Access | Endpoints |
+|---|---|
+| Public, no auth | `GET /catalog/products`, `GET /catalog/products/{id}`, `GET /.well-known/agent-card.json`, `GET /llms.txt`, `GET /seed/catalog` |
+| Signed | cart lifecycle, `POST /checkout_sessions`, completing a session, `POST /orders/{id}/payment_link` |
+
+Discovery should be free. An agent that cannot read your catalog without credentials will not read your catalog. But anything that mutates state, and especially anything that mints a payment link, requires a verified caller.
+
+Two endpoints are public exceptions, and both are principled: `GET /carts/{id}` because reads mutate nothing, and `POST /webhooks/razorpay` because it is authenticated by Razorpay's own HMAC rather than by us.
+
+## Webhooks that fail closed
+
+`POST /webhooks/razorpay` is public by design. Razorpay signs each delivery with HMAC-SHA256 in the `x-razorpay-signature` header over the raw request body.
+
+The important decision: **without `RAZORPAY_WEBHOOK_SECRET`, every webhook is refused.** The endpoint does not fall back to trusting unverified payloads. A misconfigured deployment stops working instead of silently accepting forged payment confirmations.
+
+`payment.paid` events drive the referenced order, looked up by `notes.order_id`, to paid. Duplicate deliveries are idempotent no-ops, which matters because payment providers retry, and a retry that double-credits an order is a bug you find out about from an accountant.
+
+## Credentials that cannot leak by accident
+
+Razorpay keys are read **lazily, per request**. The server boots fine without them and returns `503` only when a payment link is actually minted or a webhook arrives. Credentials are never logged.
+
+This shape is worth noting for two reasons. It means a developer can run the full flow locally without production secrets, and it means the failure mode of a missing key is a clear `503` at the moment of use rather than a boot crash that hides the actual cause. To exercise the whole path offline, point `RAZORPAY_BASE_URL` at any mock that answers `POST /v1/payment_links`.
+
+## Configuration with predictable precedence
+
+`defaults < config file < process env`, resolved per key. The config file is optional `KEY=VALUE` at `./aiter.env`, overridable with `AITER_CONFIG`. Comments and blank lines are ignored, empty values count as unset, unknown keys are ignored, and malformed lines are startup errors.
+
+The asymmetry is intentional. An unknown key is probably a typo in a harmless place, so ignoring it is friendly. A malformed line means the operator's intent is unclear, so failing loudly at startup beats starting with a half-applied configuration.
+
+## Protocol-agnostic on purpose
+
+AITER does not invent its own payment protocol. It is designed to sit inside the emerging stack, ACP, UCP, AP2, x402, and UPI Reserve Pay, rather than compete with it. The merchant keeps Razorpay. The agent gets a consistent surface.
+
+That is the part I would defend hardest. Every agentic-commerce project that defines its own protocol adds a translation layer for everyone else. Wrapping the existing rails means the merchant rebuilds nothing and the agent learns one shape.
+
+## What is actually hard here
+
+Not the HTTP surface. The hard parts were the three properties from the first paragraph: identity you can enforce spend caps against, integer arithmetic you can audit, and webhook handling that fails closed and is idempotent under retries. None of them are visible in a demo, and all of them are what you would need before letting an agent near a real card.
+
+Code: **[github.com/DeathSurfing/aiter-commerce](https://github.com/DeathSurfing/aiter-commerce)**

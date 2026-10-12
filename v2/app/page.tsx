@@ -5,6 +5,7 @@ import ContactLinks from '@/components/identity/ContactLinks';
 import StackSection from '@/components/identity/StackSection';
 import StorySection from '@/components/identity/StorySection';
 import ProjectsSection from '@/components/identity/ProjectsSection';
+import BlogTeaser from '@/components/identity/BlogTeaser';
 import dynamic from 'next/dynamic';
 import IdentityFooter from '@/components/identity/IdentityFooter';
 
@@ -23,6 +24,7 @@ export default function HomePage() {
           <StackSection />
           <StorySection />
           <ProjectsSection />
+          <BlogTeaser />
           <ActivityGraph />
         </div>
         <IdentityFooter />
