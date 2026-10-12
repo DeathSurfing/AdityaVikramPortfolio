@@ -14,7 +14,7 @@ import type { ReactNode } from 'react';
  * `prefers-reduced-motion` in globals.css instead, which is where the other
  * transitions are handled too.
  */
-export default function MotionRoot() {
+export default function MotionRoot({ children }: { children: ReactNode }) {
   useEffect(() => {
     const nodes = Array.from(document.querySelectorAll<HTMLElement>('.fade-up'));
 
