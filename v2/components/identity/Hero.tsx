@@ -52,7 +52,7 @@ export default function Hero() {
             <motion.span
               key={i}
               variants={word}
-              className="mr-[0.28em] inline-block last:mr-0"
+              className="mr-word inline-block last:mr-0"
             >
               {w}
             </motion.span>

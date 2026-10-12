@@ -115,7 +115,7 @@ export default async function BlogPostPage({ params }: PageProps) {
 
   return (
     <MotionRoot>
-      <main className="min-h-screen bg-[#0a0a0a] font-sans text-[#e5e5e5] selection:bg-[#e5e5e5] selection:text-[#0a0a0a]">
+      <main className="min-h-screen bg-background font-sans text-foreground selection:bg-foreground selection:text-background">
         <article className="mx-auto max-w-2xl px-6 pt-32 pb-20">
           <script
             type="application/ld+json"
@@ -125,24 +125,24 @@ export default async function BlogPostPage({ params }: PageProps) {
           <FadeUp>
             <Link
               href="/blog"
-              className="mb-10 inline-block font-mono text-xs text-[#8a8a8a] transition-colors hover:text-[#e5e5e5]"
+              className="mb-10 inline-block font-mono text-xs text-muted-foreground transition-colors hover:text-foreground"
             >
               &larr; blog
             </Link>
           </FadeUp>
 
           <FadeUp as="header" delay={1} className="mb-10 flex flex-col gap-4">
-            <h1 className="text-3xl font-semibold tracking-tight text-[#e5e5e5] lg:text-4xl">
+            <h1 className="text-3xl font-semibold tracking-tight text-foreground lg:text-4xl">
               {data.title}
             </h1>
 
             {data.description && (
-              <p className="text-base leading-relaxed text-[#8a8a8a]">
+              <p className="text-base leading-relaxed text-muted-foreground">
                 {data.description}
               </p>
             )}
 
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-xs text-[#666]">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-xs text-muted-foreground">
               <span>{data.author || "Aditya Vikram Mahendru"}</span>
               <span aria-hidden>·</span>
               <time dateTime={data.date}>
@@ -161,7 +161,7 @@ export default async function BlogPostPage({ params }: PageProps) {
                 {tags.map((tag: string) => (
                   <span
                     key={tag}
-                    className="rounded-sm border border-[#262626] bg-[#141414] px-2 py-0.5 font-mono text-xs text-[#b0b0b0]"
+                    className="rounded-sm border border-primary bg-card px-2 py-0.5 font-mono text-xs text-ring"
                   >
                     {tag}
                   </span>
@@ -170,7 +170,7 @@ export default async function BlogPostPage({ params }: PageProps) {
             )}
 
             {data.coverImage && (
-              <div className="mt-4 overflow-hidden rounded-sm border border-[#262626]">
+              <div className="mt-4 overflow-hidden rounded-sm border border-primary">
                 <Image
                   src={data.coverImage}
                   alt={data.title}
@@ -183,13 +183,13 @@ export default async function BlogPostPage({ params }: PageProps) {
           </FadeUp>
 
           <FadeUp delay={2}>
-            <div className="prose-custom">{mdxContent}</div>
+            <div>{mdxContent}</div>
           </FadeUp>
 
-          <footer className="mt-16 border-t border-[#1f1f1f] pt-8">
+          <footer className="mt-16 border-t border-border pt-8">
             <Link
               href="/blog"
-              className="font-mono text-xs text-[#8a8a8a] transition-colors hover:text-[#e5e5e5]"
+              className="font-mono text-xs text-muted-foreground transition-colors hover:text-foreground"
             >
               &larr; all posts
             </Link>

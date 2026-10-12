@@ -59,14 +59,14 @@ export default function ResumeClient() {
 
   return (
     <MotionRoot>
-      <main className="min-h-screen bg-[#0a0a0a] font-sans text-[#e5e5e5] selection:bg-[#e5e5e5] selection:text-[#0a0a0a]">
+      <main className="min-h-screen bg-background font-sans text-foreground selection:bg-foreground selection:text-background">
         <div className="mx-auto flex max-w-3xl flex-col gap-8 px-6 pt-32 pb-20">
           {/* Heading */}
           <div className="flex flex-col gap-5">
             <SectionHeading>// resume</SectionHeading>
             <FadeUp
               as="p"
-              className="text-base leading-relaxed text-[#b0b0b0]"
+              className="text-base leading-relaxed text-ring"
             >
               Pick a role — the PDF below swaps to the tailored version.
             </FadeUp>
@@ -86,8 +86,8 @@ export default function ResumeClient() {
                       whileTap={{ scale: 0.96 }}
                       className={`flex items-center gap-2 rounded-sm border px-3 py-1.5 font-mono text-xs transition-colors ${
                         active
-                          ? "border-[#e5e5e5] bg-[#e5e5e5] text-[#0a0a0a]"
-                          : "border-[#262626] text-[#8a8a8a] hover:border-[#3a3a3a] hover:text-[#e5e5e5]"
+                          ? "border-[#e5e5e5] bg-foreground text-background"
+                          : "border-primary text-muted-foreground hover:border-border hover:text-foreground"
                       }`}
                       aria-pressed={active}
                     >
@@ -101,7 +101,7 @@ export default function ResumeClient() {
               <AnimatePresence mode="wait" initial={false}>
                 <motion.p
                   key={selected.id}
-                  className="text-sm text-[#8a8a8a]"
+                  className="text-sm text-muted-foreground"
                   initial={{ opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -6 }}
@@ -119,7 +119,7 @@ export default function ResumeClient() {
               <AnimatedLink
                 href={selected.file}
                 download={`Aditya_Vikram_${selected.id === "general" ? "Resume" : `Resume_${selected.id.toUpperCase()}`}.pdf`}
-                className="gap-2 text-[#b0b0b0] transition-colors hover:text-[#e5e5e5]"
+                className="gap-2 text-ring transition-colors hover:text-foreground"
               >
                 <DownloadIcon className="size-3.5" />
                 download pdf
@@ -127,7 +127,7 @@ export default function ResumeClient() {
               <AnimatedLink
                 href={selected.file}
                 external
-                className="gap-2 text-[#b0b0b0] transition-colors hover:text-[#e5e5e5]"
+                className="gap-2 text-ring transition-colors hover:text-foreground"
               >
                 <ExternalLinkIcon className="size-3.5" />
                 open in new tab
@@ -137,8 +137,8 @@ export default function ResumeClient() {
 
           {/* PDF viewer */}
           <FadeUp delay={3}>
-            <div className="overflow-hidden rounded-sm border border-[#262626] bg-[#141414]">
-              <div className="relative aspect-[8.5/11] w-full">
+            <div className="overflow-hidden rounded-sm border border-primary bg-card">
+              <div className="relative aspect-a4 w-full">
                 <AnimatePresence mode="wait" initial={false}>
                   <motion.iframe
                     key={selected.id}
@@ -157,11 +157,11 @@ export default function ResumeClient() {
 
           {/* Contact */}
           <FadeUp delay={4}>
-            <p className="text-sm leading-relaxed text-[#8a8a8a]">
+            <p className="text-sm leading-relaxed text-muted-foreground">
               Interested in working together?{" "}
               <AnimatedLink
                 href={`mailto:${siteConfig.email}`}
-                className="inline text-[#e5e5e5]"
+                className="inline text-foreground"
               >
                 Get in touch
               </AnimatedLink>

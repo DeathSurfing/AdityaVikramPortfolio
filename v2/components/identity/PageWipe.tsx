@@ -6,7 +6,7 @@ import { motion, useAnimationControls, useReducedMotion, type Variants } from 'm
 import { EASE } from './motion-primitives';
 
 /* Greyscale curtain panels — lightest leads the wipe */
-const PANELS = ['#e5e5e5', '#b0b0b0', '#8a8a8a', '#5c5c5c', '#333333'];
+const PANELS = ['var(--wipe-1)', 'var(--wipe-2)', 'var(--wipe-3)', 'var(--wipe-4)', 'var(--wipe-5)'];
 const STAGGER = 0.045;
 const DURATION = 0.35;
 
@@ -112,7 +112,7 @@ export default function PageWipe() {
   return (
     <motion.div
       aria-hidden
-      className="fixed inset-0 z-[100] flex"
+      className="fixed inset-0 z-wipe flex"
       style={{ pointerEvents: blocking ? 'auto' : 'none' }}
     >
       {PANELS.map((color, i) => (

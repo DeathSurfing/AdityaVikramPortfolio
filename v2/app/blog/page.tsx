@@ -32,11 +32,11 @@ export default async function BlogPage({
 
   return (
     <MotionRoot>
-      <main className="min-h-screen bg-[#0a0a0a] font-sans text-[#e5e5e5] selection:bg-[#e5e5e5] selection:text-[#0a0a0a]">
+      <main className="min-h-screen bg-background font-sans text-foreground selection:bg-foreground selection:text-background">
         <div className="mx-auto flex max-w-2xl flex-col gap-8 px-6 pt-32 pb-20">
           <div className="flex flex-col gap-5">
             <SectionHeading>// writing</SectionHeading>
-            <FadeUp as="p" className="text-base leading-relaxed text-[#b0b0b0]">
+            <FadeUp as="p" className="text-base leading-relaxed text-ring">
               Thoughts on web development, TypeScript, React, and building
               better software.
             </FadeUp>
@@ -44,13 +44,13 @@ export default async function BlogPage({
 
           {tags.length > 0 && (
             <FadeUp delay={1}>
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-[#1f1f1f] pb-6 font-mono text-xs">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-border pb-6 font-mono text-xs">
                 <Link
                   href="/blog"
                   className={
                     !tag
-                      ? "text-[#e5e5e5] underline underline-offset-4"
-                      : "text-[#8a8a8a] transition-colors hover:text-[#e5e5e5]"
+                      ? "text-foreground underline underline-offset-4"
+                      : "text-muted-foreground transition-colors hover:text-foreground"
                   }
                 >
                   all
@@ -61,8 +61,8 @@ export default async function BlogPage({
                     href={`/blog?tag=${encodeURIComponent(t)}`}
                     className={
                       tag === t
-                        ? "text-[#e5e5e5] underline underline-offset-4"
-                        : "text-[#8a8a8a] transition-colors hover:text-[#e5e5e5]"
+                        ? "text-foreground underline underline-offset-4"
+                        : "text-muted-foreground transition-colors hover:text-foreground"
                     }
                   >
                     {t.toLowerCase()}
@@ -73,7 +73,7 @@ export default async function BlogPage({
           )}
 
           {posts.length === 0 ? (
-            <FadeUp as="p" className="py-12 font-mono text-sm text-[#666]">
+            <FadeUp as="p" className="py-12 font-mono text-sm text-muted-foreground">
               nothing here yet — check back soon.
             </FadeUp>
           ) : (

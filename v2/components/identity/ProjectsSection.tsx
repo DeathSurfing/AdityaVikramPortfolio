@@ -7,7 +7,7 @@ import { EASE, FadeUp, SectionHeading } from './motion-primitives';
 
 function StatusBadge({ status }: { status: SelectedProject['status'] }) {
   return (
-    <span className="flex items-center gap-1.5 rounded-sm border border-border bg-card px-1.5 py-0.5 font-mono text-[0.65rem] text-muted-foreground">
+    <span className="flex items-center gap-1.5 rounded-sm border border-border bg-card px-1.5 py-0.5 font-mono text-label text-muted-foreground">
       <motion.span
         className="inline-block size-1 rounded-full bg-muted-foreground"
         animate={status === 'building' ? { opacity: [1, 0.25, 1] } : undefined}
@@ -22,7 +22,7 @@ function ProjectRow({ project, index }: { project: SelectedProject; index: numbe
   return (
     <FadeUp delay={index}>
       <motion.article
-        className="group flex gap-4 rounded-md border border-transparent p-3 -mx-3 transition-colors duration-[250ms] hover:border-border hover:bg-card"
+        className="group flex gap-4 rounded-md border border-transparent p-3 -mx-3 transition-colors duration-sweep hover:border-border hover:bg-card"
         whileHover={{ y: -3 }}
         transition={{ duration: 0.25, ease: EASE }}
       >

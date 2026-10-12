@@ -59,6 +59,16 @@
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
+  --graph-1: oklch(0.35 0.14 160);
+  --graph-2: oklch(0.45 0.17 155);
+  --graph-3: oklch(0.6 0.19 150);
+  --graph-4: oklch(0.72 0.2 145);
+  --graph-0: oklch(0.2 0.01 220);
+  --wipe-1: oklch(0.9 0 0);
+  --wipe-2: oklch(0.75 0 0);
+  --wipe-3: oklch(0.65 0 0);
+  --wipe-4: oklch(0.45 0 0);
+  --wipe-5: oklch(0.25 0 0);
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
@@ -159,6 +169,11 @@
   --tracking-wide: calc(var(--tracking-normal) + 0.025em);
   --tracking-wider: calc(var(--tracking-normal) + 0.05em);
   --tracking-widest: calc(var(--tracking-normal) + 0.1em);
+  --tracking-label: 0.2em;
+  --tracking-heading: 0.25em;
+  --text-label: 0.65rem;
+  --spacing-cell: 3px;
+  --spacing-word: 0.28em;
   --tracking-normal: var(--tracking-normal);
   --shadow-2xl: var(--shadow-2xl);
   --shadow-xl: var(--shadow-xl);
@@ -185,6 +200,16 @@
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar: var(--sidebar);
   --color-chart-5: var(--chart-5);
+  --color-graph-0: var(--graph-0);
+  --color-graph-1: var(--graph-1);
+  --color-graph-2: var(--graph-2);
+  --color-graph-3: var(--graph-3);
+  --color-graph-4: var(--graph-4);
+  --color-wipe-1: var(--wipe-1);
+  --color-wipe-2: var(--wipe-2);
+  --color-wipe-3: var(--wipe-3);
+  --color-wipe-4: var(--wipe-4);
+  --color-wipe-5: var(--wipe-5);
   --color-chart-4: var(--chart-4);
   --color-chart-3: var(--chart-3);
   --color-chart-2: var(--chart-2);
@@ -231,6 +256,7 @@ body {
   overflow-y: auto;               /* ✅ allow scroll */
   overscroll-behavior-y: auto;    /* ✅ allow touch scroll */
   -webkit-overflow-scrolling: touch;
+  color-scheme: dark;
 }
 
 #__next {
@@ -278,4 +304,15 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+@utility text-label { font-size: 0.65rem; }
+@utility text-micro { font-size: 0.6rem; }
+@utility gap-cell { gap: 3px; }
+@utility rounded-cell { border-radius: 2px; }
+@utility tracking-label { letter-spacing: 0.2em; }
+@utility tracking-heading { letter-spacing: 0.25em; }
+@utility mr-word { margin-right: 0.28em; }
+@utility duration-sweep { transition-duration: 250ms; }
+@utility z-wipe { z-index: 100; }
+@utility aspect-a4 { aspect-ratio: 8.5 / 11; }
 

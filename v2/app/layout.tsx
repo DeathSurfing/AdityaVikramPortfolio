@@ -108,7 +108,6 @@ export default function RootLayout({
       lang="en"
       suppressHydrationWarning
       className={`dark ${archivoBlack.variable} ${spaceGrotesk.variable} ${plexMono.variable}`}
-      style={{ colorScheme: "dark" }}
     >
       <body className="bg-background text-foreground antialiased">
         <script

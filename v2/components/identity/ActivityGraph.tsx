@@ -17,11 +17,11 @@ const fmt = (s: string) =>
   new Date(s).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
 const GH_COLORS: Record<string, string> = {
-  '0': '#161b22',
-  '1': '#0e4429',
-  '2': '#006d32',
-  '3': '#26a641',
-  '4': '#39d353',
+  '0': 'var(--graph-0)',
+  '1': 'var(--graph-1)',
+  '2': 'var(--graph-2)',
+  '3': 'var(--graph-3)',
+  '4': 'var(--graph-4)',
 };
 
 interface ApiDay {
@@ -120,7 +120,7 @@ export default function ActivityGraph() {
               return (
                 <div
                   key={m.name + i}
-                  className="absolute font-mono text-[0.6rem] text-muted-foreground"
+                  className="absolute font-mono text-micro text-muted-foreground"
                   style={{ left: `${l}px`, width: `${w}px` }}
                 >
                   {m.name}
@@ -130,13 +130,13 @@ export default function ActivityGraph() {
           </div>
 
           {/* Grid */}
-          <div className="flex gap-[3px]">
+          <div className="flex gap-cell">
             {weeks.map((week, wi) => (
-              <div key={wi} className="flex flex-col gap-[3px]">
+              <div key={wi} className="flex flex-col gap-cell">
                 {week.map((day, di) => (
                   <motion.div
                     key={di}
-                    className="size-2.5 rounded-[2px] cursor-pointer"
+                    className="size-2.5 rounded-cell cursor-pointer"
                     style={{ backgroundColor: day.color }}
                     onMouseMove={(e) => handleMove(e, day)}
                     onMouseLeave={() => setTooltip((p) => ({ ...p, show: false }))}
@@ -150,10 +150,10 @@ export default function ActivityGraph() {
         </div>
 
         {/* Legend */}
-        <div className="flex items-center justify-end gap-1.5 font-mono text-[0.65rem] text-muted-foreground">
+        <div className="flex items-center justify-end gap-1.5 font-mono text-label text-muted-foreground">
           <span>Less</span>
           {['0', '1', '2', '3', '4'].map((l) => (
-            <span key={l} className="size-2.5 rounded-[2px]" style={{ backgroundColor: GH_COLORS[l] }} />
+            <span key={l} className="size-2.5 rounded-cell" style={{ backgroundColor: GH_COLORS[l] }} />
           ))}
           <span>More</span>
         </div>

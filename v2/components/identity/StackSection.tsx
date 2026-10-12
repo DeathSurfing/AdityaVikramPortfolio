@@ -55,7 +55,7 @@ export default function StackSection() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.35, ease: EASE, delay: 0.1 + i * 0.06 }}
                 >
-                  <span className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground">
+                  <span className="font-mono text-label uppercase tracking-label text-muted-foreground">
                     {category.name}
                   </span>
                   <div className="flex flex-wrap gap-1.5">
