@@ -14,7 +14,7 @@ COPY package.json bun.lock ./
 RUN bun install --frozen-lockfile --ignore-scripts
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN bun run build
+RUN --network=none bun run build
 
 # Production image
 FROM base AS runner
