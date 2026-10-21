@@ -2,6 +2,11 @@
 # Deploy AdityaVikramPortfolio v2 with Podman Compose
 set -euo pipefail
 
+# No /dev/net/tun on this host, so Buildah can't create isolated net
+# namespaces for RUN steps. Build with chroot isolation on the host
+# network stack instead.
+export BUILDAH_ISOLATION=chroot
+
 cd "$(dirname "$0")"
 
 CONTAINER="portfolio"
