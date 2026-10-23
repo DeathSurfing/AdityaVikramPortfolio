@@ -1,5 +1,59 @@
 /* ──────────────────────────────────────────────
+   MDX prose
+   ──────────────────────────────────────────────
+   Block chrome lives in components/blog/CodeBlock.tsx and
+   MermaidDiagram.tsx. Only the bits that cannot be expressed as a
+   component style are kept here. */
+
+[data-mdx-content] :not(pre) > code {
+  padding: 0.12em 0.35em;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card);
+  color: var(--foreground);
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  white-space: break-spaces;
+}
+
+/* ──────────────────────────────────────────────
+   Code blocks — readable text + quiet scrollbars
+   ────────────────────────────────────────────── */
+
+[data-mdx-content] pre {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+[data-mdx-content] pre::-webkit-scrollbar {
+  height: 6px;
+}
+
+[data-mdx-content] pre::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+[data-mdx-content] pre::-webkit-scrollbar-thumb {
+  background: var(--border);
+}
+
+[data-mdx-content] pre:hover::-webkit-scrollbar-thumb {
+  background: var(--muted-foreground);
+}
+
+/* Mermaid sets width to 100% and a max-width of the natural size, which keeps
+   the diagram inside the article column. */
+[data-mermaid] svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin-inline: auto;
+}
+
+/* ──────────────────────────────────────────────
    Syntax highlighting — dark code blocks
+   Palette follows GitHub dark; the block background comes from the
+   surrounding component (bg-background).
    ────────────────────────────────────────────── */
 .hljs {
   background: transparent !important;
@@ -7,31 +61,91 @@
   padding: 0 !important;
 }
 
-.hljs-keyword { color: #ff7b72 !important; }
-.hljs-string { color: #a5d6ff !important; }
-.hljs-number { color: #79c0ff !important; }
-.hljs-comment { color: #8b949e !important; font-style: italic; }
-.hljs-function { color: #d2a8ff !important; }
-.hljs-title { color: #d2a8ff !important; }
-.hljs-built_in { color: #ffa657 !important; }
-.hljs-type { color: #ffa657 !important; }
-.hljs-literal { color: #79c0ff !important; }
-.hljs-attr { color: #79c0ff !important; }
-.hljs-params { color: #c9d1d9 !important; }
-.hljs-meta { color: #8b949e !important; }
-.hljs-tag { color: #7ee787 !important; }
-.hljs-name { color: #7ee787 !important; }
-.hljs-selector-class { color: #7ee787 !important; }
-.hljs-selector-tag { color: #ff7b72 !important; }
-.hljs-deletion { color: #ffdcd7 !important; }
-.hljs-addition { color: #aff5b4 !important; }
-.hljs-section { color: #d2a8ff !important; font-weight: bold; }
-.hljs-regexp { color: #a5d6ff !important; }
-.hljs-symbol { color: #ffa657 !important; }
-.hljs-variable { color: #ffa657 !important; }
-.hljs-template-variable { color: #ffa657 !important; }
-.hljs-link { color: #79c0ff !important; text-decoration: underline; }
-.hljs-selector-id { color: #ff7b72 !important; }
-.hljs-selector-pseudo { color: #7ee787 !important; }
-.hljs-template-tag { color: #ff7b72 !important; }
-.hljs-doctag { color: #8b949e !important; }
+.hljs-comment,
+.hljs-quote {
+  color: #8b949e !important;
+  font-style: italic;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-type,
+.hljs-template-tag,
+.hljs-doctag,
+.hljs-formula,
+.hljs-selector-id {
+  color: #ff7b72 !important;
+}
+
+.hljs-string,
+.hljs-regexp,
+.hljs-char.escape_,
+.hljs-meta .hljs-string {
+  color: #a5d6ff !important;
+}
+
+.hljs-number,
+.hljs-literal,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-attr,
+.hljs-attribute,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-link {
+  color: #79c0ff !important;
+}
+
+.hljs-title,
+.hljs-title.class_,
+.hljs-title.function_,
+.hljs-section {
+  color: #d2a8ff !important;
+}
+
+.hljs-section {
+  font-weight: bold;
+}
+
+.hljs-built_in,
+.hljs-class .hljs-title,
+.hljs-title.class_ {
+  color: #ffa657 !important;
+}
+
+.hljs-name,
+.hljs-tag,
+.hljs-selector-class,
+.hljs-selector-attr,
+.hljs-selector-pseudo {
+  color: #7ee787 !important;
+}
+
+.hljs-meta,
+.hljs-meta .hljs-keyword {
+  color: #8b949e !important;
+}
+
+.hljs-params {
+  color: #e6edf3 !important;
+}
+
+.hljs-punctuation,
+.hljs-operator,
+.hljs-subst {
+  color: inherit !important;
+}
+
+.hljs-property {
+  color: #79c0ff !important;
+}
+
+.hljs-deletion {
+  color: #ffdcd7 !important;
+  background: #67060c;
+}
+
+.hljs-addition {
+  color: #aff5b4 !important;
+  background: #033a16;
+}

@@ -9,7 +9,7 @@ author: "Aditya Vikram Mahendru"
 
 Siela is a single-guild Discord bot that serves as the load-generating workload for a hardened self-hosting stack built on rootless Podman 5, Postgres 17, Valkey 8, local vLLM and TTS sidecars, one-shot migrations, and overlay composes for MCP and Caddy. The bot itself provides 59 registered commands (58 slash-enabled; `test` is prefix-only), 90-ball Tambola, and a Siela Coins economy. This post examines the infrastructure that sustains it.
 
-This post documents the build for [siela-nogseuui-seobeo-bot](https://github.com/DeathSurfing/siela-nogseuui-seobeo-bot) at build ref `d9511fa9-c25d-42c0-bb02-b9d5c494eb91`. The scope is deliberately narrow: one guild, one deployable stack, and no managed services beyond a single VPS. A single `DISCORD_TOKEN` is supplied as input; as a result, all remaining secrets are generated during initialization.
+This post documents the build for [siela-nogseuui-seobeo-bot](https://github.com/DeathSurfing/siela-nogseuui-seobeo-bot). The scope is deliberately narrow: one guild, one deployable stack, and no managed services beyond a single VPS. A single `DISCORD_TOKEN` is supplied as input; as a result, all remaining secrets are generated during initialization.
 
 ## Demo workload: what the infra runs
 
@@ -118,7 +118,7 @@ export DISCORD_TOKEN="..."
 Only `DISCORD_TOKEN` is required as input. The init script derives the client ID, prints an invite URL, generates internal Postgres and MCP secrets, and writes a 600-permission `.env`. `GUILD_ID` is auto-detected when the bot belongs to exactly one guild. Furthermore, all compose operations should use `scripts/podman-stack.sh` so that overlay selection is honored.
 
 ```mermaid
-flowchart LR
+flowchart TB
 A[podman-init] --> B[compose up]
 B --> C[Postgres 17 Valkey 8 healthy]
 C --> D[migrate]

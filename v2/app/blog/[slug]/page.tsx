@@ -187,7 +187,7 @@ export default async function BlogPostPage({ params }: PageProps) {
           </FadeUp>
 
           <FadeUp delay={2}>
-            <div className="prose-custom">{mdxContent}</div>
+            <div data-mdx-content>{mdxContent}</div>
           </FadeUp>
 
           {related.length > 0 && (
