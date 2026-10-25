@@ -9,6 +9,7 @@
 // Security: the socket is root-equivalent on the host. Only run this
 // against a repository you trust.
 import { $ } from "bun";
+import { execFile } from "node:child_process";
 
 function must(name: string): string {
   const v = process.env[name];
@@ -86,36 +87,51 @@ async function healthy(): Promise<boolean> {
   return false;
 }
 
-async function deploy(remote: string): Promise<boolean> {
+// The host mirrors main with `git pull --ff-only`: never rewrites history,
+// never touches uncommitted work (a dirty tree skips the round).
+async function syncSource(): Promise<boolean> {
   const dirty = (await git("status", "--porcelain")).out;
   if (dirty) {
     log("warn", "tree dirty, skipping update");
     return false;
   }
-  const fetched = await git("fetch", "origin", BRANCH);
-  if (fetched.code !== 0) {
-    log("warn", "fetch failed", { err: fetched.err.slice(0, 300) });
+  const pulled = await git("pull", "--ff-only", "origin", BRANCH);
+  if (pulled.code !== 0) {
+    log("warn", "pull failed", { err: pulled.err.slice(0, 300) });
     return false;
   }
-  const reset = await git("reset", "--hard", "FETCH_HEAD");
-  if (reset.code !== 0) {
-    log("error", "reset failed", { err: reset.err.slice(0, 300) });
+  return true;
+}
+
+// execFile (not Bun.$) runs the long build: it supports a real timeout
+// that kills the child instead of relying on shell helper methods.
+async function composeUpBuild(): Promise<boolean> {
+  const [cmd, ...base] = composeArgv;
+  const result = await new Promise<{ code: number; err: string }>((resolve) => {
+    execFile(
+      cmd,
+      [...base, "up", "-d", "--build"],
+      { cwd: COMPOSE_DIR, timeout: BUILD_TIMEOUT_MS, maxBuffer: 32 * 1024 * 1024 },
+      (error, _stdout, stderr) => {
+        if (error && (error as { killed?: boolean }).killed) {
+          resolve({ code: 1, err: "timed out" });
+          return;
+        }
+        resolve({ code: error ? 1 : 0, err: String(stderr ?? "") });
+      },
+    );
+  });
+  if (result.code !== 0) {
+    log("error", "build failed", { err: result.err.slice(-2000) });
     return false;
   }
+  return true;
+}
+
+async function deploy(remote: string): Promise<boolean> {
+  if (!(await syncSource())) return false;
   log("info", "rebuilding from source", {});
-  let built = false;
-  try {
-    const p = await $`${composeArgv} up -d --build`
-      .cwd(COMPOSE_DIR)
-      .timeout(BUILD_TIMEOUT_MS)
-      .quiet()
-      .nothrow();
-    built = p.exitCode === 0;
-    if (!built) log("error", "build failed", { err: p.stderr.toString().slice(-2000) });
-  } catch (e) {
-    log("error", "build timed out or crashed", { err: String(e).slice(0, 300) });
-  }
-  if (!built) return false;
+  if (!(await composeUpBuild())) return false;
   if (!(await healthy())) {
     log("error", "unhealthy after rebuild", { url: HEALTH_URL });
     return false;
