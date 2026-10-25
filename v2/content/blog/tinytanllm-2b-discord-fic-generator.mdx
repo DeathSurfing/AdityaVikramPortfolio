@@ -9,7 +9,7 @@ author: "Aditya Vikram Mahendru"
 
 `tinyTanLLM-delulu-gemma` is a short form comedic BTS scenario generator built for a Discord `/delulu` command. It produces strict JSON with four keys, `scene`, `notice`, `escalation`, and `line`, under a `json_schema` constrained decoder at temperature 0.7 and a maximum of 150 tokens.
 
-The model starts from `IlyaGusev/gemma-2-2b-it-abliterated`, a refusal abliterated Gemma 2 2B. It was trained with QLoRA SFT at rank 32 on 1,200 curated pairs, followed by DPO on 1,200 triplets. SFT reached an eval loss of 0.26. DPO reached an accuracy of 1.0, with the margin improving from 9.8 to 14.8. The release gate required 12 of 12 SFW probes and 12 of 12 NSFW probes to pass across 4 members and 3 runs each, with zero minors coded language. The released artifacts are SFT and DPO LoRA adapters with `Q4_K_M` and `Q8_0` GGUF quantizations in the private Hugging Face repository `tinyTanLLM-delulu-gemma`.
+The model starts from `IlyaGusev/gemma-2-2b-it-abliterated`, a refusal abliterated Gemma 2 2B. It was trained with QLoRA SFT at rank 32 on 1,200 curated pairs, followed by DPO on 1,200 triplets. SFT reached an eval loss of 0.26. DPO reached an accuracy of 1.0, with the margin improving from 9.8 to 14.8. The release gate required 12 of 12 SFW probes and 12 of 12 NSFW probes to pass across 4 members and 3 runs each, with zero minors coded language. The released artifacts are SFT and DPO LoRA adapters with `Q4_K_M` and `Q8_0` GGUF quantizations in the Hugging Face repository [tinyTanLLM-delulu-gemma](https://huggingface.co/DeathSurfing/tinyTanLLM-delulu-gemma).
 
 The remainder of this post explains the evidence behind these choices, beginning with the data, continuing through the memory constraint and the rejected alternatives, and concluding with construction, testing, and limits.
 
@@ -149,7 +149,7 @@ The reason for SFT followed by DPO, rather than additional SFT, is that each sta
 
 **DPO.** `python delulu/train_dpo.py --family gemma2` runs with beta 0.1, learning rate 5e-6, 2 epochs, effective batch 16, maximum prompt length 256, and maximum length 512. Accuracy reached 1.0, with the margin moving from 9.8 to 14.8. Output is `delulu-dpo-gemma-lora/`, usable standalone.
 
-**Quantization and publication.** GGUF exports produce `delulu-gemma-q4_k_m.gguf` and `delulu-gemma-q8_0.gguf`, uploaded to the private Hugging Face repository with both adapter folders and the model card in `delulu/MODEL_CARD.md` via `publish_hf.sh`.
+**Quantization and publication.** GGUF exports produce `delulu-gemma-q4_k_m.gguf` and `delulu-gemma-q8_0.gguf`, uploaded to the [Hugging Face repository](https://huggingface.co/DeathSurfing/tinyTanLLM-delulu-gemma) with both adapter folders and the model card in `delulu/MODEL_CARD.md` via `publish_hf.sh`.
 
 The memory savings are concrete rather than incidental. The 4 bit QLoRA base replaces full weights, the 512 token window matches the short form task, checkpointing with the 8 bit optimizer limits training memory, and `Q4_K_M` limits serving memory. In our runs Q4 replayed templates more often than Q8. Consequently Q8 is documented as the quality floor and Q4 as the size default.
 
@@ -210,4 +210,4 @@ python delulu/run_probes.py --base http://localhost:8080/v1
 python delulu/run_probes.py --base http://localhost:8080/v1 --nsfw
 ```
 
-Repo map: `bts_corpus/` holds the collector and dataset, `delulu/` holds scrubbing, pairs, trainers, probes, adapters with GGUFs, and the model card, `finetune/` holds the earlier Qwen prose experiment now superseded, `docs/dataset.md` holds the data card, and `decisions.tsv` holds the decision trail. Weights and dataset remain local and gitignored, while public artifacts live in the private Hugging Face repository.
+Repo map: `bts_corpus/` holds the collector and dataset, `delulu/` holds scrubbing, pairs, trainers, probes, adapters with GGUFs, and the model card, `finetune/` holds the earlier Qwen prose experiment now superseded, `docs/dataset.md` holds the data card, and `decisions.tsv` holds the decision trail. Weights and dataset remain local and gitignored, while public artifacts live in the [Hugging Face repository](https://huggingface.co/DeathSurfing/tinyTanLLM-delulu-gemma).
