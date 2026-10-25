@@ -8,3 +8,5 @@ npm-debug.log
 Dockerfile
 .dockerignore
 compose.yaml
+compose.watchtower.yaml
+Containerfile.watchtower

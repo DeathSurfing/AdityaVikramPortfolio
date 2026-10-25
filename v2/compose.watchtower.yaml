@@ -1,0 +1,44 @@
+# Source-build sidecar overlay: rebuild the portfolio from source when
+# origin/main moves. No registry is involved.
+#
+# Enable with (default):
+#   ./deploy.sh
+# Disable with:
+#   WATCHTOWER_ENABLED=false ./deploy.sh
+#
+# The watchtower container needs two host resources:
+#   - the checkout, mounted at the same absolute path it has on the host so
+#     host-side compose build contexts resolve;
+#   - the rootful Podman socket, so it can rebuild and recreate containers.
+#
+# WATCHTOWER_REPO_DIR is the absolute host path of this repository
+# (for example /root/AdityaVikramPortfolio).
+#
+# Security: the socket is root-equivalent access to the host. Only enable
+# this against a repository you trust, over HTTPS (no keys on disk).
+
+volumes:
+  watchtower-state:
+
+services:
+  watchtower:
+    image: localhost/portfolio-watchtower:latest
+    build:
+      context: .
+      dockerfile: Containerfile.watchtower
+    container_name: portfolio-watchtower
+    network_mode: host
+    environment:
+      TZ: ${TZ:-UTC}
+      WATCHTOWER_REPO_DIR: ${WATCHTOWER_REPO_DIR:?set WATCHTOWER_REPO_DIR to the absolute host path of this checkout}
+      WATCHTOWER_BRANCH: ${WATCHTOWER_BRANCH:-main}
+      WATCHTOWER_INTERVAL_SEC: ${WATCHTOWER_INTERVAL_SEC:-60}
+      WATCHTOWER_HEALTH_URL: ${WATCHTOWER_HEALTH_URL:-http://localhost:3000/}
+      WATCHTOWER_STATE_DIR: /state
+      CONTAINER_HOST: unix:///run/podman/podman.sock
+      HOME: /tmp
+    volumes:
+      - ${WATCHTOWER_REPO_DIR:?}:${WATCHTOWER_REPO_DIR:?}
+      - /run/podman/podman.sock:/run/podman/podman.sock
+      - watchtower-state:/state
+    restart: unless-stopped

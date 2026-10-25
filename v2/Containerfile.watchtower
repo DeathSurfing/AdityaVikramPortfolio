@@ -1,0 +1,26 @@
+# portfolio-watchtower: poll origin/main, rebuild the v2 stack from source.
+# Build from v2/:
+#   podman build -f Containerfile.watchtower -t localhost/portfolio-watchtower .
+#
+# The image needs two host resources at runtime (see compose.watchtower.yaml):
+# the checkout mounted at the same absolute path as on the host so compose
+# build contexts resolve, and the rootful Podman socket to rebuild/recreate.
+# Mirrors deploy/podman/Containerfile.watchtower in siela-nogseuui-seobeo-bot.
+
+FROM oven/bun:1 AS bun-base
+
+FROM debian:13-slim AS runtime
+# podman-compose 1.3.x waits for one-shot dependencies to reach "running",
+# which hangs some stacks. Pin 1.5.x like the siela watchtower does.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      ca-certificates git libstdc++6 podman python3-pip \
+  && pip3 install --no-cache-dir --break-system-packages podman-compose==1.5.0 \
+  && rm -rf /var/lib/apt/lists/* /root/.cache
+COPY --from=bun-base /usr/local/bin/bun /usr/local/bin/bun
+ENV NODE_ENV=production
+ENV HOME=/tmp
+ENV CONTAINER_HOST=unix:///run/podman/podman.sock
+WORKDIR /app
+COPY watchtower/package.json ./package.json
+COPY watchtower/src ./src
+CMD ["bun", "src/index.ts"]

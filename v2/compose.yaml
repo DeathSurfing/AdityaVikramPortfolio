@@ -1,5 +1,6 @@
 services:
   portfolio:
+    image: localhost/portfolio-v2:latest
     build:
       context: .
     container_name: portfolio
