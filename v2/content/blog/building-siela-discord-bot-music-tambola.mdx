@@ -1,26 +1,26 @@
 ---
 title: "Podman Self-Hosting: Hardened Discord Bot Stack"
-description: "Self-host a Discord bot on rootless Podman 5 with read-only containers, Postgres 17, Valkey 8, vLLM and KittenTTS sidecars, Caddy and hardened threat model."
+description: "Self-host a Discord bot on rootless Podman 5 with read-only containers, Postgres 17, Valkey 8, vLLM and KittenTTS sidecars, Caddy and a hardened threat model."
 date: "2026-10-23"
 tags: ["discord-bot", "typescript", "bun", "postgres", "podman"]
 coverImage: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1200&h=630&fit=crop"
 author: "Aditya Vikram Mahendru"
 ---
 
-Siela is a single-guild Discord bot that serves as the load-generating workload for a hardened self-hosting stack built on rootless Podman 5, Postgres 17, Valkey 8, local vLLM and TTS sidecars, one-shot migrations, and overlay composes for MCP and Caddy. The bot itself provides 59 registered commands (58 slash-enabled; `test` is prefix-only), 90-ball Tambola, and a Siela Coins economy. This post examines the infrastructure that sustains it.
+Siela is a single-guild Discord bot, and it is the load-generating workload for a hardened self-hosting stack: rootless Podman 5, Postgres 17, Valkey 8, local vLLM and TTS sidecars, one-shot migrations, and overlay composes for MCP and Caddy. The bot has 59 registered commands, 58 of them slash-enabled, plus 90-ball Tambola and a Siela Coins economy. This post is about the infrastructure underneath it.
 
-This post documents the build for [siela-bot](https://github.com/DeathSurfing/siela-bot). The scope is deliberately narrow: one guild, one deployable stack, and no managed services beyond a single VPS. A single `DISCORD_TOKEN` is supplied as input; as a result, all remaining secrets are generated during initialization.
+The build is documented in [siela-bot](https://github.com/DeathSurfing/siela-bot). The scope is one guild and one deployable stack, with no managed services beyond a single VPS. `DISCORD_TOKEN` is the only secret supplied as input; the init script generates the rest.
 
-## Demo workload: what the infra runs
+## What the stack runs
 
-Playback rests on two fundamental mechanisms: yt-dlp for extraction and mpv for decoding, both of which are shipped in the bot image. This arrangement matters because it removes external decoder dependencies at runtime. SoundCloud is therefore supported without further configuration; furthermore, YouTube and YouTube Music playlists as well as Spotify playlists and albums can be imported directly into the queue.
+Playback uses yt-dlp for extraction and mpv for decoding, and both ship in the bot image, so nothing external is needed at runtime. That makes SoundCloud work without configuration, and YouTube, YouTube Music, and Spotify playlists or albums can be imported straight into the queue.
 
-The core playback interface consists of `join`, `queue`, `clearqueue`, and `nowplaying` (aliases `current`, `currentlyplaying`, `cp`, `np`). Lyrics are retrieved from LRCLIB through the Lyrics button when available for the current track. Now-playing messages expose pause, resume, skip, a More select (seek back/forward 10s, shuffle, loop, filters), and stop. Filters are significant because they apply live through mpv, which means adjustment does not require restarting the track.
+The main playback commands are `join`, `queue`, `clearqueue`, and `nowplaying`, with the aliases `current`, `currentlyplaying`, `cp`, and `np`. The Lyrics button fetches from LRCLIB when the current track has lyrics. A now-playing message carries pause, resume, skip, a More select for seek back and forward by 10 seconds, shuffle, loop, and filters, and stop. Filters apply live through mpv, so changing one does not restart the track.
 
-Persistence follows an explicit distinction. The upcoming queue is saved in Valkey and restored when the bot next creates a player. However, `stop` clears that stored queue, whereas `disconnect` preserves it. The current playback position is not resumed in either case. Background on containerizing this class of Node service is available in [Docker for frontend developers](/blog/docker-for-frontend-developers).
+Queue persistence depends on the command. `stop` clears the queue stored in Valkey, `disconnect` keeps it, and the next player creation restores whatever is left. Neither resumes the playback position. Containerising this class of Node service is covered in [Docker for frontend developers](/blog/docker-for-frontend-developers).
 
 ```ts
-// Illustrative example — same shape as Siela command handlers
+// Illustrative example: same shape as Siela command handlers
 import { SlashCommandBuilder, type ChatInputCommandInteraction } from "discord.js";
 
 export const data = new SlashCommandBuilder()
@@ -34,15 +34,15 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 }
 ```
 
-Tambola implements the 90-ball variant, with one game permitted per guild and 2–20 players supported. Tickets are distributed by DM, which keeps game state out of public channels. Auto-marking is enabled by default and remains toggleable in lobby settings. Calls occur every 12 seconds by default (fast 8s, slow 15s), accompanied by a live called board and runtime TTS calls.
+Tambola is the 90-ball variant: one game per guild, 2 to 20 players, and tickets sent by DM so game state stays out of public channels. Auto-marking is on by default and can be toggled in the lobby. Numbers are called every 12 seconds by default, or 8 on fast and 15 on slow, with a live called board and TTS calls.
 
-The supported win patterns are Top Line, Middle Line, Bottom Line, and Full House. Tickets follow the standard 3x9 layout: 5 numbers per row, 1–3 numbers per column, column ranges `1–9` through `80–90`, sorted ascending and generated server-side with `crypto.randomInt`. The pricing mechanism is fixed: extra tickets cost 25 Siela Coins, while per-player auto-mark costs 10 SC per game. Claims are validated server-side, and Full House terminates the game.
+The win patterns are Top Line, Middle Line, Bottom Line, and Full House. Tickets use the standard 3x9 layout: five numbers per row, one to three per column, columns covering 1 to 9 through 80 to 90, sorted ascending and generated on the server with `crypto.randomInt`. Prices are fixed: an extra ticket costs 25 Siela Coins, and per-player auto-mark costs 10 SC per game. The server validates every claim, and Full House ends the game.
 
-Voice coordination has direct infrastructural implications. Tambola joins the selected voice channel when the lobby opens, stops music, and locks the music voice; as a result, random VC drops and scheduled events are skipped while the lock is active. Active games reside in memory only. A restart therefore cancels them.
+Voice coordination affects the infrastructure. When the lobby opens, Tambola joins the selected voice channel, stops the music, and locks the music voice, so random voice drops and scheduled events are skipped while the lock is held. Active games live in memory only, which means a restart cancels them.
 
-## Economy and ledger
+## The economy and its ledger
 
-Siela Coins (SC) maintains one balance per user per guild. The central guarantee is ledger integrity: every balance change writes an immutable row to `economy_transactions` within the same database transaction. Postgres, accessed via Drizzle, is the source of truth (`economy_accounts`, `economy_transactions`, `premium_passes`, shop tables). Valkey caches balance for 60s and leaderboard for 30s. However, the database remains authoritative when Valkey is unavailable.
+Siela Coins keep one balance per user per guild. Every balance change writes an immutable row to `economy_transactions` in the same database transaction, so the ledger and the balance cannot disagree. Postgres, through Drizzle, is the source of truth: `economy_accounts`, `economy_transactions`, `premium_passes`, and the shop tables. Valkey caches each balance for 60 seconds and the leaderboard for 30, and Postgres stays authoritative when Valkey is unavailable.
 
 | feature | cost | source of truth |
 |---|---|---|
@@ -51,28 +51,28 @@ Siela Coins (SC) maintains one balance per user per guild. The central guarantee
 | Delulu generation | 5 SC, 15 SC NSFW in NSFW channel | Postgres ledger, refunded on failure |
 | Premium | 2000 SC for 30 days | Postgres `premium_passes` |
 | Music queue persistence | free | Valkey, restored on player create |
-| Daily / work | earn 10–70 SC / 1–4 SC | Postgres, race-safe claims |
+| Daily / work | earn 10-70 SC / 1-4 SC | Postgres, race-safe claims |
 
-Earning proceeds through several defined mechanisms. `daily` provides a 10 SC base with up to 7x streak and a 24h cooldown, while `work` yields 1–4 SC with a 2h cooldown, supplemented by capped social and per-command awards and `transfer` (1–1,000,000 SC). Games of chance follow fixed odds: `coinflip` (45% win, 2x), `slots` (pair 2x, triple 5x), and `blackjack` (2x, blackjack 2.5x floored, with in-memory hands lost on restart). Premium is status-only, which means all users remain subject to costs and cooldowns. The storage split mirrors the Postgres-first approach described in [replaced my entire stack with Postgres](/blog/replaced-my-entire-stack-with-postgres).
+Coins are earned through a few fixed mechanisms. `daily` gives a 10 SC base with a streak multiplier of up to 7x and a 24-hour cooldown. `work` gives 1 to 4 SC with a 2-hour cooldown, and capped social and per-command awards add to that, along with `transfer` for 1 to 1,000,000 SC. Games of chance have fixed odds: `coinflip` at 45% for 2x, `slots` at 2x for a pair and 5x for a triple, and `blackjack` at 2x with a floored 2.5x blackjack payout, where in-memory hands are lost on restart. Premium is status only, so it does not exempt anyone from costs or cooldowns. The storage split follows the same Postgres-first approach as [replacing the stack with Postgres](/blog/replaced-my-entire-stack-with-postgres).
 
-Beyond games, the same guild-scoped bot provides social interaction (`slap`, `kiss`, `hug`, pair counters, leaderboard, opt-out, `lovecalc`, birthday wishes), Friendship Levels, a Confession Wall, welcomer image cards, auto-role with hierarchy checks, join-to-create temporary VCs (`jointocreate` / `j2c`), and 90-day activity monitoring.
+Outside games, the bot handles social commands (`slap`, `kiss`, `hug`, pair counters, a leaderboard, opt-out, `lovecalc`, birthday wishes), Friendship Levels, a Confession Wall, welcomer image cards, auto-role with hierarchy checks, join-to-create temporary voice channels, and 90-day activity monitoring.
 
-## Internal-only AI sidecars
+## Internal AI sidecars
 
-`/delulu` generates scenarios through a local vLLM service running `Goekdeniz-Guelmez/Josiefied-Qwen2.5-1.5B`. Each invocation costs 5 SC (15 SC for NSFW in an NSFW channel), refunded on failure. No Hugging Face token is required. The OpenAI-compatible endpoint carries no authentication because its exposure is constrained: it is reachable only on the internal compose networks and is never published to the host.
+`/delulu` generates scenarios through a local vLLM service running `Goekdeniz-Guelmez/Josiefied-Qwen2.5-1.5B`. Each call costs 5 SC, or 15 SC for NSFW in an NSFW channel, and a failed call is refunded. No Hugging Face token is needed. The OpenAI-compatible endpoint has no authentication because it is reachable only on the internal compose networks and is never published to the host.
 
-TTS operates as a standalone path via `/tts on|off` together with in-voice playback. The primary voice is KittenTTS Nano ONNX (voice Bruno) served through the local `tts` service, with Edge TTS (`en-IN-NeerjaNeural`) as fallback. Its `/synthesize` endpoints are likewise unauthenticated and internal-only. Tambola calls use the same path; consequently, a silent Tambola call generally indicates a voice-channel permission or TTS service issue rather than a game-logic fault.
+TTS is a separate path, toggled with `/tts on|off` and played in the voice channel. The primary voice is KittenTTS Nano ONNX with the Bruno voice, served by the local `tts` service, with Edge TTS (`en-IN-NeerjaNeural`) as fallback. Its `/synthesize` endpoints are also unauthenticated and internal only. Tambola calls use the same path, so a silent call usually means a voice-channel permission problem or a down TTS service, not a game-logic fault.
 
 ## Stack topology
 
-The codebase is organized as a TypeScript monorepo with shared contracts:
+The codebase is a TypeScript monorepo with shared contracts:
 
-- `apps/bot` — discord.js gateway, feature services, control API (`:3001`), health/metrics (`:3002`)
-- `apps/mcp` — MCP server (stdio + Streamable HTTP) and tool catalog, no Discord token or DB credentials
-- `packages/shared` — Zod schemas, types, constants
-- `packages/db` — Drizzle schema, migrations, Postgres client
-- `packages/config` — Zod environment validation (`*_FILE` variants read secrets from files)
-- `deploy/podman` — compose files, Containerfiles, optional overlays
+- `apps/bot`: discord.js gateway, feature services, control API on `:3001`, health and metrics on `:3002`
+- `apps/mcp`: MCP server over stdio and Streamable HTTP, with a tool catalog and no Discord token or database credentials
+- `packages/shared`: Zod schemas, types, constants
+- `packages/db`: Drizzle schema, migrations, Postgres client
+- `packages/config`: Zod environment validation, with `*_FILE` variants for secrets
+- `deploy/podman`: compose files, Containerfiles, optional overlays
 
 ```mermaid
 flowchart LR
@@ -88,7 +88,7 @@ J[migrate] --> C
 C --> K[pgdata valkeydata llmcache]
 ```
 
-Hardening follows directly from the threat model. The bot container runs read-only with `/tmp` as tmpfs, drops all capabilities, and sets `no-new-privileges`. MCP resides on the internal `mcp` network behind a single generated `MCP_TOKEN`, with `confirm: true` required for destructive tools and every mutation audited. Control API routes require `Authorization: Bearer <MCP_TOKEN>`, while health exposes `/healthz`, `/readyz`, and `/metrics`. Secrets are stored in a generated 600-permission `.env`, Pino redacts them from logs, and Postgres is backed up with `pg_dump`.
+The hardening follows from the threat model. The bot container runs read-only with `/tmp` as tmpfs, drops all capabilities, and sets `no-new-privileges`. MCP sits on the internal `mcp` network behind one generated `MCP_TOKEN`; destructive tools require `confirm: true`, and every mutation is audited. Control API routes require `Authorization: Bearer <MCP_TOKEN>`, and health exposes `/healthz`, `/readyz`, and `/metrics`. Secrets live in a generated `.env` with 600 permissions, Pino redacts them from logs, and `pg_dump` backs up Postgres.
 
 ```mermaid
 flowchart LR
@@ -101,13 +101,13 @@ H[host 8080] --> E
 I[Caddy] --> E
 ```
 
-The money-safety layering reflects the same fail-closed reasoning examined in [making a merchant agent-buyable](/blog/making-a-merchant-agent-buyable).
+The money-safety layering follows the same fail-closed reasoning as [making a merchant agent buyable](/blog/making-a-merchant-agent-buyable).
 
 ## Compose, overlays, and boot
 
-Production is defined in `deploy/podman` compose, comprising `postgres`, `valkey`, `llm`, `tts`, `bot`, and a one-shot `migrate` service. MCP and Caddy are optional overlays (`compose.mcp.yaml`, `compose.host.yaml` for `127.0.0.1:8080`, `compose.proxy.yaml` for the Caddy TLS front door). The entire composition runs rootless on Podman 5 with cgroups v2.
+Production is defined in `deploy/podman`: `postgres`, `valkey`, `llm`, `tts`, `bot`, and a one-shot `migrate` service. MCP and Caddy are optional overlays, with `compose.mcp.yaml`, `compose.host.yaml` for `127.0.0.1:8080`, and `compose.proxy.yaml` for the Caddy TLS front door. Everything runs rootless on Podman 5 with cgroups v2.
 
-The runbook defines a single quickstart path:
+The runbook has one quickstart path:
 
 ```bash
 export DISCORD_TOKEN="..."
@@ -115,7 +115,7 @@ export DISCORD_TOKEN="..."
 ./scripts/podman-stack.sh up -d --build
 ```
 
-Only `DISCORD_TOKEN` is required as input. The init script derives the client ID, prints an invite URL, generates internal Postgres and MCP secrets, and writes a 600-permission `.env`. `GUILD_ID` is auto-detected when the bot belongs to exactly one guild. Furthermore, all compose operations should use `scripts/podman-stack.sh` so that overlay selection is honored.
+`DISCORD_TOKEN` is the only required input. The init script derives the client ID, prints an invite URL, generates the internal Postgres and MCP secrets, and writes a `.env` with 600 permissions. It detects `GUILD_ID` when the bot belongs to exactly one guild. Run every compose operation through `scripts/podman-stack.sh` so overlay selection is honoured.
 
 ```mermaid
 flowchart TB
@@ -127,17 +127,24 @@ E --> F[Discord guild registration]
 F --> G[health 3002]
 ```
 
-On hosts without `/dev/net/tun`, the image should be built with host networking (`podman build --network=host`); remote Podman Desktop operates over SSH with a rootful socket. Background on single-service VPS deployment is available in [k3s bare metal](/blog/k3s-bare-metal).
+On a host without `/dev/net/tun`, build the image with host networking (`podman build --network=host`). Remote Podman Desktop connects over SSH with a rootful socket. Single-service VPS deployment is covered in [K3s bare metal](/blog/k3s-bare-metal).
 
-`docs/RUNBOOK.md` defines the verification sequence: `pg_isready` for Postgres, `valkey-cli ping`, `http://llm:8000/health`, `http://tts:8000/healthz`, `/healthz` and `/readyz` on port 3002 inside the bot container, and `./scripts/podman-stack.sh run --rm migrate` for the idempotent one-shot migrations.
+`docs/RUNBOOK.md` defines the verification sequence:
 
-## Failure modes and graceful degradation
+- `pg_isready` for Postgres
+- `valkey-cli ping`
+- `http://llm:8000/health`
+- `http://tts:8000/healthz`
+- `/healthz` and `/readyz` on port 3002 inside the bot container
+- `./scripts/podman-stack.sh run --rm migrate` for the idempotent one-shot migrations
 
-The governing principle is that absent Valkey, LLM, MCP, music binaries, TTS, or event audio must never take down the bot. Three failures documented in the runbook shaped this final behavior:
+## Failure modes
 
-- Music silent but queue advancing: `yt-dlp` or `mpv` missing or Spotify metadata unresolvable. Fixed by baking both into the bot image and resolving Spotify tracks through public oEmbed and embed metadata, then matching to YouTube. No Spotify credentials required.
-- Tambola TTS silent: missing Connect/Speak permission or `tts` service down. Fixed by checking the lobby card TTS line first, then `tts` health and `TTS_SERVICE_URL`, with Edge TTS as the fallback path.
-- Delulu failing: `siela-llm` container down or vLLM unhealthy. Fixed by checking container logs and `http://llm:8000/health`, plus keeping migrations as a one-shot container that retries DB readiness instead of migrating on app boot.
+The rule is that a missing Valkey, LLM, MCP, music binary, TTS service, or event audio must never take down the bot. Three failures in the runbook shaped the final behaviour:
+
+- Music silent but the queue advancing: `yt-dlp` or `mpv` missing, or Spotify metadata unresolvable. The fix was to bake both binaries into the bot image and resolve Spotify tracks through public oEmbed and embed metadata before matching them to YouTube. No Spotify credentials are required.
+- Tambola TTS silent: a missing Connect or Speak permission, or the `tts` service down. The fix was to check the lobby card's TTS line first, then the `tts` health endpoint and `TTS_SERVICE_URL`, with Edge TTS as the fallback path.
+- Delulu failing: the `siela-llm` container down or vLLM unhealthy. The fix was to keep migrations in a one-shot container that retries database readiness instead of migrating on app boot.
 
 Code: [github.com/DeathSurfing/siela-bot](https://github.com/DeathSurfing/siela-bot)
 
@@ -145,12 +152,12 @@ Code: [github.com/DeathSurfing/siela-bot](https://github.com/DeathSurfing/siela-
 
 ### What stack is this?
 
-The stack is a rootless Podman 5 compose comprising Postgres 17, Valkey 8, local vLLM and KittenTTS sidecars, a read-only Bun 1.x bot, one-shot Drizzle migrations, and optional MCP and Caddy overlays. Source and runbooks are maintained in the [repo](https://github.com/DeathSurfing/siela-bot); related builds are listed under [/projects](/projects).
+A rootless Podman 5 compose of Postgres 17, Valkey 8, local vLLM and KittenTTS sidecars, a read-only Bun 1.x bot, one-shot Drizzle migrations, and optional MCP and Caddy overlays. Source and runbooks are in the [repo](https://github.com/DeathSurfing/siela-bot); related builds are listed under [/projects](/projects).
 
 ### How do slash and prefix commands coexist?
 
-Every command is hybrid in design: prefix, slash, context menu, and mention prefix resolve to the same handler. However, `test` is the only prefix-only command, which explains why the total is 59 registered commands but 58 slash-enabled.
+Every command is hybrid: prefix, slash, context menu, and mention prefix all resolve to the same handler. `test` is the only prefix-only command, which is why the total is 59 registered commands but 58 slash-enabled.
 
 ### Do I need MCP?
 
-No. For Discord-only operation, retain `MCP_ENABLED=false`. Enable the `mcp` overlay only when the 51 control tools are required, served over the internal `mcp` network behind `MCP_TOKEN`, with an optional host overlay on `127.0.0.1:8080`.
+No. For Discord-only operation, keep `MCP_ENABLED=false`. Enable the `mcp` overlay only when you need the 51 control tools, served over the internal `mcp` network behind `MCP_TOKEN`, with an optional host overlay on `127.0.0.1:8080`.

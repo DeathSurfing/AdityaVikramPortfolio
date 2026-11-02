@@ -1,29 +1,23 @@
 ---
 title: "Building Real-Time Features with Convex"
-description: "How to build reactive, real-time features using Convex — from live cursors to instant data sync — without managing WebSocket infrastructure."
+description: "How reactive queries work in Convex, what they replace, and where the platform stops being the right tool."
 date: "2026-06-15"
 tags: ["convex", "backend", "realtime", "typescript"]
 coverImage: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1200&h=630&fit=crop"
 author: "Aditya Vikram Mahendru"
 ---
 
-## Why Convex?
+## What Convex does
 
-Convex is a full-stack platform that combines a real-time database, serverless functions, and reactive queries into a single SDK. The killer feature: **data automatically syncs to every connected client** without polling or manual WebSocket management.
+Convex combines a real-time database, serverless functions, and reactive queries in one SDK. A query result stays synchronised to every connected client, so live data needs no polling and no WebSocket server of your own.
 
-### The Traditional Approach
+### The usual stack
 
-Building real-time features traditionally requires:
-
-- A database (PostgreSQL, MongoDB)
-- A WebSocket server
-- Pub/Sub infrastructure (Redis, RabbitMQ)
-- Client-side state management
-- Optimistic update logic
+A real-time feature normally needs a database, a WebSocket server, pub/sub infrastructure, client state management, and optimistic update logic. Each one is a service to run and a failure mode to handle.
 
 ### With Convex
 
-Write a query function, use it from React — data stays synchronized automatically:
+Write a query, call it from React, and the client stays current:
 
 ```typescript
 // convex/projects.ts
@@ -56,9 +50,27 @@ export function ProjectList() {
 }
 ```
 
-## Reactive Queries
+## Reactive queries
 
-Every `useQuery` hook subscribes to changes. When any mutation modifies data that the query depends on, Convex **automatically re-runs the query and pushes the new result** to all connected clients.
+Every `useQuery` hook subscribes to the data it read. When a mutation changes that data, Convex re-runs the query and pushes the new result to all connected clients.
+
+```mermaid
+sequenceDiagram
+  participant UI as React client
+  participant Q as useQuery
+  participant C as Convex
+  participant DB as Database
+  UI->>Q: subscribe
+  Q->>C: run query
+  C->>DB: read documents
+  DB-->>C: rows
+  C-->>Q: result
+  Note over C,DB: a mutation writes new data
+  DB-->>C: change
+  C->>C: re-run affected queries
+  C-->>Q: push new result
+  Q-->>UI: re-render
+```
 
 ```typescript
 // convex/submissions.ts
@@ -72,7 +84,7 @@ export const submitContact = mutation({
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity()
-    // Rate limiting built-in
+    // Rate limiting is handled by the platform
     await ctx.db.insert("submissions", {
       ...args,
       userId: identity?.subject,
@@ -82,9 +94,9 @@ export const submitContact = mutation({
 })
 ```
 
-## Real-Time Collaborative Features
+## Collaborative features
 
-### Live Cursors
+### Live cursors
 
 ```typescript
 // convex/cursors.ts
@@ -112,9 +124,9 @@ export const getActiveCursors = query({
 })
 ```
 
-## Schema Design
+## Schema design
 
-Define your database schema in TypeScript:
+The schema is TypeScript, and the types flow into the queries:
 
 ```typescript
 // convex/schema.ts
@@ -139,17 +151,17 @@ export default defineSchema({
 })
 ```
 
-## When to Use Convex
+## Where it fits
 
-| Use Case | Convex Fit | Alternative |
+| Use case | Fit | Alternative |
 |---|---|---|
-| Real-time dashboards | ✅ Excellent | WebSockets + Redis |
-| Collaborative editing | ✅ Excellent | CRDTs + WebRTC |
-| Contact forms | ✅ Great (built-in rate limiting) | Serverless functions |
-| Blog CMS | ✅ Good | Headless CMS |
-| File storage | ⚠️ Needs external service | S3 / Cloudinary |
-| Heavy analytics | ⚠️ Query limits | Data warehouse |
+| Real-time dashboards | Strong | WebSockets and Redis |
+| Collaborative editing | Strong | CRDTs and WebRTC |
+| Contact forms | Good, with built-in rate limiting | Serverless functions |
+| Blog CMS | Adequate | Headless CMS |
+| File storage | Needs an external service | S3 or Cloudinary |
+| Heavy analytics | Query limits apply | Data warehouse |
 
-## Conclusion
+## Summary
 
-Convex eliminates the infrastructure complexity of building real-time features. For projects where live data sync is critical — collaboration tools, live dashboards, interactive UIs — it's one of the fastest paths to production.
+Convex removes the WebSocket server, the pub/sub layer, and the client-side sync logic from a real-time feature. When live data is central to the product, as in collaboration tools or live dashboards, that is less code to own than assembling the pieces from separate services.

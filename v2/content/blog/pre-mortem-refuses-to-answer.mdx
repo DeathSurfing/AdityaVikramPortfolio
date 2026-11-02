@@ -7,19 +7,33 @@ coverImage: "https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=1200&h=
 author: "Aditya Vikram Mahendru"
 ---
 
-Every company has already made the decision you are about to make. Nobody can find it. It is in a Slack thread from eighteen months ago, a document nobody reopens, or a postmortem that says “this has happened before” with nothing behind it.
+Every company has already made the decision you are about to make. Nobody can find it. It is in a Slack thread from eighteen months ago, a document nobody reopens, or a postmortem that says "this has happened before" with nothing behind it.
 
 I built pre-mortem to fix that for myself. You describe a decision you are weighing, and it searches what the organisation actually did in comparable situations, flags the ones that went badly, and cites each past decision by ID. If the history has nothing to say, it says so.
 
-That last sentence is the whole article. Retrieval is the part everyone has seen; making a system reliably withhold an answer, and making the refusal read as deliberate rather than broken, took several times longer. This is a write-up of the four places that fight happened, and the bugs that only appeared once I stopped reasoning about the code and started running it.
+The refusal is where the work went. Retrieval is the part everyone has seen; making a system reliably withhold an answer, and making the refusal read as deliberate rather than broken, took several times longer. What follows is a write-up of the four places where that fight happened, and the bugs that only appeared once I stopped reasoning about the code and started running it.
 
 ## How it hangs together
 
 Four components, no overlap: a small local classifier returns an area, a reversibility reading and two probability signals, with no network call. The memory layer returns comparable past decisions with exact source text. A deterministic ranker computes risk from the recorded outcomes of those precedents, and no model chooses the verdict. A language model then writes prose in which every sentence carries a decision ID.
 
-The separation is the point. If the model chose the verdict, this would be an opinion with citations stapled on. Instead the risk number is a function of what actually happened to similar decisions before, so it is auditable: check the arithmetic by reading the records it cites.
+In order, with the model confined to the last step:
 
-## Fighting the model’s instinct to be helpful
+```mermaid
+flowchart LR
+  A[Decision text] --> B[Local classifier]
+  B --> C[Memory search]
+  C --> D[Deterministic ranker]
+  D --> E{Comparable precedents?}
+  E -- No --> F[Refusal card listing declined decisions]
+  E -- Yes --> G[Risk card with outcomes and cited IDs]
+  F --> H[Writer produces prose with decision IDs]
+  G --> H
+```
+
+The separation is deliberate. If the model chose the verdict, this would be an opinion with citations stapled on. Instead the risk number is a function of what actually happened to similar decisions before, so it is auditable: check the arithmetic by reading the records it cites.
+
+## Fighting the model's instinct to be helpful
 
 ### 1. A decision that has not happened has no outcome
 
@@ -38,15 +52,16 @@ parts.append("Note: no outcome is recorded for this decision yet. Do not treat i
 ```
 The ranker treats a missing outcome as neither good nor bad, so an unresolved record can support a review as context but never move the risk. I tested this in both directions:
 
-- a proposal with no result yet → result: '', outcome: ''
-- a prompt that states a past cost → result: 'It cost 6 points of margin.', outcome: 'bad'
-The second case is the one that scares me more. Told “last year we gave a 30% discount without a volume commitment and it cost us 6 points”, the model inferred the outcome correctly. That is the behaviour you want, and it is indistinguishable from the behaviour you fear until you test both.
+- a proposal with no result yet gave `result: ''` and `outcome: ''`
+- a prompt that stated a past cost gave `result: 'It cost 6 points of margin.'` and `outcome: 'bad'`
+
+The second case is the one that scares me more. Told "last year we gave a 30% discount without a volume commitment and it cost us 6 points", the model inferred the outcome correctly. That is the behaviour you want, and it is indistinguishable from the behaviour you fear until you test both.
 
 ### 2. Everything the user types is not a fact
 
 The product vectors every prompt so it can cross-reference what you have asked before. Paste a renewal question and it shows you asked a near-identical one last week: on real text, a paraphrase matched an earlier question at 0.907 cosine similarity.
 
-The tempting design is to treat those prompts as knowledge. More data, better recall, right?
+The tempting design treats those prompts as knowledge, on the assumption that more data gives better recall.
 
 No. A prompt the user typed is not company knowledge. If prompts are retained they become retrievable evidence, and unreviewed text gets cited by the ranker. So prompts live in a separate store and reach the decision bank only through a human action.
 
@@ -67,27 +82,27 @@ POST /api/biz/history/resolve   # recording its outcome
 
 ### 3. A refusal has to look confident
 
-The first version of the no-precedent state looked broken: it said “I don’t know” in the same visual register as a system error, so it read as a bug rather than a finding.
+The first version of the no-precedent state looked broken: it said "I don't know" in the same visual register as a system error, so it read as a bug rather than a finding.
 
-A refusal is the strongest evidence the system is not a black box, so it now carries the same weight as a real risk card: how many neighbouring decisions were considered and declined, and a statement that no analogy was stretched. Only then does a fenced guess follow, labelled “not from your company’s history — general practice only, no precedent cited”, with any ID it invents stripped out. Weak matches get the same treatment rather than being dropped, because a first-of-its-kind decision needs to show what it was compared against.
+A refusal is the strongest evidence the system is not a black box, so it now carries the same weight as a real risk card: how many neighbouring decisions were considered and declined, and a statement that no analogy was stretched. Only then does a fenced guess follow, labelled "not from your company's history, general practice only, no precedent cited", with any ID it invents stripped out. Weak matches get the same treatment rather than being dropped, because a first-of-its-kind decision needs to show what it was compared against.
 
-The rule that emerged: the refusal is the answer, and anything after it is opt-in extra.
+The rule that emerged is that the refusal is the answer, and anything after it is opt-in extra.
 
 ## Four things that only appeared when I ran it
 
-Documentation lies in a specific way: it describes intent. All three were found by driving the real thing.
+Documentation lies in a specific way: it describes intent. All four were found by driving the real thing.
 
-The route that ate its neighbour. I mounted the new history router at /api/biz/prompts, where a different endpoint already lived. Mine shadowed it, the preset list began receiving a store object instead of an array, and the interface crashed during hydration. The fix was a non-colliding prefix; the lesson was to check for an existing route before naming a new one.
+The route that shadowed an existing endpoint: I mounted the new history router at /api/biz/prompts, where a different endpoint already lived. Mine shadowed it, the preset list began receiving a store object instead of an array, and the interface crashed during hydration. The fix was a non-colliding prefix; the lesson was to check for an existing route before naming a new one.
 
-The insert that lost the prompt. Recording a prompt whose embedding had failed raised IndeterminateDatatype, because [Postgres cannot infer the type](/blog/replaced-my-entire-stack-with-postgres) of a bare NULL parameter inside a CASE WHEN. The row meant to be kept with a null vector was rejected outright. The path most likely to run when something else is already broken was the one that silently dropped data.
+The insert that lost the prompt: recording a prompt whose embedding had failed raised IndeterminateDatatype, because [Postgres cannot infer the type](/blog/replaced-my-entire-stack-with-postgres) of a bare NULL parameter inside a CASE WHEN. The row meant to be kept with a null vector was rejected outright. The path most likely to run when something else is already broken was the one that silently dropped data.
 
-The 429 the browser could not read. The rate limiter builds its response in middleware, which bypasses the CORS middleware. The refusal arrived without Access-Control-Allow-Origin, so the browser blocked it and fetch rejected with an opaque TypeError. The frontend could not distinguish “you are out of free reviews” from “the server is down”, so the paywall never opened and the user saw Failed to fetch. Adding the header fixed it. The deeper lesson: middleware ordering is a correctness concern, not an implementation detail.
+The 429 the browser could not read: the rate limiter builds its response in middleware, which bypasses the CORS middleware. The refusal arrived without Access-Control-Allow-Origin, so the browser blocked it and fetch rejected with an opaque TypeError. The frontend could not distinguish "you are out of free reviews" from "the server is down", so the paywall never opened and the user saw Failed to fetch. Adding the header fixed it. The deeper lesson: middleware ordering is a correctness concern, not an implementation detail.
 
-Every endpoint was public. With no auth, a cost endpoint that spends a large batch of paid extractions was reachable by anyone with the URL, and a write endpoint could let a stranger pollute the memory the product cites. Both are closed now: those endpoints are disabled in production, and the rest are capped per visitor. That guards against a scraped public URL, not a distributed attacker.
+Every endpoint was public: with no auth, a cost endpoint that spends a large batch of paid extractions was reachable by anyone with the URL, and a write endpoint could let a stranger pollute the memory the product cites. Both are closed now: those endpoints are disabled in production, and the rest are capped per visitor. That guards against a scraped public URL, not a distributed attacker.
 
 ## What I would tell someone building this
 
-Separating “what a model thinks” from “what the records say” is the whole design. It is mechanical if you do it up front, and nearly impossible to retrofit once the model is choosing verdicts.
+Separating what a model thinks from what the records say is the central design decision. It is mechanical if you do it up front, and nearly impossible to retrofit once the model is choosing verdicts.
 
 Enforce honesty constraints in code, not in prompts. A prompt is a request. Three of the four honesty rules here are enforced by types, validation, or the absence of an import. Only one is a prompt, and I test that one adversarially.
 

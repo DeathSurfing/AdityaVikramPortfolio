@@ -1,19 +1,19 @@
 ---
 title: "Mastering TypeScript Generics"
-description: "Understanding generics in TypeScript — from basic usage to advanced patterns with real-world examples."
+description: "How generics work in TypeScript, from the basic type parameter to constraints and generic components, with examples of when one is worth adding."
 date: "2026-06-20"
 tags: ["typescript", "javascript", "programming"]
 coverImage: "/blog/typescript-generics.png"
 author: "Aditya Vikram Mahendru"
 ---
 
-## What Are Generics?
+## What generics are
 
-Generics allow you to write reusable, type-safe code that works with multiple types rather than a single one. Think of them as **type variables** — placeholders that get filled in when the function or class is used.
+Generics let one implementation work with several types while keeping the type relationship between input and output. A type parameter is a placeholder that the caller fills in.
 
-### The Problem
+### The problem
 
-Without generics, you'd have to use `any` or duplicate code:
+Without generics you either duplicate the function or lose its type:
 
 ```typescript
 // Type-safe but duplicated
@@ -24,7 +24,7 @@ function identityString(arg: string): string { return arg }
 function identityAny(arg: any): any { return arg }
 ```
 
-### The Generic Solution
+### The generic version
 
 ```typescript
 function identity<T>(arg: T): T {
@@ -35,11 +35,13 @@ const num = identity(42)        // Type: number
 const str = identity("hello")   // Type: string
 ```
 
-## Practical Patterns
+The return type follows the argument type, which neither `any` nor the duplicated pair can express.
 
-### Generic Constraints
+## Practical patterns
 
-Limit what types can be used with `extends`:
+### Constraints
+
+`extends` limits which types a parameter accepts:
 
 ```typescript
 interface HasLength {
@@ -51,12 +53,12 @@ function logLength<T extends HasLength>(arg: T): T {
   return arg
 }
 
-logLength("hello")     // ✅ string has length
-logLength([1, 2, 3])   // ✅ array has length
-logLength(42)          // ❌ number has no length
+logLength("hello")     // string has length
+logLength([1, 2, 3])   // arrays have length
+logLength(42)          // compile error: number has no length
 ```
 
-### Generic React Components
+### Generic React components
 
 ```tsx
 interface ListProps<T> {
@@ -75,7 +77,9 @@ function List<T>({ items, renderItem }: ListProps<T>) {
 }
 ```
 
-### Key-Value Store
+The component keeps the item type through `renderItem`, so a typo in the render function fails at the call site instead of at runtime.
+
+### A key-value store
 
 ```typescript
 class Store<T extends Record<string, unknown>> {
@@ -95,11 +99,13 @@ class Store<T extends Record<string, unknown>> {
 }
 ```
 
-## When to Use Generics
+`get` returns the type of the specific key, so `store.get("count")` is a number and `store.set("count", "one")` does not compile.
 
-- **Utility functions** that operate on multiple types
-- **Data structures** (stacks, queues, trees)
-- **React components** that render different data types
-- **API wrappers** with different response types
+## When to add one
 
-Generics make your code more reusable without sacrificing type safety. Start simple and add complexity as needed.
+- Utility functions that operate on several types
+- Data structures such as stacks, queues, and trees
+- Components that render different item types
+- API wrappers where the response type varies
+
+Start with the concrete version. Add a type parameter when a second caller needs the same logic with a different type, and add a constraint when the body needs a property the parameter does not guarantee.

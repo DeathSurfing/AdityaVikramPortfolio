@@ -23,13 +23,13 @@ scaler.fit(data.clone())?;
 let scaled = scaler.transform(data)?;
 ```
 
-That is the whole point. If you have used scikit-learn, you already know how to use this. Every transform implements `fit` and `transform`, and they compose the same way: `Pipeline`, `ColumnTransformer`, and `FeatureUnion` all exist, so a preprocessing graph that took an afternoon in Python takes an afternoon here.
+That is the intended effect. If you have used scikit-learn, you already know how to use this. Every transform implements `fit` and `transform`, and they compose the same way: `Pipeline`, `ColumnTransformer`, and `FeatureUnion` all exist, so a preprocessing graph that took an afternoon in Python takes an afternoon here.
 
 `fit` takes a `DataFrame` by value and returns a `Result`, so a transform that cannot be fitted reports why instead of panicking halfway through your data.
 
 ## What changes when your array is a DataFrame
 
-This is where it stops being a port.
+The differences from scikit-learn start at the column level.
 
 In scikit-learn a transform operates on a NumPy array, and column identity is a position you have to keep track of separately. In Polars a transform operates on named columns, and that changes the design in ways worth thinking about.
 
@@ -63,6 +63,6 @@ Plus `PolynomialFeatures` with a builder pattern, feature selection, `FeatureHas
 
 The library is at 0.4 on [crates.io](https://crates.io/crates/featrs), and it is maintained in the open. Recent work added `AutoScaler`, which is the piece I am most interested in: the more the library can infer from the data itself, the less of the pipeline you have to specify by hand.
 
-The honest framing is that this is not trying to replace scikit-learn. It is for the case where the rest of your stack is already Rust and you do not want a Python process in the middle of your data path. Polars is fast, and paying for a Python boundary to get a familiar API is a tax worth avoiding if you can.
+This is not an attempt to replace scikit-learn. It is for the case where the rest of your stack is already Rust and you do not want a Python process in the data path. Polars is fast, and the boundary costs more than the familiar API saves.
 
 Code: **[github.com/featrs/featrs](https://github.com/featrs/featrs)** · Docs: **[docs.rs/featrs](https://docs.rs/featrs)** · Registry: **[crates.io/crates/featrs](https://crates.io/crates/featrs)**

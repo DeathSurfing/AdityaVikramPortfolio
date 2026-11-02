@@ -9,42 +9,42 @@ author: "Aditya Vikram Mahendru"
 
 K3s bare metal is what I run instead of paying a per-hour control-plane fee on EKS, GKE, or AKS. One binary installs the control plane, containerd, flannel, Traefik, and the local-path provisioner. This is the setup, including how Ingress gets a real IP with MetalLB and where storage comes from.
 
-## Why Bare-Metal Kubernetes?
+## Why run it yourself
 
-Cloud-managed Kubernetes (EKS, GKE, AKS) is great for production — until you realize you're paying $100+/month per control plane just for the management fee. A bare-metal cluster with K3s gives you the same orchestration power at a fraction of the cost.
+A managed control plane on EKS, GKE, or AKS costs about $100 a month before any worker node exists. On hardware you already own, K3s runs the same orchestrator for the price of electricity.
 
-### The Hardware
+### The hardware
 
-My cluster uses a mix of Raspberry Pi 5s and recycled office desktops:
+My cluster mixes Raspberry Pi 5s with recycled office desktops:
 
 | Node | Hardware | Role | Specs |
 |---|---|---|---|
-| `k0-control` | HP EliteDesk 800 G4 (recycled) | Control plane + worker | i5-8500T, 32GB RAM, 512GB NVMe |
-| `k1-worker` | Raspberry Pi 5 | Worker | 4GB RAM, 128GB SSD (USB 3.0) |
-| `k2-worker` | Raspberry Pi 5 | Worker | 8GB RAM, 256GB SSD (USB 3.0) |
-| `k3-worker` | Dell OptiPlex 3060 (recycled) | Worker | i5-8500T, 16GB RAM, 256GB NVMe |
-| `k4-worker` | Lenovo ThinkCentre (recycled) | Worker | i5-7500T, 16GB RAM, 256GB SATA SSD |
+| `k0-control` | HP EliteDesk 800 G4, recycled | Control plane and worker | i5-8500T, 32 GB RAM, 512 GB NVMe |
+| `k1-worker` | Raspberry Pi 5 | Worker | 4 GB RAM, 128 GB SSD over USB 3.0 |
+| `k2-worker` | Raspberry Pi 5 | Worker | 8 GB RAM, 256 GB SSD over USB 3.0 |
+| `k3-worker` | Dell OptiPlex 3060, recycled | Worker | i5-8500T, 16 GB RAM, 256 GB NVMe |
+| `k4-worker` | Lenovo ThinkCentre, recycled | Worker | i5-7500T, 16 GB RAM, 256 GB SATA SSD |
 
-Total cost: **~$300** (mostly Pis + SSDs, the office desktops were free e-waste).
+Total cost was about $300, mostly the Pi boards and SSDs. The desktops were e-waste.
 
-## Why K3s?
+## Why K3s
 
-K3s is a CNCF-certified Kubernetes distribution designed for resource-constrained environments. It replaces etcd with SQLite (or embedded PostgreSQL), strips out legacy alpha features, and packages everything into a single ~60MB binary.
+K3s is a CNCF-certified Kubernetes distribution built for small machines. It replaces etcd with SQLite or embedded PostgreSQL, drops legacy alpha features, and ships as a single binary of about 60 MB.
 
-### vs Full Kubernetes
+### Against a full distribution
 
-| Feature | K3s | Standard K8s |
+| Feature | K3s | Standard Kubernetes |
 |---|---|---|
-| Binary size | ~60MB | ~1GB+ |
-| RAM (control plane) | ~300MB | ~1.5GB |
-| Database | SQLite (default) | etcd |
-| TLS | Auto-generated | Manual setup |
-| Built-in | Traefik, Local Path Provisioner, Helm | Nothing |
-| Cert management | cert-manager (optional) | cert-manager (required) |
+| Binary size | ~60 MB | ~1 GB+ |
+| RAM for the control plane | ~300 MB | ~1.5 GB |
+| Database | SQLite by default | etcd |
+| TLS | Generated automatically | Manual setup |
+| Built in | Traefik, local-path provisioner, Helm | Nothing |
+| Certificate management | cert-manager, optional | cert-manager, required |
 
-## Installation
+## Installing
 
-### Control Plane
+### The control plane
 
 ```bash
 # On the control plane node (Ubuntu 24.04)
@@ -57,10 +57,10 @@ curl -sfL https://get.k3s.io | sh -s - \
 sudo cat /var/lib/rancher/k3s/server/node-token
 ```
 
-### Worker Nodes
+### Workers
 
 ```bash
-# On each Raspberry Pi / worker
+# On each Raspberry Pi or desktop
 curl -sfL https://get.k3s.io | K3S_URL=https://k0-control:6443 \
   K3S_TOKEN="your-node-token" \
   sh -
@@ -80,9 +80,9 @@ k4-worker     Ready    <none>                 3m    v1.30.2+k3s2
 
 ## Networking
 
-### Flannel (Default)
+### Flannel
 
-K3s uses Flannel with VXLAN by default — it works out of the box across subnets:
+K3s uses Flannel over VXLAN by default, which works across subnets with no configuration:
 
 ```bash
 # Check pod network
@@ -90,9 +90,9 @@ kubectl get pods -n kube-system
 kubectl describe node k1-worker | grep PodCIDR
 ```
 
-### MetalLB for Load Balancing
+### MetalLB
 
-On bare metal, there's no cloud load balancer. MetalLB assigns IPs from your LAN range to services of type `LoadBalancer`:
+Bare metal has no cloud load balancer. MetalLB assigns addresses from your LAN range to services of type `LoadBalancer`:
 
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.5/config/manifests/metallb-native.yaml
@@ -118,9 +118,9 @@ EOF
 
 ## Storage
 
-### Local Path Provisioner
+### Local path
 
-K3s includes a built-in local storage provisioner:
+K3s includes a local storage provisioner:
 
 ```yaml
 apiVersion: v1
@@ -136,17 +136,17 @@ spec:
       storage: 10Gi
 ```
 
-### Longhorn for Distributed Storage
+### Longhorn
 
-For replicated storage across nodes, Longhorn is the go-to:
+Longhorn replicates volumes across nodes:
 
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/longhorn/longhorn/v1.6.2/deploy/longhorn.yaml
 ```
 
-## Deploying Workloads
+## Workloads
 
-### Simple Web App
+### A web app
 
 ```yaml
 apiVersion: apps/v1
@@ -189,9 +189,22 @@ spec:
     app: portfolio
 ```
 
-### Tolerating ARM + x86
+A request to the portfolio takes this path:
 
-With a mixed cluster, use node affinity to schedule correctly:
+```mermaid
+flowchart LR
+  C[Client] --> R[Router]
+  R --> M[MetalLB 192.168.1.200]
+  M --> T[Traefik Ingress]
+  T --> S[portfolio Service]
+  S --> P1[pod]
+  S --> P2[pod]
+  S --> P3[pod]
+```
+
+### Mixed ARM and x86
+
+Node affinity keeps a pod on the architectures its image supports:
 
 ```yaml
 apiVersion: apps/v1
@@ -231,42 +244,42 @@ helm repo add prometheus-community https://prometheus-community.github.io/helm-c
 helm upgrade --install kube-prometheus-stack prometheus-community/kube-prometheus-stack
 ```
 
-## What Runs on It
+## What runs on it
 
 | Service | Purpose | Architecture |
 |---|---|---|
-| Adguard Home | DNS + ad blocking | ARM64 |
+| Adguard Home | DNS and ad blocking | ARM64 |
 | Vaultwarden | Password manager | ARM64 |
 | Gitea | Git hosting | AMD64 |
-| Drone CI | CI/CD pipeline | AMD64 |
+| Drone CI | CI pipeline | AMD64 |
 | Nextcloud | File sync | AMD64 |
 | Uptime Kuma | Monitoring | ARM64 |
 | Nginx Proxy Manager | Reverse proxy | ARM64 |
-| PostgreSQL + Redis | Stateful storage | AMD64 |
+| PostgreSQL and Redis | Stateful storage | AMD64 |
 
-## Power and Cooling
+## Power
 
-The entire cluster idles at ~73W and ~$15/month in electricity:
+The cluster idles at about 73 W, which is roughly $15 a month:
 
 | Device | Idle | Load |
 |---|---|---|
-| 2x Raspberry Pi 5 | 8W | 15W |
-| 3x recycled desktops | 45W | 120W |
-| Switch + accessories | 15W | 15W |
-| Fans (USB) | 5W | 5W |
-| **Total** | **~73W** | **~155W** |
+| 2x Raspberry Pi 5 | 8 W | 15 W |
+| 3x recycled desktops | 45 W | 120 W |
+| Switch and accessories | 15 W | 15 W |
+| USB fans | 5 W | 5 W |
+| **Total** | **~73 W** | **~155 W** |
 
-## Lessons Learned
+## What I learned
 
-1. **SD cards die** — always boot Raspberry Pis from USB SSDs
-2. **ARM images are evolving** — not every [Docker image](/blog/docker-for-frontend-developers) supports `linux/arm64`
-3. **Network reliability matters** — a flaky switch will cause node flapping
-4. **K3s upgrades are smooth** — `apt upgrade` + `systemctl restart k3s` works
-5. **Mixed architectures are manageable** — build multi-arch images or use emulation
+1. SD cards die. Boot every Raspberry Pi from a USB SSD.
+2. ARM images are still uneven. Not every [Docker image](/blog/docker-for-frontend-developers) publishes `linux/arm64`.
+3. Network reliability matters. A flaky switch produces node flapping that looks like a Kubernetes bug.
+4. Upgrades are uneventful. `apt upgrade` then `systemctl restart k3s` has worked every time.
+5. Mixed architectures are manageable. Build multi-arch images, and use affinity rather than emulation where you can.
 
-## Conclusion
+## Summary
 
-A bare-metal K3s cluster is the most cost-effective way to learn Kubernetes at scale. For ~$300 in hardware and ~$15/month in electricity, you get a production-grade orchestrator running 10+ services on a mix of ARM and x86 nodes. It's not cloud — it's better, because it's yours.
+For learning Kubernetes on real workloads, a small bare-metal cluster is cheaper than a managed control plane and exposes the failure modes you will meet: disk wear, network flaps, and mixed architectures. About $300 in hardware and $15 a month runs ten services on nodes you can replace one at a time.
 
 ## K3s on bare metal, in questions
 

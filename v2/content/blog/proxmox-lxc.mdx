@@ -9,43 +9,54 @@ author: "Aditya Vikram Mahendru"
 
 Proxmox LXC is the container runtime built into Proxmox VE. It starts a full operating system, not a single process, so a container behaves like a very small VM while sharing the host kernel. This is what LXC is, how it differs from Docker and from OpenVZ, and the parts that actually trip people up in production.
 
-## VMs vs Containers on Proxmox
+## VMs and containers on Proxmox
 
-Proxmox VE supports both full VMs (KVM) and system containers (LXC). While VMs virtualize the hardware, LXC containers share the host kernel — making them dramatically more efficient for most server workloads.
+Proxmox VE runs both full VMs on KVM and system containers on LXC. A VM virtualises the hardware and boots its own kernel. A container shares the host kernel, so it carries no second kernel and no emulated devices.
 
-### The Density Advantage
+```mermaid
+flowchart TB
+  subgraph vm[KVM]
+    AppA[Application] --> KernelA[Guest kernel]
+  end
+  subgraph ct[LXC]
+    AppB[Application and systemd]
+  end
+  KernelA --> Host[Host kernel]
+  AppB --> Host
+```
 
-| Metric | KVM VM | LXC Container |
+### Density
+
+| Metric | KVM VM | LXC container |
 |---|---|---|
-| Boot time | 30-60s | `&lt;1s` |
-| RAM overhead | ~300MB per VM | ~10MB per container |
-| Disk usage | 2-10GB base | ~200MB base |
-| Max density (per host) | 10-20 | 100+ |
-| Kernel isolation | Full (separate kernel) | Shared (host kernel) |
+| Boot time | 30-60s | `<1s` |
+| RAM overhead | ~300 MB per VM | ~10 MB per container |
+| Disk usage | 2-10 GB base | ~200 MB base |
+| Max density per host | 10-20 | 100+ |
+| Kernel isolation | Full, separate kernel | Shared, host kernel |
 
-## Why LXC Over Docker?
+## LXC compared with Docker
 
-[Docker containers](/blog/docker-for-frontend-developers) are stateless, ephemeral, and designed for microservices. LXC containers are **system containers** — they behave like full VMs with `systemd`, SSH, and persistent state.
+[Docker containers](/blog/docker-for-frontend-developers) run a single process and are rebuilt from an image, which makes them disposable by design. LXC containers are system containers: they run `systemd`, own a persistent filesystem, and are reached over SSH.
 
 | Feature | Docker | LXC on Proxmox |
 |---|---|---|
 | Scope | Single process | Full OS |
 | Persistence | Volumes | Native filesystem |
-| Networking | Overlay/bridge | Bridge, NAT, routed |
-| Management | Docker CLI + compose | Proxmox UI + `pct` |
+| Networking | Overlay or bridge | Bridge, NAT, routed |
+| Management | Docker CLI and compose | Proxmox UI and `pct` |
 | Use case | Stateless services | Infrastructure services |
 
-## Getting Started with LXC on Proxmox
+## Creating a container
 
-### Creating a Container
+In the Proxmox web UI:
 
-Via the Proxmox web UI:
-- **Datacenter → your_node → Create CT**
-- Select a template (Ubuntu 24.04, Debian 12, Alpine)
-- Allocate CPU cores, RAM, and disk
-- Configure networking (DHCP or static)
+- Open Datacenter, then the node, then Create CT.
+- Select a template from Ubuntu 24.04, Debian 12, or Alpine.
+- Allocate CPU cores, RAM, and disk.
+- Configure networking, either DHCP or static.
 
-Or via CLI:
+Or from the shell:
 
 ```bash
 # List available templates
@@ -70,7 +81,7 @@ pct start 100
 pct enter 100
 ```
 
-### Post-Creation Setup
+### After creation
 
 ```bash
 # Set root password
@@ -86,7 +97,7 @@ pct set 100 --mp0 /storage/data,mp=/mnt/data
 pct set 100 --memory 4096 --swap 1024 --cores 4
 ```
 
-## Production Layout
+## A production layout
 
 ```
 ┌──────────────────────────────────────┐
@@ -105,14 +116,16 @@ pct set 100 --memory 4096 --swap 1024 --cores 4
 └──────────────────────────────────────┘
 ```
 
-## Networking Patterns
+One service per container is the point of the layout. A failed upgrade in the web container does not touch DNS or the database.
 
-### Bridge Networking (Default)
+## Networking
 
-Containers get IPs on the same subnet as the host — they're first-class citizens on your LAN.
+### Bridge
+
+Containers get addresses on the same subnet as the host, so the rest of the LAN reaches them directly.
 
 ```bash
-# /etc/network/interfaces on Proxmox host
+# /etc/network/interfaces on the Proxmox host
 auto vmbr0
 iface vmbr0 inet static
   address 192.168.1.10/24
@@ -122,19 +135,19 @@ iface vmbr0 inet static
   bridge-fd 0
 ```
 
-### NAT Networking
+### NAT
 
-Containers share the host's IP via NAT — useful when you have limited public IPs.
+Containers share the host's address through NAT, which helps when public addresses are scarce.
 
 ```bash
 pct set 100 --net0 name=eth0,bridge=vmbr0,firewall=1
 # Set up NAT via iptables on the host
 ```
 
-## Backup and Snapshots
+## Snapshots and backups
 
 ```bash
-# Snapshot (live, with RAM)
+# Snapshot, including RAM
 pct snapshot 100 pre-upgrade --description "Before Postgres 16 upgrade"
 
 # Backup to Proxmox Backup Server
@@ -144,11 +157,11 @@ vzdump 100 --compress zstd --mode snapshot --storage pbs
 pct restore 100 /var/lib/vz/dump/vzdump-lxc-100-2026_07_02.tar.zst
 ```
 
-## Resource Optimization
+## Memory and disk
 
 ### Memory
 
-LXC containers use **no memory overhead** beyond the processes running inside. A tiny Alpine container running a single service uses ~15MB RAM.
+A container adds no kernel of its own, so its memory use is the processes inside it. A small Alpine container running one service uses about 15 MB.
 
 ```bash
 # Limit memory hard and soft
@@ -160,7 +173,7 @@ pct status 100 --verbose
 
 ### Disk
 
-Use `.raw` disk images on ZFS or LVM-thin for best performance with snapshots.
+Use `.raw` images on ZFS or LVM-thin, which snapshot cheaply.
 
 ```bash
 # Move rootfs to a different storage
@@ -170,21 +183,21 @@ pct move-volume 100 rootfs local-zfs
 pct resize 100 rootfs +4G
 ```
 
-## When to Use LXC vs KVM
+## LXC or KVM
 
-| Scenario | Best Fit |
+| Scenario | Best fit |
 |---|---|
 | Web servers, databases | LXC |
-| Docker hosts | LXC (Docker in LXC) |
-| Custom kernels, kernel modules | KVM |
+| A Docker host | LXC, with Docker inside |
+| Custom kernels or kernel modules | KVM |
 | Windows guests | KVM |
 | Untrusted workloads | KVM |
 | Maximum density | LXC |
-| Snapshots with RAM | LXC (supported) |
+| Snapshots with RAM | LXC |
 
-## Conclusion
+## Summary
 
-LXC containers on Proxmox give you the density and performance of containers with the management experience of full VMs. For most Linux server workloads — web services, databases, DNS, monitoring — they're the right default choice.
+LXC gives you container density with VM-like management. For Linux services such as web servers, databases, DNS, and monitoring, it is the default on Proxmox. Reach for KVM when you need a different kernel, a Windows guest, or isolation from code you do not trust.
 
 ## Proxmox LXC questions I get most
 

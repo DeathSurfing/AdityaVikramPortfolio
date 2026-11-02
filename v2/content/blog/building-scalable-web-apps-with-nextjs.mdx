@@ -1,28 +1,28 @@
 ---
 title: "Building Scalable Web Apps with Next.js"
-description: "A deep dive into modern architecture patterns for building production-ready Next.js applications that scale."
+description: "How to structure a Next.js application that survives growth: rendering strategy, project layout, and the performance work that changes a number."
 date: "2026-06-28"
 tags: ["nextjs", "react", "typescript", "architecture"]
 coverImage: "/blog/nextjs-scalable.png"
 author: "Aditya Vikram Mahendru"
 ---
 
-## Why Next.js?
+## What Next.js provides
 
-Next.js has become the de facto framework for building modern web applications. It provides a powerful set of tools for both static site generation (SSG) and server-side rendering (SSR), making it versatile for a wide range of use cases.
+Next.js supplies file-based routing, server and client rendering in the same tree, per-route code splitting, and image and font optimisation. Most production React applications need all four, which is why it is a common default.
 
-### Key Benefits
+### The parts that matter
 
-- **File-based routing** — intuitive and scalable
-- **Server Components** — reduced client-side JavaScript
-- **Automatic code splitting** — faster page loads
-- **Built-in optimizations** — image, font, script optimization out of the box
+- File-based routing, which removes a routing table from the code
+- Server Components, which keep component code out of the client bundle
+- Automatic code splitting per route
+- Image, font, and script optimisation with no extra setup
 
-## Architecture Patterns
+## Architecture
 
-### Project Structure
+### Project structure
 
-A well-organized project is crucial for maintainability:
+The layout should make the boundary between routing, UI, and utilities obvious:
 
 ```
 src/
@@ -34,9 +34,11 @@ src/
 └── providers/    # Context providers
 ```
 
-### Server Components First
+The rule this layout encodes: `app/` decides what renders, `components/` decides how it looks, and `lib/` holds the code that has no React dependency.
 
-With [React Server Components](/blog/what-are-react-server-components), you can fetch data on the server and send only the rendered HTML to the client. This reduces the bundle size and improves performance.
+### Server Components first
+
+With [React Server Components](/blog/what-are-react-server-components), data is fetched on the server and only the rendered output reaches the client. Component code and its dependencies stay off the browser.
 
 ```tsx
 // app/posts/[id]/page.tsx
@@ -47,22 +49,34 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
 }
 ```
 
-### Data Fetching Strategies
+### Data fetching strategies
 
-| Strategy | Use Case | When to Use |
+| Strategy | Use case | When it fits |
 |---|---|---|
 | Static (SSG) | Blog posts, documentation | Content rarely changes |
-| Dynamic (SSR) | User dashboards, real-time data | Per-request freshness needed |
-| Incremental (ISR) | E-commerce, news sites | Balance of speed and freshness |
+| Dynamic (SSR) | User dashboards, live data | Every request needs fresh data |
+| Incremental (ISR) | E-commerce, news | Freshness with a cache in front |
 
-## Performance Considerations
+The choice follows from two questions: whether the content differs per user, and whether it changes between deploys.
 
-1. **Optimize images** — Use `next/image` with proper sizing
-2. **Streaming** — Leverage `loading.tsx` and `Suspense` boundaries
-3. **Bundle analysis** — Regularly check your bundle size
+```mermaid
+flowchart TD
+  A[Request] --> B{Differs per user?}
+  B -- Yes --> C[SSR, render per request]
+  B -- No --> D{Changes between deploys?}
+  D -- No --> E[SSG, render at build]
+  D -- Yes --> F[ISR, revalidate on an interval]
+  C --> G[Stream slow subtrees with Suspense]
+  E --> G
+  F --> G
+```
 
-> "Performance is not just about speed — it's about delivering a great user experience regardless of device or network conditions."
+## Performance
 
-## Conclusion
+1. Serve images through `next/image` with explicit dimensions.
+2. Stream slow subtrees with `loading.tsx` and `Suspense` boundaries.
+3. Check bundle size on every release, not once at the end.
 
-Next.js provides everything you need to build production-ready applications. Start with Server Components, optimize progressively, and scale confidently.
+## Where to start
+
+Begin with Server Components and push Client Components to the leaves. Add caching and streaming where a measurement shows they help. The structure above scales because each directory has one job, and the rendering strategy is a per-route decision rather than a framework-wide one.

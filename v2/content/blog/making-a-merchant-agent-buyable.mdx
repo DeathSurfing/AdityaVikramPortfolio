@@ -7,9 +7,29 @@ coverImage: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1200&h=
 author: "Aditya Vikram Mahendru"
 ---
 
-If an AI agent is going to spend your money, three things have to be true: you must be able to tell which agent it is, you must be able to cap what it can spend, and you must be able to reconstruct afterwards exactly what it did. Everything else is a detail.
+If an AI agent is going to spend your money, three things have to be true: you must be able to tell which agent it is, you must be able to cap what it can spend, and you must be able to reconstruct afterwards exactly what it did.
 
 [AITER COMMERCE](https://github.com/DeathSurfing/aiter-commerce) is my attempt at that. It wraps an existing storefront and payment provider in an agent-facing API, so an agent can discover products, build a cart, and complete a purchase, while the merchant keeps their current checkout. This is what the money-safety layer actually looks like in code.
+
+The purchase path, end to end:
+
+```mermaid
+sequenceDiagram
+  participant A as Agent
+  participant S as aiter-server
+  participant DB as Postgres
+  participant R as Razorpay
+  A->>S: GET /catalog/products
+  S-->>A: catalog
+  A->>S: signed POST /checkout_sessions
+  S->>DB: create order
+  S->>R: create payment link
+  R-->>A: payment link
+  A->>R: pay
+  R->>S: webhook payment.paid
+  S->>S: verify HMAC
+  S->>DB: mark paid, idempotent
+```
 
 ## Money is an integer, always
 
@@ -32,7 +52,7 @@ Missing, malformed, or invalid signatures are rejected. The signature is what ma
 
 ## Public reads, signed writes
 
-The split is deliberate and worth copying.
+The split is deliberate.
 
 | Access | Endpoints |
 |---|---|
@@ -47,7 +67,7 @@ Two endpoints are public exceptions, and both are principled: `GET /carts/{id}` 
 
 `POST /webhooks/razorpay` is public by design. Razorpay signs each delivery with HMAC-SHA256 in the `x-razorpay-signature` header over the raw request body.
 
-The important decision: **without `RAZORPAY_WEBHOOK_SECRET`, every webhook is refused.** The endpoint does not fall back to trusting unverified payloads. A misconfigured deployment stops working instead of silently accepting forged payment confirmations.
+One decision matters more than the rest. Without `RAZORPAY_WEBHOOK_SECRET`, every webhook is refused. The endpoint does not fall back to trusting unverified payloads. A misconfigured deployment stops working instead of silently accepting forged payment confirmations.
 
 `payment.paid` events drive the referenced order, looked up by `notes.order_id`, to paid. Duplicate deliveries are idempotent no-ops, which matters because payment providers retry, and a retry that double-credits an order is a bug you find out about from an accountant.
 
@@ -55,7 +75,7 @@ The important decision: **without `RAZORPAY_WEBHOOK_SECRET`, every webhook is re
 
 Razorpay keys are read **lazily, per request**. The server boots fine without them and returns `503` only when a payment link is actually minted or a webhook arrives. Credentials are never logged.
 
-This shape is worth noting for two reasons. It means a developer can run the full flow locally without production secrets, and it means the failure mode of a missing key is a clear `503` at the moment of use rather than a boot crash that hides the actual cause. To exercise the whole path offline, point `RAZORPAY_BASE_URL` at any mock that answers `POST /v1/payment_links`.
+Two things follow from that shape. A developer can run the full flow locally without production secrets, and a missing key fails as a clear `503` at the moment of use rather than a boot crash that hides the cause. To exercise the whole path offline, point `RAZORPAY_BASE_URL` at any mock that answers `POST /v1/payment_links`.
 
 ## Configuration with predictable precedence
 
@@ -69,8 +89,8 @@ AITER does not invent its own payment protocol. It is designed to sit inside the
 
 That is the part I would defend hardest. Every agentic-commerce project that defines its own protocol adds a translation layer for everyone else. Wrapping the existing rails means the merchant rebuilds nothing and the agent learns one shape.
 
-## What is actually hard here
+## What is hard here
 
-Not the HTTP surface. The hard parts were the three properties from the first paragraph: identity you can enforce spend caps against, integer arithmetic you can audit, and webhook handling that fails closed and is idempotent under retries. None of them are visible in a demo, and all of them are what you would need before letting an agent near a real card.
+The HTTP surface was not the hard part. The hard parts were the three properties from the first paragraph: identity you can enforce spend caps against, integer arithmetic you can audit, and webhook handling that fails closed and is idempotent under retries. None of them are visible in a demo, and all of them are what you would need before letting an agent near a real card.
 
 Code: **[github.com/DeathSurfing/aiter-commerce](https://github.com/DeathSurfing/aiter-commerce)**

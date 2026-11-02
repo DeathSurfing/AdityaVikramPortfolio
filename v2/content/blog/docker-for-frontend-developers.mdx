@@ -1,23 +1,21 @@
 ---
 title: "Docker for Frontend Developers"
-description: "A practical introduction to Docker from a frontend perspective — containerizing Next.js apps, managing development environments, and CI/CD."
+description: "A frontend introduction to Docker: containerising a Next.js app, using Compose for development, and building the image in CI."
 date: "2026-06-10"
 tags: ["docker", "devops", "frontend", "deployment"]
 coverImage: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=1200&h=630&fit=crop"
 author: "Aditya Vikram Mahendru"
 ---
 
-## Why Frontend Developers Need Docker
+## Why a frontend needs Docker
 
-Docker isn't just for backend engineers. As frontend applications grow in complexity — with environment variables, API proxies, SSR, and serverless functions — Docker provides **consistent environments** from development through production.
+A frontend application now has the environment problems a backend service has. It depends on a Node version, system libraries, build tools, and environment variables, and a server-side rendering step means the build and the runtime both matter. Docker packages all of it into one artefact that runs the same way on a laptop and on a server.
 
-### The Problem
+### The problem it removes
 
-How many times have you heard "it works on my machine"? Different Node versions, operating systems, and system dependencies cause subtle bugs that waste hours.
+Different Node versions, operating systems, and system libraries produce bugs that appear on one machine only. Docker puts the runtime next to the application, so the version of Node and the system libraries travel with the code.
 
-Docker solves this by packaging your entire environment into a container.
-
-## Your First Dockerfile
+## A Dockerfile for Next.js
 
 ```dockerfile
 FROM node:20-alpine AS base
@@ -47,18 +45,28 @@ EXPOSE 3000
 CMD ["node", "server.js"]
 ```
 
-### Multi-Stage Builds
+### Multi-stage builds
 
-The Dockerfile above uses **multi-stage builds** — a pattern that keeps the final image small by discarding build tools and intermediate artifacts:
+The stages above keep the final image small by discarding the build tools and the intermediate layers:
 
 | Stage | Purpose | Size |
 |---|---|---|
-| `base` | Base Node image with system deps | ~150MB |
-| `deps` | Install dependencies | Adds ~200MB (discarded later) |
-| `builder` | Compile the app | Adds ~50MB (discarded later) |
-| `runner` | Production image — only what's needed | **~180MB final** |
+| `base` | Node image with system dependencies | ~150 MB |
+| `deps` | Install dependencies | Adds ~200 MB, discarded |
+| `builder` | Compile the app | Adds ~50 MB, discarded |
+| `runner` | Production image with only runtime files | ~180 MB final |
 
-## Docker Compose for Development
+The `runner` stage copies from `builder` rather than from the build context, so source files, dev dependencies, and the package manager never reach production. Only the last stage survives into the image.
+
+```mermaid
+flowchart LR
+  Base[base: Node 20 Alpine] --> Deps[deps: install packages]
+  Deps --> Builder[builder: compile the app]
+  Builder --> Runner[runner: production files only]
+  Builder -.->|not copied| Drop[source, dev dependencies, package manager]
+```
+
+## Compose for development
 
 ```yaml
 # docker-compose.yml
@@ -89,7 +97,9 @@ volumes:
   postgres_data:
 ```
 
-## Essential Docker Commands
+The anonymous volume on `/app/node_modules` keeps the container's dependencies separate from the host directory, so a bind mount of the source does not replace them.
+
+## Commands you will use daily
 
 ```bash
 # Build the image
@@ -111,11 +121,11 @@ docker logs -f my-app
 docker system prune -a
 ```
 
-## Optimizing for Next.js
+## Next.js specifics
 
-### Standalone Output
+### Standalone output
 
-Next.js can produce a [standalone output](https://nextjs.org/docs/app/api-reference/next-config-js/output) that includes only the files needed for production:
+Next.js can produce a [standalone output](https://nextjs.org/docs/app/api-reference/next-config-js/output) containing only the files the production server needs:
 
 ```javascript
 // next.config.js
@@ -124,9 +134,9 @@ module.exports = {
 }
 ```
 
-This reduces the deployment package significantly and works perfectly with the multi-stage Dockerfile pattern above.
+That output is what the multi-stage Dockerfile copies into the final image.
 
-### Environment Variables
+### Environment variables
 
 ```dockerfile
 # Build-time args
@@ -138,7 +148,9 @@ ENV DATABASE_URL=""
 ENV AUTH_SECRET=""
 ```
 
-## CI/CD Integration
+`NEXT_PUBLIC_` values come from the build stage, so they are fixed when the image is built. Everything else can change at deploy time.
+
+## Building in CI
 
 ```yaml
 # .github/workflows/deploy.yml
@@ -162,14 +174,14 @@ jobs:
           ssh user@server "docker compose up -d"
 ```
 
-## Best Practices
+## Practices worth keeping
 
-1. **Use `.dockerignore`** — exclude `node_modules`, `.next`, `.git`
-2. **Pin base image versions** — avoid `:latest`, use `:20-alpine`
-3. **Layer caching** — order instructions from least to most frequently changing
-4. **Health checks** — add `HEALTHCHECK` to detect failing containers
-5. **Non-root user** — create and use a non-root user for security
+1. Add a `.dockerignore` for `node_modules`, `.next`, and `.git`.
+2. Pin base images to a version, such as `node:20-alpine`, rather than `latest`.
+3. Order the instructions from least to most frequently changed, so dependency layers cache.
+4. Add a `HEALTHCHECK` so a failing container is visible.
+5. Create a non-root user and run the app as that user.
 
-## Conclusion
+## Summary
 
-Docker eliminates environment inconsistencies and streamlines deployment. Start with a simple Dockerfile for your Next.js app, add Docker Compose for development, and expand from there. The upfront investment pays for itself in the first debugging session saved.
+Docker removes the difference between your machine and the server. Start with one Dockerfile, add Compose when the app needs a database, and add the deploy workflow once the image builds reliably.

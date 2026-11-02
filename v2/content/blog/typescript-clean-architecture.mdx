@@ -9,11 +9,11 @@ author: "Aditya Vikram Mahendru"
 
 TypeScript clean architecture is a dependency rule before it is a folder layout: the domain and the service layer must not import a framework, and the framework depends inward through interfaces the domain owns. Here is how the layers map onto TypeScript, and where the pattern stops paying for itself.
 
-## What Is Clean Architecture?
+## What clean architecture is
 
-Clean Architecture, popularized by Robert C. Martin, is about **separating concerns** into layers. The core principle: dependencies flow inward — outer layers depend on inner layers, never the reverse.
+Clean architecture, as Robert C. Martin describes it, separates code into layers and fixes the direction of the dependencies. Outer layers depend on inner layers. Inner layers never depend on outer ones.
 
-### The Layered Model
+### The layers
 
 ```
 ┌─────────────────────────────┐
@@ -25,15 +25,15 @@ Clean Architecture, popularized by Robert C. Martin, is about **separating conce
 └─────────────────────────────┘
 ```
 
-- **Domain** — Pure business logic, no external dependencies
-- **Application** — Orchestration, use cases, interfaces (ports)
-- **Infrastructure** — Implementation details (databases, HTTP clients)
+- The domain holds business logic and imports nothing from outside.
+- The application layer holds use cases and the interfaces, or ports, they call.
+- The infrastructure layer holds the implementations: databases, HTTP clients, mailers.
 
-## TypeScript Implementation
+## Layers in TypeScript
 
-### Domain Layer
+### Domain
 
-The domain contains **entities** — pure business objects with no framework dependencies:
+The domain holds entities: plain objects and functions with no framework imports.
 
 ```typescript
 // domain/entities/User.ts
@@ -52,7 +52,7 @@ export class User {
 }
 ```
 
-Value objects encapsulate validation:
+Value objects keep validation next to the value it produces:
 
 ```typescript
 // domain/value-objects/Email.ts
@@ -69,9 +69,11 @@ export class Email {
 }
 ```
 
-### Application Layer
+The private constructor is what makes that work. An `Email` reaching the database has already been validated, so no later layer has to check it again.
 
-Ports are interfaces that define how the application communicates with the outside world:
+### Application
+
+Ports are the interfaces through which the application reaches the outside world:
 
 ```typescript
 // application/ports/UserRepository.ts
@@ -83,7 +85,7 @@ export interface UserRepository {
 }
 ```
 
-Use cases orchestrate business logic:
+Use cases orchestrate the domain:
 
 ```typescript
 // application/use-cases/CreateUser.ts
@@ -112,7 +114,9 @@ export class CreateUserUseCase {
 }
 ```
 
-### Infrastructure Layer
+The use case depends on the `UserRepository` interface. It has no import of Postgres and no import of the HTTP layer, which is why it runs in a test with no container.
+
+### Infrastructure
 
 Concrete implementations of the ports:
 
@@ -151,9 +155,19 @@ export class PostgresUserRepository implements UserRepository {
 }
 ```
 
-## Dependency Injection
+At runtime the call travels outward, from the handler to the use case to the repository. Every arrow below is an import, and all of them point inward.
 
-Wire everything together at the composition root:
+```mermaid
+flowchart LR
+  Http[Express handler] --> UC[CreateUserUseCase]
+  UC --> Port[UserRepository port]
+  Repo[PostgresUserRepository] -->|implements| Port
+  UC --> Entity[User and Email]
+```
+
+## Wiring it together
+
+The composition root is the one place that knows about every layer:
 
 ```typescript
 // main.ts
@@ -175,7 +189,7 @@ app.post("/users", async (req, res) => {
 
 ## Testing
 
-Clean Architecture makes testing straightforward:
+The use case runs against an in-memory repository and a mock mailer, with no database and no HTTP server:
 
 ```typescript
 // tests/CreateUser.test.ts
@@ -196,20 +210,20 @@ describe("CreateUser", () => {
 })
 ```
 
-## When to Use Clean Architecture
+## When it pays
 
-| Scenario | Apply Clean Architecture? |
+| Scenario | Apply it? |
 |---|---|
-| Simple CRUD app | Overkill — use a framework convention |
-| Complex business logic | ✅ Yes |
-| Multiple delivery mechanisms (API + CLI + Queue) | ✅ Yes |
-| Microservices | ✅ Yes |
-| Rapid prototyping | Not necessary — refactor later |
-| Large team, long-lived project | ✅ Essential |
+| Simple CRUD | No. Follow the framework convention. |
+| Complex business rules | Yes |
+| Several delivery mechanisms: API, CLI, queue | Yes |
+| Microservices | Yes |
+| Rapid prototyping | Not yet. Refactor when the rules stabilise. |
+| Large team, long-lived project | Yes |
 
-## Conclusion
+## Summary
 
-Clean Architecture shines in complex, long-lived applications. For smaller projects, it's overkill — but the **separation of concerns** and **dependency inversion** principles apply at any scale. Start simple, and introduce layers as your application grows.
+The dependency rule costs little when the domain is complex and a lot when it is not. Apply the layers where business rules outlive the framework, and leave a CRUD screen as a CRUD screen.
 
 ## TypeScript clean architecture, in questions
 

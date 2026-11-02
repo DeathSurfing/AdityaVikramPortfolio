@@ -46,7 +46,7 @@ I fixed it at the source instead of chasing the mechanism, because the mechanism
 | `card/69k.lol.png` | 311,458 B | 4,891 B |
 | `card/kubernetes.png` | 62,914 B | 5,224 B |
 
-**913,777 bytes saved.** Fast whether or not the container's image optimizer works.
+**913,777 bytes saved.** The images load fast whether or not the container's image optimizer works.
 
 ## Fix 2: an animation library loaded before the animation was needed
 
@@ -83,7 +83,7 @@ I replaced it with CSS. Everything it was doing had a native equivalent:
 | Per-day motion fade (~371 instances) | Plain divs |
 | Motion timeline page curtain | CSS keyframes on data attributes |
 
-The scroll-driven header is the neatest swap. `useScroll` registers a scroll listener and recomputes transforms on every frame. CSS scroll-driven animations do the same interpolation on the compositor with no JavaScript at all:
+The scroll-driven header is the clearest replacement. `useScroll` registers a scroll listener and recomputes transforms on every frame. CSS scroll-driven animations do the same interpolation on the compositor with no JavaScript at all:
 
 ```css
 .scroll-chrome {
@@ -95,7 +95,7 @@ The scroll-driven header is the neatest swap. `useScroll` registers a scroll lis
 
 **171,298 bytes saved**, and `motion` is now absent from the bundle entirely.
 
-The drawer is the other one worth stealing. Animating `height: auto` normally needs JavaScript to measure the content first. A grid wrapper does it declaratively:
+The drawer does the same job declaratively. Animating `height: auto` normally needs JavaScript to measure the content first. A grid wrapper avoids the measurement:
 
 ```css
 .stack-drawer { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.4s; }
@@ -126,4 +126,4 @@ Modern browsers never fetch a `noModule` script. I confirmed the app code is not
 
 **A config flag is not a fix for an architectural problem.** Nearly 900 KB of JavaScript was going to the browser for what amounts to fades, a lift on hover, and a curtain. That was a decision, not a setting, and it needed a rewrite rather than a `browserslist` entry.
 
-**Verify bytes, not impressions.** Every number above came from `curl` and `stat` against the built output. Several of my initial hypotheses, including two about the image optimizer, were wrong and measurement is what caught them.
+**Check the bytes.** Every number above came from `curl` and `stat` against the built output. Several of my initial hypotheses, including two about the image optimizer, were wrong and measurement is what caught them.
