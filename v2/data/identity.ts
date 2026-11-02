@@ -31,13 +31,13 @@ export const bioParagraphs: BioSegment[][] = [
     },
     { text: 'LexContra', href: 'https://tech.lexcontra.com/' },
     {
-      text: ", a corporate law firm, and run a web agency on retainer-based pricing. I'm also DPO certified, the rare mix of law and engineering that makes me the perfect fit for a Data Protection Officer role.",
+      text: ", a corporate law practice, and run a web agency on retainer-based pricing. I'm also DPO certified, which lets me work across privacy engineering and legal compliance.",
     },
   ],
   [
     { text: 'At Woxsen University I served as Technical Secretary of the Student Council' },
     {
-      text: ', building platforms for 600+ students and migrating campus infrastructure in-house. Previously I interned at the Woxsen AI Research Center, shipping ML-backed ERP systems for 6,000+ users.',
+      text: ', building platforms for 600+ core student users and reaching 2,000+ across 10+ organisations, while migrating campus infrastructure in-house. Previously I interned at the Woxsen AI Research Center, contributing to a production ERP platform used by 6,000+ users.',
     },
   ],
   [
@@ -46,7 +46,7 @@ export const bioParagraphs: BioSegment[][] = [
     },
     { text: 'featrs', href: 'https://github.com/featrs/featrs' },
     {
-      text: ', a Polars-native feature engineering library for Rust. I also run a bare-metal K3s cluster on Raspberry Pis and recycled hardware.',
+      text: ', a Polars-native feature engineering library for Rust. I also run a bare-metal K3s cluster on Raspberry Pis and recycled hardware. The through-line is systems I can operate end to end: the model, the service, and the machine it runs on.',
     },
   ],
 ];
@@ -54,7 +54,7 @@ export const bioParagraphs: BioSegment[][] = [
 export const ctaLine = "Got something to build? Let's make it happen.";
 
 export const stackSummary =
-  'Rust and Python for systems work. Next.js with TypeScript and Tailwind on the front, Convex or PostgreSQL on the back, Docker everywhere. For infrastructure: K3s on Proxmox.';
+  'Rust and Python for systems work. Next.js with TypeScript and Tailwind on the front, Convex or PostgreSQL on the back, Docker everywhere. For infrastructure: K3s on Proxmox. This is the stack I reach for most, not an exhaustive inventory.';
 
 export const experiences: Experience[] = [
   {
@@ -98,7 +98,7 @@ export const experiences: Experience[] = [
     location: 'Hyderabad, India',
     type: 'Leadership',
     summary:
-      'Campus-wide digital transformation - 6 projects, 4 internal tools, and a 55% cut in hosting costs by moving vendor services in-house. Platforms served 600+ students.',
+      'Campus-wide digital transformation - 6 projects and 4 internal tools. Platforms served 600+ core student users and reached 2,000+ across 10+ organisations. Cut hosting costs 55% (INR 20,000 to 9,000 per month) by moving vendor services in-house.',
   },
   {
     role: 'Software Engineering Intern',
@@ -109,7 +109,32 @@ export const experiences: Experience[] = [
     location: 'Hyderabad, India',
     type: 'Internship',
     summary:
-      'Production ERP systems for 6,000+ users - Flask REST APIs, PostgreSQL, and a 50% cut in deployment time by containerizing three microservices and streamlining CI/CD with GitHub Actions.',
+      'Contributed to a production ERP platform used by 6,000+ users, owning the Flask APIs for leave, holiday, and outing workflows. Cut deployment time 50% (40s to 20s) by containerizing three microservices and streamlining CI/CD with GitHub Actions.',
+  },
+];
+
+export interface MetricNote {
+  label: string;
+  detail: string;
+}
+
+// Keep the raw numbers beside every percentage. A percentage alone cannot be
+// checked, and a wrong denominator turns a 55% cut into a nonsensical claim.
+export const metricNotes: MetricNote[] = [
+  {
+    label: 'Deployment time',
+    detail:
+      'Measured from CI start to the ERP service being reachable. 40s before containerization, 20s after. The 50% reduction is (40 - 20) / 40.',
+  },
+  {
+    label: 'Hosting cost',
+    detail:
+      'Monthly vendor invoice before and after the in-house migration: INR 20,000 to INR 9,000. The 55% reduction is (20,000 - 9,000) / 20,000.',
+  },
+  {
+    label: 'User counts',
+    detail:
+      'ERP platform active users (6,000+) and student-council platform users (600+ core students; 2,000+ reached across 10+ organisations).',
   },
 ];
 

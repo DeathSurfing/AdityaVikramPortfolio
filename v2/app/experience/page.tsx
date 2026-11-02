@@ -1,7 +1,7 @@
 import Link from "next/link"
 import type { Metadata } from "next"
 
-import { experiences } from "@/data/identity"
+import { experiences, metricNotes } from "@/data/identity"
 import { skillCategories } from "@/data/skills"
 import { profile } from "@/data/profile"
 import { experienceJsonLd } from "@/lib/schema"
@@ -63,9 +63,26 @@ export default function ExperiencePage() {
 
           <section className="flex flex-col gap-4">
             <h2 className="font-mono text-xs uppercase tracking-heading text-muted-foreground">
-              {`// skills`}
+              {`// how the numbers were measured`}
             </h2>
             <ul className="flex flex-col gap-2">
+              {metricNotes.map((note) => (
+                <li key={note.label} className="text-sm leading-relaxed text-ring">
+                  <span className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
+                    {note.label}
+                  </span>
+                  <br />
+                  {note.detail}
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          <section className="flex flex-col gap-4">
+            <h2 className="font-mono text-xs uppercase tracking-heading text-muted-foreground">
+              {`// skills`}
+            </h2>
+            <ul className="flex flex-col gap-3">
               {skillCategories.map((category) => (
                 <li key={category.name} className="text-sm text-ring">
                   <span className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
@@ -73,6 +90,17 @@ export default function ExperiencePage() {
                   </span>
                   <br />
                   {category.skills.join(", ")}
+                  <span className="mt-1 flex flex-wrap gap-x-3 gap-y-1 font-mono text-xs">
+                    {category.evidence.map((item) => (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className="text-muted-foreground underline decoration-border underline-offset-4 transition-colors hover:text-foreground hover:decoration-foreground"
+                      >
+                        {item.label} →
+                      </Link>
+                    ))}
+                  </span>
                 </li>
               ))}
             </ul>

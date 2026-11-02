@@ -2,6 +2,17 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: 'standalone',
+  async redirects() {
+    return [
+      {
+        // The project was described as a CNN but the code is an MLP. Keep the
+        // old URL working while the canonical page moves to the accurate name.
+        source: '/projects/cnn-from-scratch',
+        destination: '/projects/mlp-from-scratch',
+        permanent: true,
+      },
+    ];
+  },
   // Link response headers for agent discovery, per RFC 8288 and RFC 9727
   // section 3. Agents reading only the response headers can find the API
   // catalog, the OpenAPI description, and the markdown representation without
