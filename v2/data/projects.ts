@@ -108,7 +108,7 @@ export const projects: Project[] = [
     highlights: [
       'Live at premortem.lexcontra.com; searches decision history and cites each precedent by id.',
       'Returns no_precedent instead of a verdict when no precedent exists.',
-      'Measured intent routing: a decision-class message scored 0.99 on the domain classifier.',
+      'Routes chat, query, and decision classes before retrieval, so the review runs only when the message is a decision.',
     ],
     author: { name: profile.name, url: profile.url },
   },
