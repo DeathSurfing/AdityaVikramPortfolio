@@ -4,9 +4,10 @@
 //
 // To add a project: append one object here and commit. Nothing else.
 //
-// Descriptions and highlights are verified specifics. Do not add a claim here
-// that the linked artifact does not support. The MLP project is the corrected
-// record of a repository that was previously described as a CNN.
+// Descriptions and highlights are specific to the work. Do not add a claim
+// here that the linked artifact or write-up does not support. The MLP project
+// is the corrected record of a repository that was previously described as a
+// CNN.
 
 import { profile } from './profile'
 

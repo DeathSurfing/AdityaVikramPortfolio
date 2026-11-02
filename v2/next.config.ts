@@ -6,9 +6,14 @@ const nextConfig: NextConfig = {
     return [
       {
         // The project was described as a CNN but the code is an MLP. Keep the
-        // old URL working while the canonical page moves to the accurate name.
+        // old URLs working while the canonical page moves to the accurate name.
         source: '/projects/cnn-from-scratch',
         destination: '/projects/mlp-from-scratch',
+        permanent: true,
+      },
+      {
+        source: '/api/projects/cnn-from-scratch',
+        destination: '/api/projects/mlp-from-scratch',
         permanent: true,
       },
     ];

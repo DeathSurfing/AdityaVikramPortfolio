@@ -40,7 +40,12 @@ export default function StackSection() {
         </button>
       </FadeUp>
 
-      <div id="stack-drawer" className="stack-drawer" data-open={expanded}>
+      <div
+        id="stack-drawer"
+        className="stack-drawer"
+        data-open={expanded}
+        inert={!expanded}
+      >
         <div>
           <div className="flex flex-col gap-5 border-l border-border pl-5">
             {skillCategories.map((category) => (

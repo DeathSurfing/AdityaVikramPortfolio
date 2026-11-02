@@ -37,7 +37,7 @@ export const bioParagraphs: BioSegment[][] = [
   [
     { text: 'At Woxsen University I served as Technical Secretary of the Student Council' },
     {
-      text: ', building platforms for 600+ core student users and reaching 2,000+ across 10+ organisations, while migrating campus infrastructure in-house. Previously I interned at the Woxsen AI Research Center, contributing to a production ERP platform used by 6,000+ users.',
+      text: ', building platforms for 600+ core student users and supporting council events that reached 2,000+ across 10+ organisations, while migrating campus infrastructure in-house. Previously I interned at the Woxsen AI Research Center, contributing to a production ERP platform used by 6,000+ users.',
     },
   ],
   [
@@ -98,7 +98,7 @@ export const experiences: Experience[] = [
     location: 'Hyderabad, India',
     type: 'Leadership',
     summary:
-      'Campus-wide digital transformation - 6 projects and 4 internal tools. Platforms served 600+ core student users and reached 2,000+ across 10+ organisations. Cut hosting costs 55% (INR 20,000 to 9,000 per month) by moving vendor services in-house.',
+      'Campus-wide digital transformation - 6 projects and 4 internal tools. Platforms served 600+ core student users; council events and tools reached 2,000+ across 10+ organisations. Cut hosting costs 55% (INR 20,000 to 9,000 per month) by moving vendor services in-house.',
   },
   {
     role: 'Software Engineering Intern',
@@ -134,7 +134,7 @@ export const metricNotes: MetricNote[] = [
   {
     label: 'User counts',
     detail:
-      'ERP platform active users (6,000+) and student-council platform users (600+ core students; 2,000+ reached across 10+ organisations).',
+      'ERP platform active users (6,000+). Student-council platform core users (600+). The 2,000+ figure is event and tool reach across 10+ organisations, not monthly active accounts.',
   },
 ];
 
