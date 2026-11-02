@@ -9,7 +9,7 @@ author: "Aditya Vikram Mahendru"
 
 Siela is a single-guild Discord bot that serves as the load-generating workload for a hardened self-hosting stack built on rootless Podman 5, Postgres 17, Valkey 8, local vLLM and TTS sidecars, one-shot migrations, and overlay composes for MCP and Caddy. The bot itself provides 59 registered commands (58 slash-enabled; `test` is prefix-only), 90-ball Tambola, and a Siela Coins economy. This post examines the infrastructure that sustains it.
 
-This post documents the build for [siela-nogseuui-seobeo-bot](https://github.com/DeathSurfing/siela-nogseuui-seobeo-bot). The scope is deliberately narrow: one guild, one deployable stack, and no managed services beyond a single VPS. A single `DISCORD_TOKEN` is supplied as input; as a result, all remaining secrets are generated during initialization.
+This post documents the build for [siela-bot](https://github.com/DeathSurfing/siela-bot). The scope is deliberately narrow: one guild, one deployable stack, and no managed services beyond a single VPS. A single `DISCORD_TOKEN` is supplied as input; as a result, all remaining secrets are generated during initialization.
 
 ## Demo workload: what the infra runs
 
@@ -139,13 +139,13 @@ The governing principle is that absent Valkey, LLM, MCP, music binaries, TTS, or
 - Tambola TTS silent: missing Connect/Speak permission or `tts` service down. Fixed by checking the lobby card TTS line first, then `tts` health and `TTS_SERVICE_URL`, with Edge TTS as the fallback path.
 - Delulu failing: `siela-llm` container down or vLLM unhealthy. Fixed by checking container logs and `http://llm:8000/health`, plus keeping migrations as a one-shot container that retries DB readiness instead of migrating on app boot.
 
-Code: [github.com/DeathSurfing/siela-nogseuui-seobeo-bot](https://github.com/DeathSurfing/siela-nogseuui-seobeo-bot)
+Code: [github.com/DeathSurfing/siela-bot](https://github.com/DeathSurfing/siela-bot)
 
 ## Ops FAQ
 
 ### What stack is this?
 
-The stack is a rootless Podman 5 compose comprising Postgres 17, Valkey 8, local vLLM and KittenTTS sidecars, a read-only Bun 1.x bot, one-shot Drizzle migrations, and optional MCP and Caddy overlays. Source and runbooks are maintained in the [repo](https://github.com/DeathSurfing/siela-nogseuui-seobeo-bot); related builds are listed under [/projects](/projects).
+The stack is a rootless Podman 5 compose comprising Postgres 17, Valkey 8, local vLLM and KittenTTS sidecars, a read-only Bun 1.x bot, one-shot Drizzle migrations, and optional MCP and Caddy overlays. Source and runbooks are maintained in the [repo](https://github.com/DeathSurfing/siela-bot); related builds are listed under [/projects](/projects).
 
 ### How do slash and prefix commands coexist?
 

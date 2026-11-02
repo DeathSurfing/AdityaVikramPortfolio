@@ -42,7 +42,7 @@ export const bioParagraphs: BioSegment[][] = [
   ],
   [
     {
-      text: "I'm a Forward Deployed ML Intern at iGlobus, embedded with US client teams to turn DPDP duties into working product controls. My machine learning work runs on Python and PyTorch, with MLOps practices for training, evaluation, and deployment. I maintain ",
+      text: "I was a Forward Deployed ML Intern at iGlobus, embedded with US client teams to turn DPDP duties into working product controls. My machine learning work runs on Python and PyTorch, with MLOps practices for training, evaluation, and deployment. I maintain ",
     },
     { text: 'featrs', href: 'https://github.com/featrs/featrs' },
     {
@@ -60,8 +60,9 @@ export const experiences: Experience[] = [
   {
     role: 'Forward Deployed ML Intern',
     company: 'iGlobus Corporate Consulting',
-    duration: 'Aug 2026 - Present',
+    duration: 'Aug 2026 - Nov 2026',
     startDate: '2026-08',
+    endDate: '2026-11',
     location: 'Hyderabad, India',
     type: 'Internship',
     summary:

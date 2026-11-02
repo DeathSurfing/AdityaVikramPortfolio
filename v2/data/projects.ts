@@ -45,6 +45,22 @@ export const projects: Project[] = [
     author: { name: profile.name, url: profile.url },
   },
   {
+    slug: 'siela-bot',
+    name: 'siela-bot',
+    description:
+      'Self-hosted Discord bot with music, a PostgreSQL coin economy, daily card auctions, Tambola, TTS, and a web dashboard - built on Bun, TypeScript, and Podman.',
+    status: 'live',
+    type: 'open-source',
+    technologies: ['TypeScript', 'Bun', 'PostgreSQL', 'Valkey', 'discord.js', 'Podman'],
+    repository: 'https://github.com/DeathSurfing/siela-bot',
+    highlights: [
+      '63 commands covering music, a coin economy with an immutable Postgres ledger, daily one-of-one card auctions, 90-ball Tambola, TTS, and community features.',
+      'Streams from SoundCloud, YouTube, and Spotify through yt-dlp and mpv, with a persistent Valkey-backed queue and live filters.',
+      'Ships as a rootless Podman stack with Postgres 17, Valkey 8, local llama.cpp and KittenTTS sidecars, an MCP control server, and a web dashboard.',
+    ],
+    author: { name: profile.name, url: profile.url },
+  },
+  {
     slug: '69k-lol',
     name: '69k.lol',
     description:
@@ -98,6 +114,18 @@ export const projects: Project[] = [
     type: 'open-source',
     technologies: ['Rust', 'Axum', 'Ed25519', 'Razorpay'],
     repository: 'https://github.com/DeathSurfing/aiter-commerce',
+    author: { name: profile.name, url: profile.url },
+  },
+  {
+    slug: 'autofeat',
+    name: 'AutoFeat',
+    description:
+      'Interactive AI-powered feature engineering CLI in Rust - proposes preprocessing pipelines, explains each step, and lets you inspect, edit, or reject every change.',
+    status: 'building',
+    type: 'open-source',
+    technologies: ['Rust', 'CLI', 'LLM', 'Polars', 'featrs'],
+    repository: 'https://github.com/DeathSurfing/autofeat',
+    registry: 'https://crates.io/crates/autofeat',
     author: { name: profile.name, url: profile.url },
   },
   {
