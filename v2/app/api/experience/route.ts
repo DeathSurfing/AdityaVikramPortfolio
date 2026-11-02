@@ -1,4 +1,4 @@
-import { experiences } from "@/data/identity"
+import { experiences, metricNotes } from "@/data/identity"
 import { profile } from "@/data/profile"
 
 export const dynamic = "force-static"
@@ -11,5 +11,6 @@ export function GET() {
       ...exp,
       organization: exp.company,
     })),
+    metrics: metricNotes,
   })
 }

@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { experiences } from '@/data/identity';
 import { FadeUp, SectionHeading } from './motion-primitives';
 
@@ -27,6 +28,13 @@ export default function StorySection() {
           </FadeUp>
         ))}
       </div>
+
+      <Link
+        href="/experience"
+        className="self-start font-mono text-xs text-muted-foreground underline decoration-border underline-offset-4 transition-colors hover:text-foreground hover:decoration-foreground"
+      >
+        experience and measurement notes →
+      </Link>
     </section>
   );
 }

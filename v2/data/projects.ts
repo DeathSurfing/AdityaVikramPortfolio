@@ -4,9 +4,10 @@
 //
 // To add a project: append one object here and commit. Nothing else.
 //
-// Descriptions mirror what the live site already published. `highlights` is
-// intentionally left unpopulated: it is for verified specifics only, and the
-// brief forbids inventing detail to fill it.
+// Descriptions and highlights are specific to the work. Do not add a claim
+// here that the linked artifact or write-up does not support. The MLP project
+// is the corrected record of a repository that was previously described as a
+// CNN.
 
 import { profile } from './profile'
 
@@ -14,7 +15,7 @@ export interface Project {
   slug: string
   name: string
   description: string
-  status: 'live' | 'building' | 'archived'
+  status: 'live' | 'building' | 'complete' | 'archived'
   // 'open-source' gets a SoftwareSourceCode JSON-LD node, 'product' gets a
   // SoftwareApplication node.
   type: 'open-source' | 'product'
@@ -42,6 +43,11 @@ export const projects: Project[] = [
     type: 'open-source',
     technologies: ['Rust', 'Polars', 'Data Engineering', 'Machine Learning'],
     repository: 'https://github.com/featrs/featrs',
+    highlights: [
+      'Published on crates.io with docs, examples, and integration tests.',
+      'Polars-native scalers, encoders, imputers, and feature selectors that preserve column names.',
+      'CI runs on every change; releases are semantically versioned.',
+    ],
     author: { name: profile.name, url: profile.url },
   },
   {
@@ -70,6 +76,10 @@ export const projects: Project[] = [
     technologies: ['Next.js', 'Convex', 'Stripe', 'WorkOS', 'TypeScript'],
     live: 'https://69k.lol',
     image: '/card/69k.lol.png',
+    highlights: [
+      'Live at 69k.lol with WorkOS authentication, Stripe subscription billing, and a real-time Convex backend.',
+      'Owned the stack 0 to 1: schema and API design, auth boundaries, billing webhooks, and production deployment.',
+    ],
     author: { name: profile.name, url: profile.url },
   },
   {
@@ -81,6 +91,10 @@ export const projects: Project[] = [
     type: 'product',
     technologies: ['Next.js', 'TypeScript', 'AI', 'React', 'Tailwind'],
     repository: 'https://github.com/DeathSurfing/EssetAI',
+    highlights: [
+      'Turns a Google Maps business link into a production-ready site blueprint with Next.js, TypeScript, and the AI SDK.',
+      'Streams structured AI output with concurrent prompt editing, quality scoring, and live preview on a Convex pipeline.',
+    ],
     author: { name: profile.name, url: profile.url },
   },
   {
@@ -92,6 +106,11 @@ export const projects: Project[] = [
     type: 'product',
     technologies: ['Python', 'Postgres', 'pgvector', 'FastAPI', 'Next.js'],
     repository: 'https://github.com/DeathSurfing/pre-mortem',
+    highlights: [
+      'Live at premortem.lexcontra.com; searches decision history and cites each precedent by id.',
+      'Returns no_precedent instead of a verdict when no precedent exists.',
+      'Routes chat, query, and decision classes before retrieval, so the review runs only when the message is a decision.',
+    ],
     author: { name: profile.name, url: profile.url },
   },
   {
@@ -114,6 +133,11 @@ export const projects: Project[] = [
     type: 'open-source',
     technologies: ['Rust', 'Axum', 'Ed25519', 'Razorpay'],
     repository: 'https://github.com/DeathSurfing/aiter-commerce',
+    highlights: [
+      'Rust workspace with a pure commerce core and a thin axum HTTP surface.',
+      'Signs every mutating request with Ed25519 per RFC 9421 and reconciles Razorpay payment-link webhooks to paid orders.',
+      'Enforces per-agent spend caps, receipts, and an append-only audit log.',
+    ],
     author: { name: profile.name, url: profile.url },
   },
   {
@@ -126,6 +150,10 @@ export const projects: Project[] = [
     technologies: ['Rust', 'CLI', 'LLM', 'Polars', 'featrs'],
     repository: 'https://github.com/DeathSurfing/autofeat',
     registry: 'https://crates.io/crates/autofeat',
+    highlights: [
+      'Published on crates.io as a Rust CLI.',
+      'Proposes preprocessing pipelines, explains each step, and lets you inspect, edit, or reject every change.',
+    ],
     author: { name: profile.name, url: profile.url },
   },
   {
@@ -139,17 +167,26 @@ export const projects: Project[] = [
     // No repository: the write-up is the published artifact.
     live: '/blog/k3s-bare-metal',
     image: '/card/kubernetes.png',
+    highlights: [
+      'Five-node K3s cluster on Raspberry Pi 5 and x86 hardware, hosting 10+ self-hosted services.',
+      'MetalLB and Nginx ingress for service routing; Longhorn for storage; Prometheus and Grafana for monitoring.',
+    ],
     author: { name: profile.name, url: profile.url },
   },
   {
-    slug: 'cnn-from-scratch',
-    name: 'CNN From Scratch',
+    slug: 'mlp-from-scratch',
+    name: 'MLP From Scratch',
     description:
-      'Convolutional neural network built entirely in Rust - no ML frameworks, just linear algebra and matrix operations from scratch.',
-    status: 'building',
+      'A 784-128-64-10 multilayer perceptron written from scratch in Rust - manual forward and backward passes, trained to 97.46% on MNIST.',
+    status: 'complete',
     type: 'open-source',
-    technologies: ['Rust', 'Neural Networks', 'Deep Learning', 'Linear Algebra'],
-    repository: 'https://github.com/DeathSurfing/CNN-From-Scratch',
+    technologies: ['Rust', 'Neural Networks', 'Linear Algebra', 'MNIST'],
+    repository: 'https://github.com/DeathSurfing/MLP-From-Scratch',
+    highlights: [
+      'Implements dense layers, ReLU, softmax cross-entropy, and mini-batch SGD by hand with no ML crate.',
+      'Trained on 60,000 MNIST images for 12 epochs; 97.46% accuracy on the 10,000-image test set.',
+      'Ships the training command, committed weights, and evaluation command so the result is reproducible.',
+    ],
     author: { name: profile.name, url: profile.url },
   },
 ]

@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useState } from 'react';
 import { stackSummary } from '@/data/identity';
 import { skillCategories } from '@/data/skills';
@@ -19,6 +20,11 @@ export default function StackSection() {
         {stackSummary}
       </FadeUp>
 
+      <FadeUp as="p" className="text-sm leading-relaxed text-muted-foreground">
+        Each group links to a shipped artifact, so you can check depth instead
+        of taking the label at face value.
+      </FadeUp>
+
       <FadeUp delay={1}>
         <button
           type="button"
@@ -34,7 +40,12 @@ export default function StackSection() {
         </button>
       </FadeUp>
 
-      <div id="stack-drawer" className="stack-drawer" data-open={expanded}>
+      <div
+        id="stack-drawer"
+        className="stack-drawer"
+        data-open={expanded}
+        inert={!expanded}
+      >
         <div>
           <div className="flex flex-col gap-5 border-l border-border pl-5">
             {skillCategories.map((category) => (
@@ -50,6 +61,17 @@ export default function StackSection() {
                     >
                       {skill}
                     </span>
+                  ))}
+                </div>
+                <div className="flex flex-wrap gap-x-3 gap-y-1 font-mono text-xs">
+                  {category.evidence.map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className="text-muted-foreground underline decoration-border underline-offset-4 transition-colors hover:text-foreground hover:decoration-foreground"
+                    >
+                      {item.label} →
+                    </Link>
                   ))}
                 </div>
               </div>

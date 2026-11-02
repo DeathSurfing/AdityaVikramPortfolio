@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import {
   DownloadIcon,
@@ -109,6 +110,17 @@ export default function ResumeClient() {
 
               <p key={selected.id} className="role-fade text-sm text-muted-foreground">
                 {selected.description}
+              </p>
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                These PDFs are tailored snapshots. The current full record,
+                including LexContra and iGlobus, is on the{" "}
+                <Link
+                  href="/experience"
+                  className="text-foreground underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground"
+                >
+                  experience page
+                </Link>
+                .
               </p>
             </div>
           </FadeUp>

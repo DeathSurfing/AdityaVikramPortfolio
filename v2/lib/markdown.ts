@@ -1,5 +1,5 @@
 import { skillCategories } from "@/data/skills"
-import { bioParagraphs, experiences } from "@/data/identity"
+import { bioParagraphs, experiences, metricNotes } from "@/data/identity"
 import { profile } from "@/data/profile"
 import { getProject, projects, type Project } from "@/data/projects"
 import { getAllPosts, getPostBody, getPostBySlug, getRelatedPosts } from "@/lib/blog"
@@ -43,6 +43,10 @@ ${profile.name} is a ${profile.title.toLowerCase()} based in ${profile.location.
 
 ${experienceMarkdown()}
 
+## How the numbers were measured
+
+${metricNotes.map((note) => `- **${note.label}:** ${note.detail}`).join("\n")}
+
 ## Skills
 
 ${skillsMarkdown()}
@@ -57,7 +61,12 @@ Source: ${siteConfig.url}/experience
 
 function skillsMarkdown(): string {
   return skillCategories
-    .map((cat) => `- **${cat.name}:** ${cat.skills.join(", ")}`)
+    .map((cat) => {
+      const evidence = cat.evidence
+        .map((item) => `[${item.label}](${siteConfig.url}${item.href})`)
+        .join(", ")
+      return `- **${cat.name}:** ${cat.skills.join(", ")}. Evidence: ${evidence}`
+    })
     .join("\n")
 }
 
