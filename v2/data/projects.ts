@@ -15,7 +15,7 @@ export interface Project {
   slug: string
   name: string
   description: string
-  status: 'live' | 'building' | 'archived'
+  status: 'live' | 'building' | 'complete' | 'archived'
   // 'open-source' gets a SoftwareSourceCode JSON-LD node, 'product' gets a
   // SoftwareApplication node.
   type: 'open-source' | 'product'
@@ -178,7 +178,7 @@ export const projects: Project[] = [
     name: 'MLP From Scratch',
     description:
       'A 784-128-64-10 multilayer perceptron written from scratch in Rust - manual forward and backward passes, trained to 97.46% on MNIST.',
-    status: 'archived',
+    status: 'complete',
     type: 'open-source',
     technologies: ['Rust', 'Neural Networks', 'Linear Algebra', 'MNIST'],
     repository: 'https://github.com/DeathSurfing/MLP-From-Scratch',
