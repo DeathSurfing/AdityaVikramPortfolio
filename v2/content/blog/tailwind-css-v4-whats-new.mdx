@@ -1,19 +1,19 @@
 ---
 title: "Tailwind CSS v4: What's New and Why It Matters"
-description: "Exploring the major changes in Tailwind CSS v4 — from CSS-first configuration to the new engine, and how it changes your workflow."
+description: "What changed in Tailwind CSS v4: CSS-first configuration, the Oxide engine, custom variants, and what migration involves."
 date: "2026-06-18"
 tags: ["css", "tailwind", "design", "frontend"]
 coverImage: "https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=1200&h=630&fit=crop"
 author: "Aditya Vikram Mahendru"
 ---
 
-## A New Foundation
+## A rewrite
 
-Tailwind CSS v4 is a complete rewrite. Gone is the JavaScript-based configuration — Tailwind now uses native CSS features and a new Rust-based engine for blazing-fast builds.
+Tailwind CSS v4 replaces the JavaScript configuration and the JavaScript build with a Rust engine that reads native CSS. The class names are mostly unchanged; the setup around them is not.
 
-### CSS-First Configuration
+### CSS-first configuration
 
-The biggest change: no more `tailwind.config.js`. Configuration is done entirely through CSS:
+`tailwind.config.js` is gone. Configuration lives in CSS:
 
 ```css
 @import "tailwindcss";
@@ -26,9 +26,9 @@ The biggest change: no more `tailwind.config.js`. Configuration is done entirely
 }
 ```
 
-Define your design tokens directly in CSS using `@theme`. This is more intuitive and keeps your design system close to your styles.
+Tokens sit next to the styles that use them, so there is no second file to keep in sync.
 
-### The `@theme` Directive
+### `@theme`
 
 Custom values, fonts, shadows, and breakpoints all live in `@theme`:
 
@@ -41,23 +41,23 @@ Custom values, fonts, shadows, and breakpoints all live in `@theme`:
 }
 ```
 
-## New Syntax Changes
+## Syntax changes
 
-### Arbitrary Values
+### Arbitrary values
 
-The bracket syntax is now more powerful:
+The bracket syntax keeps its form and runs faster:
 
 ```html
 <!-- Before (v3) -->
 <div class="top-[117px]">
 
-<!-- After (v4) — same syntax, better performance -->
+<!-- After (v4): same syntax, new engine -->
 <div class="top-[117px]">
 ```
 
-### Variant Changes
+### Variants
 
-Some variants have been renamed for consistency:
+Most variants are unchanged. The ones that rely on configuration moved to `@custom-variant`:
 
 | v3 | v4 | Notes |
 |---|---|---|
@@ -65,11 +65,11 @@ Some variants have been renamed for consistency:
 | `focus-within:` | `focus-within:` | Unchanged |
 | `group-hover:` | `group-hover:` | Unchanged |
 | `motion-safe:` | `motion-safe:` | Unchanged |
-| `dark:` | `dark:` | Same, but uses `@custom-variant` |
+| `dark:` | `dark:` | Uses `@custom-variant` |
 
-### Custom Variants
+### Custom variants
 
-Define your own variants with `@custom-variant`:
+Define your own with `@custom-variant`:
 
 ```css
 @custom-variant dark (&:is(.dark *));
@@ -84,31 +84,29 @@ Define your own variants with `@custom-variant`:
 }
 ```
 
-## The New Engine
+## The engine
 
-Tailwind v4 uses a Rust-based engine called **Oxide** for scanning your source files and generating CSS. It's significantly faster than v3's JavaScript engine.
+Tailwind v4 scans source files and generates CSS with a Rust engine called Oxide. Build times on the project sizes in the announcement:
 
-### Build Performance
-
-| Project Size | v3 | v4 | Improvement |
+| Project size | v3 | v4 | Speedup |
 |---|---|---|---|
-| Small (100 components) | 800ms | 50ms | 16x faster |
-| Medium (500 components) | 3.2s | 180ms | 18x faster |
-| Large (2000+ components) | 12s | 600ms | 20x faster |
+| Small (100 components) | 800ms | 50ms | 16x |
+| Medium (500 components) | 3.2s | 180ms | 18x |
+| Large (2000+ components) | 12s | 600ms | 20x |
 
-## Migration Strategy
+## Migrating
 
-### From v3 to v4
+### From v3
 
-1. **Replace config file** — Move `tailwind.config.js` to `@theme` in CSS
-2. **Update plugins** — Most plugins need v4-compatible versions
-3. **Check variants** — Verify custom variants still work
-4. **Use the upgrade tool** — `npx @tailwindcss/upgrade` handles most migration
+1. Move `tailwind.config.js` into `@theme` in CSS.
+2. Update plugins to their v4-compatible versions.
+3. Check that custom variants still resolve.
+4. Run `npx @tailwindcss/upgrade` for the mechanical parts.
 
-### Incremental Adoption
+### Incrementally
 
-You don't need to migrate everything at once. Tailwind v4 can coexist with v3 in the same project during migration by using the compatibility layer.
+A full migration is not required in one commit. The compatibility layer lets v4 and v3 coexist in the same project while routes are converted.
 
-## Conclusion
+## Summary
 
-Tailwind CSS v4 is a major leap forward. The CSS-first configuration, Rust-based engine, and custom variants make it more powerful and faster than ever. If you're starting a new project today, v4 is the clear choice.
+The CSS-first configuration removes a build step's worth of setup, and the Rust engine makes the rebuild cost small enough that it stops shaping how you write styles. For a new project, v4 is the reasonable default.

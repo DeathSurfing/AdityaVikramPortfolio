@@ -17,7 +17,7 @@ The reduction did not come from one change. It came from a sequence of measureme
 
 The first correction concerned what to measure. The llama.cpp process reported 971 MB of RSS and looked like the natural starting point. Its anonymous memory was 213 MB. The remainder was the model file mapped into the process, which the kernel counts as page cache. Under pressure the kernel can drop that cache and read it again. Calling it used memory is technically accurate and practically misleading.
 
-`podman stats` did not resolve the question. It is broken on this host and fails while trying to stat a network namespace. I therefore read the per-container memory accounting directly from cgroupfs and looked at the `anon` line, which records memory the process owns. File-backed pages are a cache, not a lease.
+`podman stats` did not resolve the question. It is broken on this host and fails while trying to stat a network namespace. I therefore read the per-container memory accounting directly from cgroupfs and looked at the `anon` line, which records memory the process owns.
 
 ```bash
 # What the host reports after a deploy
@@ -57,7 +57,7 @@ nvidia-smi --query-gpu=driver_version,memory.used,memory.total --format=csv
 llama-server --verbose 2>&1 | grep -i -E "cuda|layer|offload"
 ```
 
-I copied the 595 libraries from the Proxmox host into the container library directory, kept the old set as a backup, and restarted. All 27 layers moved to VRAM. A memory optimization is therefore only established when the placement is verified. The health endpoint reported that the server was fine. It was fine. It was doing the wrong work slowly.
+I copied the 595 libraries from the Proxmox host into the container library directory, kept the old set as a backup, and restarted. All 27 layers moved to VRAM. The placement check is what establishes that a memory optimization worked. The health endpoint reported that the server was fine, and it was, while doing the wrong work slowly.
 
 ```mermaid
 flowchart TB
@@ -70,7 +70,7 @@ flowchart TB
 
 ## Services that cost almost nothing at idle
 
-The second largest saving came from a service that is usually not running. The TTS engine loads its model only when speech is requested and unloads it when no session uses it. At idle it holds about 1 MB. While speaking it can reach roughly 105 MB, then it returns to idle. Some work was required to keep the ONNX Runtime environment stable across reloads. The result is a service that costs almost nothing until there is a reason for it to exist.
+The second largest saving came from a service that is usually not running. The TTS engine loads its model only when speech is requested and unloads it when no session uses it. At idle it holds about 1 MB. While speaking it can reach roughly 105 MB, then it returns to idle. Some work was required to keep the ONNX Runtime environment stable across reloads, so the allocation is paid only when speech is requested.
 
 The third saving came from a default. The llama.cpp server opened four parallel slots. Delulu is an occasional command, not a queue, so three of those slots held capacity that no traffic used. All four slots still required host buffers. Reducing the server to one slot lowered anonymous memory from 293 MB to 212 MB, with generation speed unchanged within measurement noise.
 
@@ -82,13 +82,13 @@ command:
   - --n-gpu-layers 27
 ```
 
-Defaults are where memory accumulates. Batch size and the prompt cache both looked like suspects. Reducing the batch changed nothing. The prompt cache changed something, but not in the expected direction.
+Batch size and the prompt cache both looked like suspects. Reducing the batch changed nothing. The prompt cache changed something, but not in the expected direction.
 
 ## An 8 GB default nobody requested
 
 The server keeps prompt states in host RAM and calls the result a cache. The default ceiling is 8192 MiB. That is not the GPU KV cache, which had already been quantized and moved to VRAM. It is a second cache in system memory with an eight gigabyte limit.
 
-Delulu prompts are unique per call, so the cache mostly accumulates entries that are never reused. During testing, anonymous memory grew about 10 MB across six requests. Across days, that pattern is a slow increase with a very large ceiling. The container has a 2 GB limit, so the practical outcome is not an 8 GB allocation. It is an OOM kill after the cache fills the limit.
+Delulu prompts are unique per call, so the cache mostly accumulates entries that are never reused. During testing, anonymous memory grew about 10 MB across six requests. Across days, that pattern is a slow increase under an 8 GB ceiling. The container has a 2 GB limit, so the practical outcome is not an 8 GB allocation. It is an OOM kill after the cache fills the limit.
 
 I disabled it with `--cache-ram 0`. The immediate saving was 13 MB. The more durable result is that the process no longer has a path to grow without bound.
 
@@ -105,13 +105,13 @@ Smaller batches produced no measurable change. Disabling CUDA pinned buffers pro
 # - bun --smol on router: about 2 MB, within noise
 ```
 
-Two larger tradeoffs were also rejected. Removing one voice worker would save 52 MB, but it would reduce the fleet from three concurrent streams to two because the commander also serves as a node. Removing watchtower would save 13 MB and remove automatic deploys. Both changes are reversible, and both make the product worse for a saving that is negligible on a 15 GB host.
+Two larger tradeoffs were also rejected. Removing one voice worker would save 52 MB, but it would reduce the fleet from three concurrent streams to two because the commander is also a node. Removing watchtower would save 13 MB and remove automatic deploys. Both changes are reversible, and both make the product worse for a saving that is negligible on a 15 GB host.
 
 For perspective, the Immich stack on the same machine uses about 820 MB of anonymous memory, more than this entire bot stack. I left it alone. The scope of this work was the bot compose stack, not the largest number on the host.
 
 ## Final measurement
 
-The stack now stands as follows.
+The stack now measures as follows.
 
 | Service | Anonymous memory |
 | --- | ---: |

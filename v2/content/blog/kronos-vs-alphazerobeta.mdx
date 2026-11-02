@@ -21,11 +21,25 @@ This asymmetry drives the entire design.
 
 Kronos produces a forecast and needs a separate rule to convert that into positions. AlphaZeroBeta produces positions and never emits a forecast. So the forecasting arm is scored against a random walk, the decision arms are scored on risk-adjusted return with interval estimates, and no attempt is made to manufacture a forecast for the agent that does not produce one.
 
+The two arms meet only at the portfolio:
+
+```mermaid
+flowchart TB
+  Data[Market data] --> Fold[Walk-forward fold, Jan 2014 to Dec 2024]
+  Fold --> K[Kronos forecast]
+  Fold --> Z[AlphaZeroBeta positions]
+  K --> Rule[Rule converts forecast to weights]
+  Rule --> P[Portfolio]
+  Z --> P
+  P --> Score[Risk-adjusted return with interval estimates]
+  K --> Error[Error against a random walk]
+```
+
 ## The protocol
 
 One evaluation harness, applied identically to every model.
 
-| | |
+| Parameter | Value |
 |---|---|
 | Market | S&P 500, `^GSPC` benchmark |
 | Sample | 2013-06-03 .. 2025-01-14, 476 tickers |
@@ -52,13 +66,13 @@ Baseline costs, full out-of-sample period:
 | S&P 500 buy-and-hold | 0.115 | 0.171 | 0.725 | 0.859 | -0.339 | 1.000 |
 | AlphaZeroBeta | -0.036 | 0.068 | -0.497 | -0.620 | -0.371 | -0.024 |
 
-The headline is not flattering to either model, and that is the point.
+Neither model comes out well.
 
 **Kronos zero-shot lost badly**, with a Sharpe of -3.010 and a 92% drawdown. A foundation model pre-trained on price bars, used without fine-tuning, did not produce a usable cross-sectional signal on this universe and period. That is a real result, not a broken run: the pipeline is the same one that produces sensible numbers for every other arm.
 
 **AlphaZeroBeta also lost**, at -0.497 Sharpe, though with the lowest volatility in the table (0.068) and near-zero beta. It was market-neutral and it stayed market-neutral; the risk controls worked even though the returns did not.
 
-**Neither beat the index.** Buy-and-hold returned a 0.725 Sharpe with a 0.115 CAGR. Two of the simplest constructed portfolios, min-correlation and max-Sharpe, beat both learned models. That is worth sitting with rather than burying.
+**Neither beat the index.** Buy-and-hold returned a 0.725 Sharpe with a 0.115 CAGR. Two of the simplest constructed portfolios, min-correlation and max-Sharpe, beat both learned models. That matters more than either headline number.
 
 ## The reproduction gap
 

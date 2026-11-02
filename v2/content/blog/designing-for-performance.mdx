@@ -1,6 +1,6 @@
 ---
-title: "Designing for Performance: Web Vitals Deep Dive"
-description: "Learn how to optimize Core Web Vitals — LCP, INP, and CLS — with actionable techniques and real metrics."
+title: "Designing for Performance: Core Web Vitals"
+description: "How to measure and improve LCP, INP, and CLS, with the techniques that move each number."
 date: "2026-06-12"
 tags: ["performance", "web", "optimization", "css"]
 coverImage: "/blog/web-vitals.png"
@@ -9,27 +9,27 @@ author: "Aditya Vikram Mahendru"
 
 ## Core Web Vitals
 
-Google's Core Web Vitals are a set of real-world metrics that measure user experience on the web. They've become critical for both SEO and user satisfaction.
+Core Web Vitals are the field metrics Google uses to describe loading, interactivity, and visual stability. They matter to search ranking and to what a user experiences on a slow connection.
 
-### The Three Pillars
+### The three metrics
 
-1. **LCP (Largest Contentful Paint)** — loading performance
-2. **INP (Interaction to Next Paint)** — interactivity
-3. **CLS (Cumulative Layout Shift)** — visual stability
+1. Largest Contentful Paint (LCP) measures loading.
+2. Interaction to Next Paint (INP) measures responsiveness.
+3. Cumulative Layout Shift (CLS) measures visual stability.
 
-## Optimizing LCP
+## LCP
 
-LCP measures when the largest visible element (usually an image or text block) is rendered. Aim for **under 2.5 seconds**.
+LCP is the time until the largest visible element, usually an image or a text block, is rendered. The threshold for a good score is 2.5 seconds.
 
-### Image Optimization
+### Images
 
 ```tsx
 import Image from 'next/image'
 
-// ❌ Bad — no size hints
+// Bad: no size hints
 <img src="/hero.jpg" alt="Hero" />
 
-// ✅ Good — explicit dimensions, lazy loading
+// Good: explicit dimensions, priority for the hero image
 <Image
   src="/hero.jpg"
   alt="Hero"
@@ -40,9 +40,11 @@ import Image from 'next/image'
 />
 ```
 
+Declaring the dimensions lets the browser reserve space before the file arrives, which helps LCP and CLS at the same time.
+
 ### Critical CSS
 
-Inline critical CSS in the `<head>` to render above-the-fold content immediately:
+Inline the CSS for above-the-fold content in the `<head>` so the first paint does not wait on a stylesheet:
 
 ```html
 <style>
@@ -52,17 +54,17 @@ Inline critical CSS in the `<head>` to render above-the-fold content immediately
 </style>
 ```
 
-## Reducing CLS
+## CLS
 
-CLS measures unexpected layout shifts. Keep it **under 0.1**.
+CLS measures unexpected layout movement. The threshold for a good score is 0.1.
 
-### Always Set Dimensions
+### Give every image dimensions
 
 ```css
-/* ❌ Bad — causes layout shift */
+/* Bad: causes layout shift */
 img { width: 100% }
 
-/* ✅ Good — preserves space */
+/* Good: reserves space */
 img {
   width: 100%;
   height: auto;
@@ -70,7 +72,7 @@ img {
 }
 ```
 
-### Reserve Space for Dynamic Content
+### Reserve space for embeds
 
 ```tsx
 // Reserve space for embeds
@@ -79,11 +81,11 @@ img {
 </div>
 ```
 
-## Improving INP
+## INP
 
-INP measures the time from user interaction to the browser painting the next frame. Aim for **under 200ms**.
+INP is the time from a user interaction to the browser painting the next frame. The threshold for a good score is 200 milliseconds.
 
-### Code Splitting
+### Split the code
 
 ```tsx
 // Dynamic import for heavy components
@@ -93,9 +95,9 @@ const HeavyChart = dynamic(() => import('@/components/Chart'), {
 })
 ```
 
-### Avoid Long Tasks
+### Break up long tasks
 
-> Break up long JavaScript tasks into smaller chunks using `setTimeout`, `requestIdleCallback`, or `scheduler.yield()`.
+A single task that runs longer than 50 milliseconds blocks the main thread, so input is queued behind it. Split the work across tasks:
 
 ```typescript
 function processItems(items: Item[]) {
@@ -114,14 +116,31 @@ function processItems(items: Item[]) {
 }
 ```
 
-## Measuring Performance
+`setTimeout`, `requestIdleCallback`, and `scheduler.yield()` all let the browser paint between chunks.
 
-| Tool | Purpose | Type |
+## Measuring
+
+| Tool | What it measures | How it runs |
 |---|---|---|
-| Lighthouse | Lab-based audit | Automated |
-| Web Vitals Library | Real user monitoring | JavaScript |
+| Lighthouse | Lab audit of a single load | Automated |
+| Web Vitals library | Real user measurements | In the page |
 | Chrome DevTools | Detailed profiling | Manual |
 
-## Conclusion
+Lab tools tell you what could be slow. Field data tells you what is slow for the people using the site. Measure in the field first, then reproduce the largest problem in the lab.
 
-Performance optimization is an ongoing process. Measure first, optimize the bottlenecks, and repeat. Small improvements compound into a significantly better user experience.
+## Where to spend the effort
+
+Each metric maps to a short list of levers. Start with the one that matches the failing number.
+
+```mermaid
+flowchart LR
+  LCP[LCP] --> Images[Set image dimensions]
+  LCP --> Priority[Mark the hero image priority]
+  LCP --> CSS[Inline critical CSS]
+  CLS[CLS] --> Images
+  CLS --> Reserve[Reserve space for embeds]
+  INP[INP] --> Split[Split heavy components]
+  INP --> Tasks[Break long tasks into chunks]
+```
+
+Measure first, fix the bottleneck the measurement identifies, then measure again. Most sites only need two or three of the techniques above, and which two depends on which metric is failing.
