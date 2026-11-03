@@ -7,7 +7,7 @@ const redirects = JSON.parse(
   fs.readFileSync(path.join(root, "data/redirects.json"), "utf8"),
 )
 
-// Losing one of these five URLs again removes the page, its clicks, and its ranking.
+// Losing one of these URLs again removes the page, its clicks, and its ranking.
 const requiredSources = [
   "/blog/bare-metal-kubernetes-cluster",
   "/blog/clean-architecture-in-typescript",

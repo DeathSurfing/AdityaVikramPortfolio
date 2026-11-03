@@ -2,8 +2,11 @@
 title: "Building Scalable Web Apps with Next.js"
 description: "How to structure a Next.js application that survives growth: rendering strategy, project layout, and the performance work that changes a number."
 date: "2026-06-28"
+updated: "2026-11-02"
 tags: ["nextjs", "react", "typescript", "architecture"]
 coverImage: "/blog/nextjs-scalable.png"
+coverWidth: 736
+coverHeight: 414
 author: "Aditya Vikram Mahendru"
 ---
 
@@ -76,6 +79,8 @@ flowchart TD
 1. Serve images through `next/image` with explicit dimensions.
 2. Stream slow subtrees with `loading.tsx` and `Suspense` boundaries.
 3. Check bundle size on every release, not once at the end.
+
+Each of these moves a number covered in [Designing for Performance](/blog/designing-for-performance): images and streaming affect LCP, and bundle size affects INP.
 
 ## Where to start
 

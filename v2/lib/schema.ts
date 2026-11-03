@@ -5,6 +5,11 @@ import { profile } from '@/data/profile'
 import { projects, type Project } from '@/data/projects'
 import { experiences } from '@/data/identity'
 import { siteConfig } from '@/data/site'
+import type { BlogPost } from '@/lib/blog'
+
+function absoluteUrl(value: string): string {
+  return value.startsWith('http') ? value : `${siteConfig.url}${value}`
+}
 
 const person = {
   '@type': 'Person',
@@ -119,5 +124,45 @@ export function projectsIndexJsonLd() {
     url: `${siteConfig.url}/projects`,
     about: { '@id': `${profile.url}/#person` },
     hasPart: projects.map((p) => projectJsonLd(p)),
+  }
+}
+
+export function articleJsonLd(post: BlogPost, slug: string) {
+  const url = `${siteConfig.url}/blog/${slug}`
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    '@id': `${url}/#article`,
+    headline: post.title,
+    description: post.description,
+    image: post.coverImage ? absoluteUrl(post.coverImage) : undefined,
+    datePublished: post.date,
+    dateModified: post.updated || post.date,
+    author: { '@id': `${profile.url}/#person` },
+    publisher: { '@id': `${profile.url}/#person` },
+    mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+    isPartOf: { '@id': `${profile.url}/#website` },
+    keywords: post.tags.join(', '),
+    articleSection: post.tags[0],
+    inLanguage: 'en',
+  }
+}
+
+export interface BreadcrumbItem {
+  name: string
+  url: string
+}
+
+export function breadcrumbJsonLd(items: BreadcrumbItem[]) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: items.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.name,
+      item: item.url,
+    })),
   }
 }

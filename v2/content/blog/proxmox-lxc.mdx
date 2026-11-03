@@ -1,7 +1,8 @@
 ---
 title: "Proxmox LXC: System Containers Explained"
-description: "Proxmox LXC containers run a full Linux userspace on the host kernel: a real init system, its own filesystem, and its own SSH service, with no hypervisor in between."
+description: "Proxmox LXC runs a full Linux userspace on the host kernel. How it differs from Docker, KVM, and OpenVZ, what to run in it, and the flags that break."
 date: "2026-07-02"
+updated: "2026-11-02"
 tags: ["proxmox", "lxc", "containers", "self-hosting", "devops"]
 coverImage: "https://images.unsplash.com/photo-1605745341112-85968b19335b?w=1200&h=630&fit=crop"
 author: "Aditya Vikram Mahendru"
@@ -207,11 +208,23 @@ No. LXC containers are **system containers**: they run `systemd`, own a persiste
 filesystem, and are reached over SSH like a machine. Docker containers are single-process
 and rebuilt from an image, which is why they are disposable by design.
 
+### Is LXC the same as Proxmox?
+
+No. Proxmox VE is the host platform, and LXC is the container runtime it manages. A
+"Proxmox container" is an LXC container created through Proxmox. LXC also runs without
+Proxmox on any Linux host with the right kernel features.
+
 ### LXC vs OpenVZ?
 
 OpenVZ required a patched host kernel. Proxmox VE moved to LXC, which uses the mainline
 kernel's cgroup and namespace primitives, and dropped OpenVZ entirely in the 4.x line.
 Everything current is LXC.
+
+### Can LXC run Windows?
+
+No. LXC shares the Linux kernel, and Windows needs its own. Use a KVM virtual machine for
+a Windows guest. The same limit applies to any workload that needs a custom kernel or a
+kernel module the host does not already load.
 
 ### How do I run Pihole, Scrypted, or an *arr stack as a container?
 

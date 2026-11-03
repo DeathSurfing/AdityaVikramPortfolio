@@ -1,7 +1,8 @@
 ---
 title: "K3s Bare Metal: Building a Small Kubernetes Cluster"
-description: "K3s bare metal means one ~70 MB binary that brings up a certified Kubernetes control plane, containerd, and a storage provisioner on hardware you own, with no cloud control-plane fee."
+description: "K3s on bare metal: one 60 MB binary, five mixed nodes, no control-plane fee. The install, MetalLB ingress, Longhorn storage, and what broke."
 date: "2026-06-30"
+updated: "2026-11-02"
 tags: ["kubernetes", "k3s", "raspberry-pi", "self-hosting", "devops"]
 coverImage: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1200&h=630&fit=crop"
 author: "Aditya Vikram Mahendru"
@@ -255,7 +256,7 @@ helm upgrade --install kube-prometheus-stack prometheus-community/kube-prometheu
 | Nextcloud | File sync | AMD64 |
 | Uptime Kuma | Monitoring | ARM64 |
 | Nginx Proxy Manager | Reverse proxy | ARM64 |
-| PostgreSQL and Redis | Stateful storage | AMD64 |
+| [PostgreSQL](/blog/replaced-my-entire-stack-with-postgres) and Redis | Stateful storage | AMD64 |
 
 ## Power
 

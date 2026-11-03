@@ -2,6 +2,7 @@
 title: "I Replaced My Entire Stack with Postgres"
 description: "I replaced my entire stack with Postgres and kept it: one database now serves the queue, the cache, the vector store, the scheduler, and full-text search."
 date: "2026-07-03"
+updated: "2026-11-02"
 tags: ["postgresql", "database", "architecture", "backend", "pgvector"]
 coverImage: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1200&h=630&fit=crop"
 author: "Aditya Vikram Mahendru"
@@ -223,7 +224,7 @@ One database, one backup, one dashboard.
 
 ## The cluster I run
 
-On my K3s cluster, one Postgres container with these extensions runs all of this:
+On my [K3s cluster](/blog/k3s-bare-metal), one Postgres container with these extensions runs all of this:
 
 ```yaml
 # postgres.yaml
@@ -242,7 +243,7 @@ spec:
           value: "vector,pg_cron,pgmq,postgis,hstore,pg_analytics"
 ```
 
-It runs in a single 4 GB LXC container and holds:
+It runs in a single 4 GB [LXC container](/blog/proxmox-lxc) and holds:
 
 - the primary application database
 - the full-text search index, through GIN and `pg_bm25`

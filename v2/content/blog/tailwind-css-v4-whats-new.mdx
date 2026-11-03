@@ -1,7 +1,8 @@
 ---
 title: "Tailwind CSS v4: What's New and Why It Matters"
-description: "What changed in Tailwind CSS v4: CSS-first configuration, the Oxide engine, custom variants, and what migration involves."
+description: "What changed in Tailwind CSS v4: CSS-first config, the Oxide engine, renamed utilities, and the migration steps that actually matter."
 date: "2026-06-18"
+updated: "2026-11-02"
 tags: ["css", "tailwind", "design", "frontend"]
 coverImage: "https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=1200&h=630&fit=crop"
 author: "Aditya Vikram Mahendru"
@@ -103,9 +104,31 @@ Tailwind v4 scans source files and generates CSS with a Rust engine called Oxide
 3. Check that custom variants still resolve.
 4. Run `npx @tailwindcss/upgrade` for the mechanical parts.
 
+### What changes in the markup
+
+Most class names are unchanged. The scale shifted at the small end, so the same class can
+render a different size:
+
+| v3 | v4 |
+|---|---|
+| `shadow-sm` | `shadow-xs` |
+| `shadow` | `shadow-sm` |
+| `rounded-sm` | `rounded-xs` |
+| `rounded` | `rounded-sm` |
+| `blur-sm` | `blur-xs` |
+| `blur` | `blur-sm` |
+| `outline-none` | `outline-hidden` |
+
+Two defaults also change. Borders use `currentColor` instead of `gray-200`, and `ring` is
+1px wide instead of 3px. v4 targets Safari 16.4, Chrome 111, and Firefox 128, so a project
+that supports older browsers needs to stay on v3.
+
 ### Incrementally
 
-A full migration is not required in one commit. The compatibility layer lets v4 and v3 coexist in the same project while routes are converted.
+A full migration does not have to land in one commit. Keep the v3 build on the old branch,
+move one route or package at a time, and compare the generated CSS before you delete the
+old pipeline. The `@config` directive lets v4 read an existing JavaScript config during
+the transition, but it does not run v3 and v4 side by side in one build.
 
 ## Summary
 

@@ -4,19 +4,19 @@ import { BlogCard } from "@/components/blog/BlogCard"
 import { getAllPosts, getAllTags } from "@/lib/blog"
 import MotionRoot from "@/components/identity/MotionRoot"
 import IdentityFooter from "@/components/identity/IdentityFooter"
-import { FadeUp, SectionHeading } from "@/components/identity/motion-primitives"
+import { FadeUp } from "@/components/identity/motion-primitives"
 
 export const metadata: Metadata = {
   title: "Blog",
   description:
-    "Thoughts on web development, TypeScript, React, and building better software.",
+    "Long-form notes on Postgres, self-hosting, React Server Components, and the parts of web systems that break in production.",
   alternates: {
     canonical: "/blog",
   },
   openGraph: {
     title: "Blog | Aditya Vikram",
     description:
-      "Thoughts on web development, TypeScript, React, and building better software.",
+      "Long-form notes on Postgres, self-hosting, React Server Components, and the parts of web systems that break in production.",
   },
 }
 
@@ -39,8 +39,8 @@ export default async function BlogPage({
               {`// writing by Aditya Vikram`}
             </h1>
             <FadeUp as="p" className="text-base leading-relaxed text-ring">
-              Thoughts on web development, TypeScript, React, and building
-              better software.
+              Notes on Postgres, self-hosting, React Server Components, and the
+              parts of web systems that break in production.
             </FadeUp>
           </div>
 
