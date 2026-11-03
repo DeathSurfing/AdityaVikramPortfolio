@@ -1,9 +1,9 @@
 import { skillCategories } from "@/data/skills"
-import { bioParagraphs, experiences, metricNotes } from "@/data/identity"
+import { bioParagraphs, experiences, metricNotes, stackSummary } from "@/data/identity"
 import { profile } from "@/data/profile"
 import { getProject, projects, type Project } from "@/data/projects"
 import { getAllPosts, getPostBody, getPostBySlug, getRelatedPosts } from "@/lib/blog"
-import { siteConfig } from "@/data/site"
+import { blogDescription, siteConfig } from "@/data/site"
 
 // Every markdown/text representation the site exposes is rendered here, from
 // the canonical data modules. Nothing restates a fact by hand.
@@ -87,9 +87,11 @@ function postsMarkdown(): string {
 
 function contactMarkdown(): string {
   return `- Email: ${profile.email}
-- GitHub: ${profile.sameAs[0]}
-- LinkedIn: ${profile.sameAs[1]}
-- Substack: ${profile.sameAs[2]}
+- GitHub: ${profile.accounts.github}
+- LinkedIn: ${profile.accounts.linkedin}
+- Substack: ${profile.accounts.substack}
+- Hugging Face: ${profile.accounts.huggingface}
+- About: ${siteConfig.url}/about
 - Resume (PDF): ${siteConfig.url}/resume`
 }
 
@@ -121,6 +123,31 @@ ${postsMarkdown()}
 ${contactMarkdown()}
 
 Source of truth: ${profile.url}
+`
+}
+
+export function aboutMarkdown(): string {
+  const bio = bioParagraphs.map(inline).join("\n\n")
+
+  return `# About ${profile.name}
+
+${profile.shortBio}
+
+${bio}
+
+## What I work on
+
+${stackSummary}
+
+## Elsewhere
+
+${contactMarkdown()}
+
+## Writing
+
+${postsMarkdown()}
+
+Source: ${siteConfig.url}/about
 `
 }
 
@@ -165,7 +192,7 @@ Source: ${siteConfig.url}/projects
 export function blogIndexMarkdown(): string {
   return `# Writing by ${profile.name}
 
-Thoughts on web development, TypeScript, React, machine learning, and building better software.
+${blogDescription}
 
 ${postsMarkdown()}
 `
@@ -203,7 +230,7 @@ Source: ${siteConfig.url}/blog/${slug}
 export function resumeMarkdown(): string {
   return `# Resume - ${profile.name}
 
-${profile.name} is a ${profile.title.toLowerCase()}.
+${profile.shortBio}
 
 Downloadable role-specific PDFs: ${siteConfig.url}/resume
 
@@ -233,7 +260,7 @@ ${profile.name} is a software engineer based in ${profile.location.city}, ${prof
 ## Core
 
 - [Homepage](${profile.url}): bio, work history, skills, and selected projects
-- [About](${profile.url}/#about): background and current work
+- [About](${profile.url}/about): background and current work
 - [Experience](${profile.url}/experience): full work history, roles in order
 - [Resume](${profile.url}/resume): role-specific PDF downloads
 - [Profile JSON](${profile.url}/api/profile): this profile as JSON
@@ -281,6 +308,8 @@ Generated from the canonical data source. One page = one section.
 
 `,
     homeMarkdown(),
+    "\n---\n\n",
+    aboutMarkdown(),
     "\n---\n\n",
     projectsIndexMarkdown(),
     "\n---\n\n",

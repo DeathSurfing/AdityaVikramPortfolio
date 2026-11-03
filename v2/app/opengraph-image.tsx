@@ -1,7 +1,9 @@
 import { ImageResponse } from "next/og"
 
+import { profile } from "@/data/profile"
+
 export const runtime = "edge"
-export const alt = "Aditya Vikram — Full Stack Developer"
+export const alt = `${profile.name}, ${profile.title}`
 export const size = { width: 1200, height: 630 }
 export const contentType = "image/png"
 
@@ -34,18 +36,18 @@ export default async function OGImage() {
             textTransform: "uppercase",
           }}
         >
-          Full Stack Developer
+          {profile.title}
         </div>
         <div
           style={{
             display: "flex",
-            fontSize: 84,
+            fontSize: 68,
             fontWeight: 900,
             lineHeight: 1,
             marginBottom: 16,
           }}
         >
-          Aditya Vikram
+          {profile.name}
         </div>
         <div
           style={{

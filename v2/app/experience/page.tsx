@@ -34,7 +34,7 @@ export default function ExperiencePage() {
         <div className="mx-auto flex max-w-2xl flex-col gap-10 px-6 pt-32 pb-20">
           <div className="flex flex-col gap-5">
             <h1 className="font-mono text-xs uppercase tracking-heading text-muted-foreground">
-              {`// experience - ${profile.alternateNames[0]}`}
+              {`// experience - ${profile.name}`}
             </h1>
             <FadeUp as="p" className="text-base leading-relaxed text-ring">
               {profile.name} is a {profile.title.toLowerCase()} based in{" "}
