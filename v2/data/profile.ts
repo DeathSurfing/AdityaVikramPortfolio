@@ -2,23 +2,26 @@
 // derives from this object: metadata, JSON-LD, llms.txt, /api/profile,
 // sitemap, and the on-page copy that imports it. Edit here, not downstream.
 
-export interface ProfileLink {
-  label: string;
-  url: string;
-}
+const accounts = {
+  github: 'https://github.com/deathSurfing',
+  linkedin: 'https://www.linkedin.com/in/aditya-vikram-mahendru/',
+  substack: 'https://substack.com/@adityavikramdev',
+  huggingface: 'https://huggingface.co/DeathSurfing',
+} as const;
 
 export const profile = {
   name: 'Aditya Vikram Mahendru',
   // Shorter forms the site and search engines use.
   alternateNames: ['Aditya Vikram', 'Aditya Mahendru', 'Vikk'],
 
-  headline: 'Aditya Vikram - Full Stack Developer and ML Engineer',
+  headline: 'Aditya Vikram Mahendru - Full Stack Developer and ML Engineer',
   title: 'Full Stack Developer and ML Engineer',
   shortBio:
     'Full stack developer and machine learning engineer. Next.js, TypeScript, and Rust on the web; Python, PyTorch, and MLOps for ML systems.',
 
   url: 'https://adityavikram.dev',
   image: '/AdityaVikram.webp',
+  updated: '2026-11-03',
   email: 'jobs.aditya.vikram.mahendru@gmail.com',
 
   location: {
@@ -49,10 +52,12 @@ export const profile = {
 
   // Profiles that describe the same person. Drives schema.org Person.sameAs,
   // which is how search engines and LLMs link the site to known entities.
+  accounts,
   sameAs: [
-    'https://github.com/deathSurfing',
-    'https://www.linkedin.com/in/aditya-vikram-mahendru/',
-    'https://substack.com/@adityavikramdev',
+    accounts.github,
+    accounts.linkedin,
+    accounts.substack,
+    accounts.huggingface,
   ],
 
   // Employer / project entities the person is tied to.
@@ -61,11 +66,3 @@ export const profile = {
     { name: 'featrs', url: 'https://github.com/featrs/featrs' },
   ],
 } as const;
-
-export const profileLinks: ProfileLink[] = [
-  { label: 'GitHub', url: 'https://github.com/deathSurfing' },
-  { label: 'LinkedIn', url: 'https://www.linkedin.com/in/aditya-vikram-mahendru/' },
-  { label: 'Substack', url: 'https://substack.com/@adityavikramdev' },
-  { label: 'Email', url: `mailto:${profile.email}` },
-  { label: 'Resume', url: '/resume' },
-];

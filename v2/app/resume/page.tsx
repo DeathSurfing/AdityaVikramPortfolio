@@ -1,10 +1,10 @@
 import type { Metadata } from "next"
+import { profile } from "@/data/profile"
 import ResumeClient from "./ResumeClient"
 
 export const metadata: Metadata = {
   title: "Resume",
-  description:
-    "View and download Aditya Vikram's resume — full stack developer specializing in TypeScript, React, and modern web technologies.",
+  description: `View and download the resume of ${profile.name}, ${profile.title.toLowerCase()}.`,
   alternates: {
     canonical: "/resume",
   },

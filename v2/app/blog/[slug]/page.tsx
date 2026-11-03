@@ -11,7 +11,11 @@ import matter from "gray-matter"
 import readingTime from "reading-time"
 
 import { mdxComponents } from "@/components/blog/MDXComponents"
+import AuthorCard from "@/components/blog/AuthorCard"
 import { getPostBySlug, getRelatedPosts } from "@/lib/blog"
+import { articleJsonLd, breadcrumbJsonLd } from "@/lib/schema"
+import { profile } from "@/data/profile"
+import { siteConfig } from "@/data/site"
 import MotionRoot from "@/components/identity/MotionRoot"
 import IdentityFooter from "@/components/identity/IdentityFooter"
 import { FadeUp } from "@/components/identity/motion-primitives"
@@ -46,14 +50,21 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       },
     },
     openGraph: {
-      title: `${post.title} | Aditya Vikram`,
+      title: `${post.title} | ${profile.name}`,
       description: post.description,
       type: "article",
       publishedTime: post.date,
+      modifiedTime: post.updated || post.date,
       authors: [post.author],
-      url: `https://adityavikram.dev/blog/${slug}`,
+      url: `${siteConfig.url}/blog/${slug}`,
       images: post.coverImage
-        ? [{ url: post.coverImage, width: 1200, height: 630 }]
+        ? [
+            {
+              url: post.coverImage,
+              width: post.coverWidth ?? 1200,
+              height: post.coverHeight ?? 630,
+            },
+          ]
         : undefined,
     },
     twitter: {
@@ -69,7 +80,9 @@ export default async function BlogPostPage({ params }: PageProps) {
   const { slug } = await params
   const filePath = path.join(process.cwd(), "content/blog", `${slug}.mdx`)
 
-  if (!fs.existsSync(filePath)) {
+  const post = getPostBySlug(slug)
+
+  if (!post) {
     notFound()
   }
 
@@ -91,31 +104,12 @@ export default async function BlogPostPage({ params }: PageProps) {
 
   const tags: string[] = data.tags || []
   const readingTimeText = `${Math.ceil(stats.minutes)} min read`
-
-  const articleJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    headline: data.title,
-    description: data.description,
-    image: data.coverImage ? `https://adityavikram.dev${data.coverImage}` : undefined,
-    datePublished: data.date,
-    dateModified: data.date,
-    author: {
-      "@type": "Person",
-      name: data.author || "Aditya Vikram Mahendru",
-      url: "https://adityavikram.dev",
-    },
-    publisher: {
-      "@type": "Person",
-      name: "Aditya Vikram Mahendru",
-      url: "https://adityavikram.dev",
-    },
-    mainEntityOfPage: {
-      "@type": "WebPage",
-      "@id": `https://adityavikram.dev/blog/${slug}`,
-    },
-    keywords: tags.join(", "),
-  }
+  const article = articleJsonLd(post, slug)
+  const breadcrumbs = breadcrumbJsonLd([
+    { name: "Home", url: siteConfig.url },
+    { name: "Blog", url: `${siteConfig.url}/blog` },
+    { name: post.title, url: `${siteConfig.url}/blog/${slug}` },
+  ])
 
   return (
     <MotionRoot>
@@ -123,16 +117,26 @@ export default async function BlogPostPage({ params }: PageProps) {
         <article className="mx-auto max-w-2xl px-6 pt-32 pb-20">
           <script
             type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(article) }}
+          />
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbs) }}
           />
 
           <FadeUp>
-            <Link
-              href="/blog"
-              className="mb-10 inline-block font-mono text-xs text-muted-foreground transition-colors hover:text-foreground"
+            <nav
+              aria-label="Breadcrumb"
+              className="mb-10 flex items-center gap-2 font-mono text-xs text-muted-foreground"
             >
-              &larr; blog
-            </Link>
+              <Link href="/" className="transition-colors hover:text-foreground">
+                home
+              </Link>
+              <span aria-hidden>/</span>
+              <Link href="/blog" className="transition-colors hover:text-foreground">
+                blog
+              </Link>
+            </nav>
           </FadeUp>
 
           <FadeUp as="header" delay={1} className="mb-10 flex flex-col gap-4">
@@ -147,7 +151,12 @@ export default async function BlogPostPage({ params }: PageProps) {
             )}
 
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-xs text-muted-foreground">
-              <span>{data.author || "Aditya Vikram Mahendru"}</span>
+              <Link
+                href="/about"
+                className="transition-colors hover:text-foreground"
+              >
+                {data.author || profile.name}
+              </Link>
               <span aria-hidden>·</span>
               <time dateTime={data.date}>
                 {new Date(data.date).toLocaleDateString("en-US", {
@@ -156,6 +165,21 @@ export default async function BlogPostPage({ params }: PageProps) {
                   year: "numeric",
                 })}
               </time>
+              {post.updated && post.updated !== post.date && (
+                <>
+                  <span aria-hidden>·</span>
+                  <span>
+                    updated{" "}
+                    <time dateTime={post.updated}>
+                      {new Date(post.updated).toLocaleDateString("en-US", {
+                        month: "long",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
+                    </time>
+                  </span>
+                </>
+              )}
               <span aria-hidden>·</span>
               <span>{readingTimeText}</span>
             </div>
@@ -178,8 +202,8 @@ export default async function BlogPostPage({ params }: PageProps) {
                 <Image
                   src={data.coverImage}
                   alt={data.title}
-                  width={1200}
-                  height={630}
+                  width={post.coverWidth ?? 1200}
+                  height={post.coverHeight ?? 630}
                   className="h-auto w-full object-cover"
                 />
               </div>
@@ -189,6 +213,8 @@ export default async function BlogPostPage({ params }: PageProps) {
           <FadeUp delay={2}>
             <div data-mdx-content>{mdxContent}</div>
           </FadeUp>
+
+          <AuthorCard />
 
           {related.length > 0 && (
             <section className="mt-16 border-t border-border pt-8">

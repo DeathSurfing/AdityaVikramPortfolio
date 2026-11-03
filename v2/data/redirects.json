@@ -1,0 +1,34 @@
+[
+  {
+    "source": "/blog/bare-metal-kubernetes-cluster",
+    "destination": "/blog/k3s-bare-metal"
+  },
+  {
+    "source": "/blog/clean-architecture-in-typescript",
+    "destination": "/blog/typescript-clean-architecture"
+  },
+  {
+    "source": "/blog/postgres-can-replace-your-whole-stack",
+    "destination": "/blog/replaced-my-entire-stack-with-postgres"
+  },
+  {
+    "source": "/blog/proxmox-lxc-containers",
+    "destination": "/blog/proxmox-lxc"
+  },
+  {
+    "source": "/blog/understanding-react-server-components",
+    "destination": "/blog/what-are-react-server-components"
+  },
+  {
+    "source": "/uploads/Resume.pdf",
+    "destination": "/resume"
+  },
+  {
+    "source": "/projects/cnn-from-scratch",
+    "destination": "/projects/mlp-from-scratch"
+  },
+  {
+    "source": "/api/projects/cnn-from-scratch",
+    "destination": "/api/projects/mlp-from-scratch"
+  }
+]

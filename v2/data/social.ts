@@ -3,8 +3,11 @@ import {
   GitHubLogoIcon,
   EnvelopeClosedIcon,
   FileTextIcon,
+  GlobeIcon,
   ReaderIcon,
 } from '@radix-ui/react-icons';
+
+import { profile } from './profile';
 
 export interface SocialLink {
   name: string;
@@ -18,28 +21,35 @@ export const socialLinks: SocialLink[] = [
   {
     name: 'LinkedIn',
     icon: LinkedInLogoIcon,
-    url: 'https://www.linkedin.com/in/aditya-vikram-mahendru/',
+    url: profile.accounts.linkedin,
     color: 'bg-[#0A66C2]',
     category: 'professional',
   },
   {
     name: 'GitHub',
     icon: GitHubLogoIcon,
-    url: 'https://github.com/deathSurfing',
+    url: profile.accounts.github,
     color: 'bg-[#24292e]',
     category: 'professional',
   },
   {
     name: 'Substack',
     icon: ReaderIcon,
-    url: 'https://substack.com/@adityavikramdev',
+    url: profile.accounts.substack,
     color: 'bg-[#FF6719]',
+    category: 'professional',
+  },
+  {
+    name: 'Hugging Face',
+    icon: GlobeIcon,
+    url: profile.accounts.huggingface,
+    color: 'bg-[#FFD21E]',
     category: 'professional',
   },
   {
     name: 'Email',
     icon: EnvelopeClosedIcon,
-    url: 'mailto:jobs.aditya.vikram.mahendru@gmail.com',
+    url: `mailto:${profile.email}`,
     color: 'bg-primary',
     category: 'contact',
   },

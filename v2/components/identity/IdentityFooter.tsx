@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+import { profile } from '@/data/profile';
 import { FadeUp } from './motion-primitives';
 
 export default function IdentityFooter() {
@@ -10,8 +12,14 @@ export default function IdentityFooter() {
   return (
     <FadeUp className="border-t border-border">
       <footer className="mx-auto flex max-w-2xl items-center justify-between px-6 py-8 font-mono text-xs text-muted-foreground">
-        <span>© 2026 Aditya Vikram</span>
+        <span>© 2026 {profile.name}</span>
         <div className="flex items-center gap-5">
+          <Link
+            href="/about"
+            className="transition-colors hover:text-foreground"
+          >
+            about
+          </Link>
           <a
             href="/sitemap.xml"
             className="link-sweep relative inline-flex items-center transition-colors hover:text-muted-foreground"

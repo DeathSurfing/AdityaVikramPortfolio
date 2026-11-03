@@ -1,7 +1,8 @@
 ---
 title: "Building Real-Time Features with Convex"
-description: "How reactive queries work in Convex, what they replace, and where the platform stops being the right tool."
+description: "How Convex reactive queries keep every client in sync without polling, what they replace, and when Liveblocks or Postgres is the better fit."
 date: "2026-06-15"
+updated: "2026-11-02"
 tags: ["convex", "backend", "realtime", "typescript"]
 coverImage: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1200&h=630&fit=crop"
 author: "Aditya Vikram Mahendru"
@@ -159,8 +160,28 @@ export default defineSchema({
 | Collaborative editing | Strong | CRDTs and WebRTC |
 | Contact forms | Good, with built-in rate limiting | Serverless functions |
 | Blog CMS | Adequate | Headless CMS |
-| File storage | Needs an external service | S3 or Cloudinary |
+| File storage | Built in, with limits | S3 or Cloudinary |
 | Heavy analytics | Query limits apply | Data warehouse |
+
+## Convex or Liveblocks
+
+The two overlap on presence and live updates, but they solve different layers.
+
+| Need | Convex | Liveblocks |
+|---|---|---|
+| Primary application database | Built in | Not included |
+| Server functions and scheduled jobs | Built in | Not included |
+| Presence, cursors, comments | Through your own tables | Built in |
+| Works with an existing backend | Replaces it | Adds to it |
+| Realtime model | Reactive queries over your data | Synchronised shared state |
+
+Reach for Liveblocks when you already have a backend and need collaboration primitives
+in an editor. Reach for Convex when the live data is the application's primary data and
+you want the database, functions, and sync in one system. A product can use both:
+Liveblocks for editor presence and Convex for everything else.
+
+If the live data is not central, a single [Postgres](/blog/replaced-my-entire-stack-with-postgres)
+with `LISTEN`/`NOTIFY` and a WebSocket bridge can be enough.
 
 ## Summary
 

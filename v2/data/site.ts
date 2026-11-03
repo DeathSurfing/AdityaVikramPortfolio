@@ -5,6 +5,9 @@ import type { Metadata } from 'next';
 
 import { profile } from './profile';
 
+export const blogDescription =
+  'Long-form notes on Postgres, self-hosting, React Server Components, and the parts of web systems that break in production.';
+
 export const siteConfig = {
   name: profile.name,
   title: profile.title,
@@ -12,11 +15,11 @@ export const siteConfig = {
   email: profile.email,
   github: {
     username: 'deathSurfing',
-    url: profile.sameAs[0],
+    url: profile.accounts.github,
   },
   linkedin: {
     username: 'aditya-vikram-mahendru',
-    url: profile.sameAs[1],
+    url: profile.accounts.linkedin,
   },
   description: profile.shortBio,
 };
@@ -24,7 +27,7 @@ export const siteConfig = {
 export const siteMetadata: Metadata = {
   title: {
     default: profile.headline,
-    template: `%s | ${profile.alternateNames[0]}`,
+    template: `%s | ${profile.name}`,
   },
   description: profile.shortBio,
 
@@ -42,6 +45,7 @@ export const siteMetadata: Metadata = {
   keywords: [
     profile.alternateNames[0],
     profile.name,
+    profile.alternateNames[1],
     profile.alternateNames[2],
     'full stack developer',
     'machine learning engineer',

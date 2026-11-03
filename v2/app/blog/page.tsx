@@ -2,21 +2,21 @@ import Link from "next/link"
 import type { Metadata } from "next"
 import { BlogCard } from "@/components/blog/BlogCard"
 import { getAllPosts, getAllTags } from "@/lib/blog"
+import { blogDescription } from "@/data/site"
+import { profile } from "@/data/profile"
 import MotionRoot from "@/components/identity/MotionRoot"
 import IdentityFooter from "@/components/identity/IdentityFooter"
-import { FadeUp, SectionHeading } from "@/components/identity/motion-primitives"
+import { FadeUp } from "@/components/identity/motion-primitives"
 
 export const metadata: Metadata = {
   title: "Blog",
-  description:
-    "Thoughts on web development, TypeScript, React, and building better software.",
+  description: blogDescription,
   alternates: {
     canonical: "/blog",
   },
   openGraph: {
-    title: "Blog | Aditya Vikram",
-    description:
-      "Thoughts on web development, TypeScript, React, and building better software.",
+    title: `Blog | ${profile.name}`,
+    description: blogDescription,
   },
 }
 
@@ -36,11 +36,10 @@ export default async function BlogPage({
         <div className="mx-auto flex max-w-2xl flex-col gap-8 px-6 pt-32 pb-20">
           <div className="flex flex-col gap-5">
             <h1 className="font-mono text-xs uppercase tracking-heading text-muted-foreground">
-              {`// writing by Aditya Vikram`}
+              {`// writing by ${profile.name}`}
             </h1>
             <FadeUp as="p" className="text-base leading-relaxed text-ring">
-              Thoughts on web development, TypeScript, React, and building
-              better software.
+              {blogDescription}
             </FadeUp>
           </div>
 

@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { heroCopy } from '@/data/identity';
+import { profile } from '@/data/profile';
 
 // pruned: was a motion stagger over each word with a spring and a blur.
 // The portrait fade-in and the status dot pulse are CSS now (globals.css).
@@ -9,8 +10,8 @@ export default function Hero() {
       <div className="flex items-center gap-5 sm:gap-6">
         <div className="hero-avatar size-14 shrink-0 overflow-hidden rounded-full border border-border grayscale transition-all duration-500 hover:grayscale-0 sm:size-16">
           <Image
-            src="/AdityaVikram.webp"
-            alt="Aditya Vikram"
+            src={profile.image}
+            alt={profile.name}
             width={64}
             height={64}
             priority
@@ -18,9 +19,14 @@ export default function Hero() {
           />
         </div>
 
-        <h1 className="text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
-          {heroCopy.greeting}
-        </h1>
+        <div className="flex flex-col gap-1">
+          <span className="font-mono text-xs uppercase tracking-heading text-muted-foreground">
+            {`// hello`}
+          </span>
+          <h1 className="text-balance text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
+            {profile.name}
+          </h1>
+        </div>
       </div>
 
       <div className="flex items-center gap-3 font-mono text-sm text-muted-foreground">

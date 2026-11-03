@@ -20,8 +20,11 @@ export interface BlogPost {
   title: string
   description: string
   date: string
+  updated?: string
   tags: string[]
   coverImage?: string
+  coverWidth?: number
+  coverHeight?: number
   author: string
   readingTime: string
 }
@@ -47,8 +50,11 @@ export function getAllPosts(): BlogPost[] {
         title: data.title || slug,
         description: data.description || "",
         date: data.date || "",
+        updated: data.updated || undefined,
         tags: data.tags || [],
         coverImage: data.coverImage || undefined,
+        coverWidth: data.coverWidth || undefined,
+        coverHeight: data.coverHeight || undefined,
         author: data.author || "Aditya Vikram Mahendru",
         readingTime: formatReadingTime(stats.minutes),
       }

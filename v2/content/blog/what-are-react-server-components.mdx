@@ -1,7 +1,8 @@
 ---
 title: "What Are React Server Components?"
-description: "React Server Components render only on the server and send their output to the client as data, so their code never enters the browser bundle."
+description: "React Server Components render only on the server, so their code never enters the browser bundle. How they differ from SSR, and when to use the client."
 date: "2026-06-25"
+updated: "2026-11-02"
 tags: ["react", "nextjs", "architecture", "frontend"]
 coverImage: "https://images.unsplash.com/photo-1555099962-4199c345e5dd?w=1200&h=630&fit=crop"
 author: "Aditya Vikram Mahendru"
@@ -124,7 +125,7 @@ async function Profile() {
 
 ## Performance
 
-Only Client Components ship their JavaScript. Server Components render to HTML on the server and stream that HTML to the browser, so the bundle contains nothing for the parts of the page that need no interactivity. The smaller bundle reduces parse and execution work in the browser and improves the Core Web Vitals that depend on it.
+Only Client Components ship their JavaScript. Server Components render to HTML on the server and stream that HTML to the browser, so the bundle contains nothing for the parts of the page that need no interactivity. The smaller bundle reduces parse and execution work in the browser and improves the [Core Web Vitals](/blog/designing-for-performance) that depend on it.
 
 Start with Server Components by default and reach for a Client Component when you need interactivity.
 
@@ -139,7 +140,7 @@ crosses the wire, so a heavy dependency used inside one costs the client nothing
 ### Are React Server Components the same as using React Router?
 
 No. RSC is a React capability; a framework implements the transport. React Router in
-framework mode has server components, and Next.js App Router has them. A plain
+framework mode has server components, and the [Next.js App Router](/blog/building-scalable-web-apps-with-nextjs) has them. A plain
 client-side React Router app does not, and adding a `<Suspense>` boundary there will not
 create one.
 

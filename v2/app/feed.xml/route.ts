@@ -1,5 +1,5 @@
 import { getAllPosts } from "@/lib/blog"
-import { siteConfig } from "@/data/site"
+import { blogDescription, siteConfig } from "@/data/site"
 
 export const dynamic = "force-static"
 
@@ -33,7 +33,7 @@ ${post.tags.map((tag) => `      <category>${esc(tag)}</category>`).join("\n")}
   <channel>
     <title>${esc(siteConfig.name)} - Blog</title>
     <link>${siteConfig.url}/blog</link>
-    <description>Thoughts on web development, TypeScript, React, and building better software.</description>
+    <description>${esc(blogDescription)}</description>
     <language>en</language>
     <atom:link href="${siteConfig.url}/feed.xml" rel="self" type="application/rss+xml" />
 ${items}
