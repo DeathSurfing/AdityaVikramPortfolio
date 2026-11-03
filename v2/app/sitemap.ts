@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next"
 import { getAllPosts, getLatestPostDate } from "@/lib/blog"
 import { projects } from "@/data/projects"
+import { profile } from "@/data/profile"
 import { siteConfig } from "@/data/site"
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -20,6 +21,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: siteLastMod,
       changeFrequency: "weekly",
       priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/about`,
+      lastModified: new Date(profile.updated),
+      changeFrequency: "monthly",
+      priority: 0.8,
     },
     {
       url: `${baseUrl}/projects`,

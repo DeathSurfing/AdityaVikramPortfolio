@@ -15,6 +15,7 @@ import { siteJsonLd } from "@/lib/schema";
 
 const menuItems = [
   { label: "Home", ariaLabel: "Go to home page", link: "/" },
+  { label: "About", ariaLabel: "Read about Aditya", link: "/about" },
   { label: "Projects", ariaLabel: "View projects", link: "/projects" },
   { label: "Experience", ariaLabel: "View experience", link: "/experience" },
   { label: "Blog", ariaLabel: "Read the blog", link: "/blog" },
@@ -24,10 +25,11 @@ const menuItems = [
 const socialItems = [
   {
     label: "LinkedIn",
-    link: profile.sameAs[1],
+    link: profile.accounts.linkedin,
   },
-  { label: "GitHub", link: profile.sameAs[0] },
-  { label: "Substack", link: profile.sameAs[2] },
+  { label: "GitHub", link: profile.accounts.github },
+  { label: "Substack", link: profile.accounts.substack },
+  { label: "Hugging Face", link: profile.accounts.huggingface },
 ];
 
 const archivoBlack = Archivo_Black({

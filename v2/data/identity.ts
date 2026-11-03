@@ -1,5 +1,3 @@
-// Static content for the minimal identity landing page (/)
-
 export interface BioSegment {
   text: string;
   href?: string;
@@ -19,7 +17,6 @@ export interface Experience {
 }
 
 export const heroCopy = {
-  greeting: "Hi, I'm Aditya Vikram",
   role: 'Engineer and Open Source Creator',
   status: 'Building Open Source Sauce',
 };

@@ -11,13 +11,20 @@ function absoluteUrl(value: string): string {
   return value.startsWith('http') ? value : `${siteConfig.url}${value}`
 }
 
+const personImage = {
+  '@type': 'ImageObject',
+  url: absoluteUrl(profile.image),
+  width: 256,
+  height: 256,
+}
+
 const person = {
   '@type': 'Person',
   '@id': `${profile.url}/#person`,
   name: profile.name,
   alternateName: profile.alternateNames,
   url: profile.url,
-  image: `${profile.url}${profile.image}`,
+  image: personImage,
   jobTitle: profile.jobTitles,
   description: profile.shortBio,
   email: `mailto:${profile.email}`,
@@ -36,7 +43,6 @@ const person = {
   })),
 }
 
-// Site-wide graph injected once in the root layout.
 export const siteJsonLd = {
   '@context': 'https://schema.org',
   '@graph': [
@@ -50,17 +56,14 @@ export const siteJsonLd = {
       publisher: { '@id': `${profile.url}/#person` },
     },
     {
-      '@type': 'ProfilePage',
-      '@id': `${profile.url}/#profilepage`,
+      '@type': 'WebPage',
+      '@id': `${profile.url}/#webpage`,
       url: profile.url,
       name: profile.headline,
-      // mainEntity is the property Google reads for the profile page rich
-      // result; about alone does not satisfy it. References the Person node
-      // by @id rather than inlining it, so the Person is defined once in the
-      // graph.
-      mainEntity: { '@id': `${profile.url}/#person` },
-      about: { '@id': `${profile.url}/#person` },
+      description: profile.shortBio,
       isPartOf: { '@id': `${profile.url}/#website` },
+      about: { '@id': `${profile.url}/#person` },
+      mainEntity: { '@id': `${profile.url}/#person` },
     },
   ],
 }
@@ -95,13 +98,14 @@ export function projectJsonLd(project: Project) {
 export function experienceJsonLd() {
   return {
     '@context': 'https://schema.org',
-    '@type': 'ProfilePage',
-    '@id': `${siteConfig.url}/experience/#profilepage`,
+    '@type': 'CollectionPage',
+    '@id': `${siteConfig.url}/experience/#collection`,
     url: `${siteConfig.url}/experience`,
     name: `Experience - ${profile.name}`,
     about: { '@id': `${profile.url}/#person` },
     isPartOf: { '@id': `${profile.url}/#website` },
-    mainEntity: experiences.map((exp) => ({
+    mainEntity: { '@id': `${profile.url}/#person` },
+    hasPart: experiences.map((exp) => ({
       '@type': 'EmployeeRole',
       roleName: exp.role,
       description: exp.summary,
@@ -164,5 +168,32 @@ export function breadcrumbJsonLd(items: BreadcrumbItem[]) {
       name: item.name,
       item: item.url,
     })),
+  }
+}
+
+export function profilePageJsonLd(recentPosts: BlogPost[] = []) {
+  const url = `${profile.url}/about`
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ProfilePage',
+    '@id': `${url}/#profilepage`,
+    url,
+    name: `About ${profile.name}`,
+    description: profile.shortBio,
+    dateModified: profile.updated,
+    isPartOf: { '@id': `${profile.url}/#website` },
+    mainEntity: person,
+    ...(recentPosts.length > 0
+      ? {
+          hasPart: recentPosts.map((post) => ({
+            '@type': 'Article',
+            headline: post.title,
+            url: `${profile.url}/blog/${post.slug}`,
+            datePublished: post.date,
+            author: { '@id': `${profile.url}/#person` },
+          })),
+        }
+      : {}),
   }
 }

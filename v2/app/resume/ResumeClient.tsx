@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import {
   DownloadIcon,
@@ -16,6 +17,7 @@ import {
   AnimatedLink,
   FadeUp,
 } from "@/components/identity/motion-primitives";
+import { profile } from "@/data/profile";
 import { siteConfig } from "@/data/site";
 
 type ResumeOption = {
@@ -70,16 +72,24 @@ export default function ResumeClient() {
         <div className="mx-auto flex max-w-3xl flex-col gap-8 px-6 pt-32 pb-20">
           {/* Heading */}
           <div className="flex flex-col gap-5">
-            <h1 className="font-mono text-xs uppercase tracking-heading text-muted-foreground">
-              {`// resume - Aditya Vikram`}
-            </h1>
+            <div className="flex items-center gap-4">
+              <Image
+                src={profile.image}
+                alt={profile.name}
+                width={64}
+                height={64}
+                className="size-14 shrink-0 rounded-full border border-border object-cover grayscale transition-all duration-500 hover:grayscale-0"
+              />
+              <h1 className="font-mono text-xs uppercase tracking-heading text-muted-foreground">
+                {`// resume - ${profile.name}`}
+              </h1>
+            </div>
             <FadeUp
               as="p"
               className="text-base leading-relaxed text-ring"
             >
-              Aditya Vikram is a full stack developer and machine learning
-              engineer. Pick a role and the PDF below swaps to the tailored
-              version.
+              {profile.shortBio} Pick a role and the PDF below swaps to the
+              tailored version.
             </FadeUp>
           </div>
 
@@ -96,7 +106,7 @@ export default function ResumeClient() {
                       onClick={() => setSelected(option)}
                       className={`role-tap flex items-center gap-2 rounded-sm border px-3 py-1.5 font-mono text-xs transition-colors ${
                         active
-                          ? "border-[#e5e5e5] bg-foreground text-background"
+                          ? "border-foreground bg-foreground text-background"
                           : "border-primary text-muted-foreground hover:border-border hover:text-foreground"
                       }`}
                       aria-pressed={active}
@@ -155,7 +165,7 @@ export default function ResumeClient() {
                   key={selected.id}
                   src={selected.file}
                   className="pdf-fade absolute inset-0 h-full w-full"
-                  title={`Aditya Vikram Resume — ${selected.label}`}
+                  title={`${profile.name} Resume - ${selected.label}`}
                 />
               </div>
             </div>

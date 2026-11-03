@@ -11,8 +11,10 @@ import matter from "gray-matter"
 import readingTime from "reading-time"
 
 import { mdxComponents } from "@/components/blog/MDXComponents"
+import AuthorCard from "@/components/blog/AuthorCard"
 import { getPostBySlug, getRelatedPosts } from "@/lib/blog"
 import { articleJsonLd, breadcrumbJsonLd } from "@/lib/schema"
+import { profile } from "@/data/profile"
 import { siteConfig } from "@/data/site"
 import MotionRoot from "@/components/identity/MotionRoot"
 import IdentityFooter from "@/components/identity/IdentityFooter"
@@ -48,7 +50,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       },
     },
     openGraph: {
-      title: `${post.title} | Aditya Vikram`,
+      title: `${post.title} | ${profile.name}`,
       description: post.description,
       type: "article",
       publishedTime: post.date,
@@ -149,7 +151,12 @@ export default async function BlogPostPage({ params }: PageProps) {
             )}
 
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-xs text-muted-foreground">
-              <span>{data.author || "Aditya Vikram Mahendru"}</span>
+              <Link
+                href="/about"
+                className="transition-colors hover:text-foreground"
+              >
+                {data.author || profile.name}
+              </Link>
               <span aria-hidden>·</span>
               <time dateTime={data.date}>
                 {new Date(data.date).toLocaleDateString("en-US", {
@@ -206,6 +213,8 @@ export default async function BlogPostPage({ params }: PageProps) {
           <FadeUp delay={2}>
             <div data-mdx-content>{mdxContent}</div>
           </FadeUp>
+
+          <AuthorCard />
 
           {related.length > 0 && (
             <section className="mt-16 border-t border-border pt-8">
