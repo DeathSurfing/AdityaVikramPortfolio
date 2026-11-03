@@ -1,21 +1,21 @@
 import type { NextConfig } from "next";
 
+import permanentRedirects from "./data/redirects.json";
+
 const nextConfig: NextConfig = {
   output: 'standalone',
   async redirects() {
     return [
       {
-        // The project was described as a CNN but the code is an MLP. Keep the
-        // old URLs working while the canonical page moves to the accurate name.
-        source: '/projects/cnn-from-scratch',
-        destination: '/projects/mlp-from-scratch',
+        source: '/:path*',
+        has: [{ type: 'host', value: 'www.adityavikram.dev' }],
+        destination: 'https://adityavikram.dev/:path*',
         permanent: true,
       },
-      {
-        source: '/api/projects/cnn-from-scratch',
-        destination: '/api/projects/mlp-from-scratch',
+      ...permanentRedirects.map((redirect) => ({
+        ...redirect,
         permanent: true,
-      },
+      })),
     ];
   },
   // Link response headers for agent discovery, per RFC 8288 and RFC 9727
