@@ -105,6 +105,7 @@ export const projects: Project[] = [
     status: 'building',
     type: 'product',
     technologies: ['Python', 'Postgres', 'pgvector', 'FastAPI', 'Next.js'],
+    live: 'https://premortem.lexcontra.com',
     repository: 'https://github.com/DeathSurfing/pre-mortem',
     highlights: [
       'Live at premortem.lexcontra.com; searches decision history and cites each precedent by id.',
