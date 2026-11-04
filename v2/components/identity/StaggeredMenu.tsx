@@ -50,6 +50,13 @@ interface StaggeredMenuProps {
   onMenuClose?: () => void;
 }
 
+function prefersReducedMotion() {
+  return (
+    typeof window !== 'undefined' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  );
+}
+
 export function StaggeredMenu({
   position = 'right',
   colors = ['var(--primary)', 'var(--muted-foreground)'],
@@ -169,12 +176,12 @@ export function StaggeredMenu({
     const tl = gsap.timeline({ paused: true });
 
     layers.forEach((el, i) => {
-      tl.fromTo(el, { xPercent: offscreen }, { xPercent: 0, duration: 0.5, ease: 'power4.out' }, i * 0.07);
+      tl.fromTo(el, { xPercent: offscreen }, { xPercent: 0, duration: 0.26, ease: 'power4.out' }, i * 0.04);
     });
 
-    const lastTime = layers.length ? (layers.length - 1) * 0.07 : 0;
-    const panelInsertTime = lastTime + (layers.length ? 0.08 : 0);
-    const panelDuration = 0.65;
+    const lastTime = layers.length ? (layers.length - 1) * 0.04 : 0;
+    const panelInsertTime = lastTime + (layers.length ? 0.06 : 0);
+    const panelDuration = 0.3;
 
     tl.fromTo(
       panel,
@@ -184,39 +191,39 @@ export function StaggeredMenu({
     );
 
     if (itemEls.length) {
-      const itemsStartRatio = 0.15;
+      const itemsStartRatio = 0.08;
       const itemsStart = panelInsertTime + panelDuration * itemsStartRatio;
       tl.to(itemEls, {
         yPercent: 0,
         rotate: 0,
-        duration: 1,
+        duration: 0.3,
         ease: 'power4.out',
-        stagger: { each: 0.1, from: 'start' },
+        stagger: { each: 0.03, from: 'start' },
       }, itemsStart);
       if (numberEls.length) {
         tl.to(numberEls, {
-          duration: 0.6,
+          duration: 0.24,
           ease: 'power2.out',
           '--sm-num-opacity': 1,
-          stagger: { each: 0.08, from: 'start' },
-        }, itemsStart + 0.1);
+          stagger: { each: 0.05, from: 'start' },
+        }, itemsStart + 0.06);
       }
     }
 
     if (socialTitle || socialLinks.length) {
-      const socialsStart = panelInsertTime + panelDuration * 0.4;
+      const socialsStart = panelInsertTime + panelDuration * 0.35;
       if (socialTitle) {
-        tl.to(socialTitle, { opacity: 1, duration: 0.5, ease: 'power2.out' }, socialsStart);
+        tl.to(socialTitle, { opacity: 1, duration: 0.2, ease: 'power2.out' }, socialsStart);
       }
       if (socialLinks.length) {
         tl.to(socialLinks, {
           y: 0,
           opacity: 1,
-          duration: 0.55,
+          duration: 0.24,
           ease: 'power3.out',
-          stagger: { each: 0.08, from: 'start' },
+          stagger: { each: 0.03, from: 'start' },
           onComplete: () => gsap.set(socialLinks, { clearProps: 'opacity' }),
-        }, socialsStart + 0.04);
+        }, socialsStart + 0.02);
       }
     }
 
@@ -229,8 +236,13 @@ export function StaggeredMenu({
     busyRef.current = true;
     const tl = buildOpenTimeline(gsap);
     if (tl) {
-      tl.eventCallback('onComplete', () => { busyRef.current = false; });
-      tl.play(0);
+      if (prefersReducedMotion()) {
+        tl.progress(1);
+        busyRef.current = false;
+      } else {
+        tl.eventCallback('onComplete', () => { busyRef.current = false; });
+        tl.play(0);
+      }
     } else {
       busyRef.current = false;
     }
@@ -248,6 +260,23 @@ export function StaggeredMenu({
     const all = [...layers, panel];
     closeTweenRef.current?.kill();
     const offscreen = position === 'left' ? -100 : 100;
+
+    if (prefersReducedMotion()) {
+      gsap.set(all, { xPercent: offscreen });
+      const itemEls = Array.from(panel.querySelectorAll('.sm-panel-itemLabel'));
+      if (itemEls.length) gsap.set(itemEls, { yPercent: 140, rotate: 10 });
+      const numberEls = Array.from(
+        panel.querySelectorAll('.sm-panel-list[data-numbering] .sm-panel-item'),
+      );
+      if (numberEls.length) gsap.set(numberEls, { '--sm-num-opacity': 0 });
+      const socialTitle = panel.querySelector('.sm-socials-title');
+      const socialLinks = Array.from(panel.querySelectorAll('.sm-socials-link'));
+      if (socialTitle) gsap.set(socialTitle, { opacity: 0 });
+      if (socialLinks.length) gsap.set(socialLinks, { y: 25, opacity: 0 });
+      busyRef.current = false;
+      return;
+    }
+
     closeTweenRef.current = gsap.to(all, {
       xPercent: offscreen,
       duration: 0.32,
@@ -273,10 +302,14 @@ export function StaggeredMenu({
     const icon = iconRef.current;
     if (!icon) return;
     spinTweenRef.current?.kill();
+    if (prefersReducedMotion()) {
+      gsap.set(icon, { rotate: opening ? 225 : 0 });
+      return;
+    }
     if (opening) {
-      spinTweenRef.current = gsap.to(icon, { rotate: 225, duration: 0.8, ease: 'power4.out', overwrite: 'auto' });
+      spinTweenRef.current = gsap.to(icon, { rotate: 225, duration: 0.3, ease: 'power4.out', overwrite: 'auto' });
     } else {
-      spinTweenRef.current = gsap.to(icon, { rotate: 0, duration: 0.35, ease: 'power3.inOut', overwrite: 'auto' });
+      spinTweenRef.current = gsap.to(icon, { rotate: 0, duration: 0.2, ease: 'power3.inOut', overwrite: 'auto' });
     }
   }, []);
 
@@ -287,7 +320,11 @@ export function StaggeredMenu({
       colorTweenRef.current?.kill();
       if (changeMenuColorOnOpen) {
         const targetColor = opening ? openMenuButtonColor : menuButtonColor;
-        colorTweenRef.current = gsap.to(btn, { color: targetColor, delay: 0.18, duration: 0.3, ease: 'power2.out' });
+        if (prefersReducedMotion()) {
+          gsap.set(btn, { color: targetColor });
+          return;
+        }
+        colorTweenRef.current = gsap.to(btn, { color: targetColor, delay: 0.05, duration: 0.15, ease: 'power2.out' });
       } else {
         gsap.set(btn, { color: menuButtonColor });
       }
@@ -314,7 +351,14 @@ export function StaggeredMenu({
 
     const currentLabel = opening ? 'Menu' : 'Close';
     const targetLabel = opening ? 'Close' : 'Menu';
-    const cycles = 3;
+
+    if (prefersReducedMotion()) {
+      setTextLines([targetLabel]);
+      gsap.set(inner, { yPercent: 0 });
+      return;
+    }
+
+    const cycles = 1;
     const seq = [currentLabel];
     let last = currentLabel;
     for (let i = 0; i < cycles; i++) {
@@ -330,7 +374,7 @@ export function StaggeredMenu({
     const finalShift = ((lineCount - 1) / lineCount) * 100;
     textCycleAnimRef.current = gsap.to(inner, {
       yPercent: -finalShift,
-      duration: 0.5 + lineCount * 0.07,
+      duration: 0.3 + lineCount * 0.04,
       ease: 'power4.out',
     });
   }, []);
@@ -364,6 +408,9 @@ export function StaggeredMenu({
 
   const closeMenu = useCallback(() => {
     if (!openRef.current) return;
+    if (panelRef.current?.contains(document.activeElement)) {
+      toggleBtnRef.current?.focus();
+    }
     openRef.current = false;
     setOpen(false);
     void ensureGsap().then((gsap) => {
@@ -392,6 +439,32 @@ export function StaggeredMenu({
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [closeOnClickAway, open, closeMenu]);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    const background = Array.from(
+      document.querySelectorAll<HTMLElement>('.site-header, main, .site-footer'),
+    );
+    background.forEach((element) => element.setAttribute('inert', ''));
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        toggleBtnRef.current?.focus();
+        closeMenu();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      background.forEach((element) => element.removeAttribute('inert'));
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [open, closeMenu]);
 
   return (
     <div
@@ -424,7 +497,7 @@ export function StaggeredMenu({
           ));
         })()}
       </div>
-      <header className="staggered-menu-header">
+      <div className="staggered-menu-header">
         <button
           ref={toggleBtnRef}
           className="sm-toggle"
@@ -448,9 +521,9 @@ export function StaggeredMenu({
             <span ref={plusVRef} className="sm-icon-line sm-icon-line-v" />
           </span>
         </button>
-      </header>
+      </div>
 
-      <aside
+      <nav
         id="staggered-menu-panel"
         ref={panelRef}
         className="staggered-menu-panel"
@@ -474,9 +547,23 @@ export function StaggeredMenu({
                     aria-label={it.ariaLabel}
                     data-index={idx + 1}
                     onClick={(e) => {
+                      if (e.defaultPrevented) {
+                        closeMenu();
+                        return;
+                      }
+                      if (
+                        e.metaKey ||
+                        e.ctrlKey ||
+                        e.shiftKey ||
+                        e.altKey ||
+                        e.button !== 0
+                      ) {
+                        return;
+                      }
                       e.preventDefault();
                       closeMenu();
-                      setTimeout(() => router.push(it.link), 320);
+                      window.scrollTo(0, 0);
+                      router.push(it.link, { scroll: false });
                     }}
                   >
                     <span className="sm-panel-itemLabel">{it.label}</span>
@@ -511,7 +598,7 @@ export function StaggeredMenu({
             </div>
           )}
         </div>
-      </aside>
+      </nav>
     </div>
   );
 }

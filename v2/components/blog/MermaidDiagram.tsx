@@ -21,38 +21,38 @@ function loadMermaid() {
           darkMode: true,
           background: "transparent",
           fontFamily: "var(--font-mono)",
-          primaryColor: "#1f1f1f",
-          primaryTextColor: "#f5f5f5",
-          primaryBorderColor: "#6b6b6b",
-          secondaryColor: "#292929",
-          secondaryTextColor: "#f5f5f5",
-          secondaryBorderColor: "#6b6b6b",
-          tertiaryColor: "#171717",
-          tertiaryTextColor: "#f5f5f5",
-          tertiaryBorderColor: "#6b6b6b",
-          lineColor: "#8b949e",
-          textColor: "#e5e5e5",
-          mainBkg: "#1f1f1f",
-          nodeBorder: "#6b6b6b",
-          clusterBkg: "#171717",
-          clusterBorder: "#3f3f3f",
-          edgeLabelBackground: "#171717",
-          noteBkgColor: "#262626",
-          noteTextColor: "#f5f5f5",
-          noteBorderColor: "#6b6b6b",
-          actorBkg: "#1f1f1f",
-          actorBorder: "#6b6b6b",
-          actorTextColor: "#f5f5f5",
-          actorLineColor: "#3f3f3f",
-          signalColor: "#a3a3a3",
-          signalTextColor: "#e5e5e5",
-          labelBoxBkgColor: "#1f1f1f",
-          labelBoxBorderColor: "#6b6b6b",
-          labelTextColor: "#f5f5f5",
-          loopTextColor: "#e5e5e5",
-          activationBkgColor: "#292929",
-          activationBorderColor: "#6b6b6b",
-          sequenceNumberColor: "#171717",
+          primaryColor: "#121210",
+          primaryTextColor: "#f4f1e8",
+          primaryBorderColor: "#3d3932",
+          secondaryColor: "#181815",
+          secondaryTextColor: "#f4f1e8",
+          secondaryBorderColor: "#3d3932",
+          tertiaryColor: "#0a0a09",
+          tertiaryTextColor: "#f4f1e8",
+          tertiaryBorderColor: "#3d3932",
+          lineColor: "#a8a49a",
+          textColor: "#f4f1e8",
+          mainBkg: "#121210",
+          nodeBorder: "#3d3932",
+          clusterBkg: "#0a0a09",
+          clusterBorder: "#2a2823",
+          edgeLabelBackground: "#0a0a09",
+          noteBkgColor: "#1e1c18",
+          noteTextColor: "#f4f1e8",
+          noteBorderColor: "#ffcc00",
+          actorBkg: "#121210",
+          actorBorder: "#3d3932",
+          actorTextColor: "#f4f1e8",
+          actorLineColor: "#2a2823",
+          signalColor: "#a8a49a",
+          signalTextColor: "#f4f1e8",
+          labelBoxBkgColor: "#121210",
+          labelBoxBorderColor: "#3d3932",
+          labelTextColor: "#f4f1e8",
+          loopTextColor: "#f4f1e8",
+          activationBkgColor: "#1e1c18",
+          activationBorderColor: "#ffcc00",
+          sequenceNumberColor: "#0a0a09",
         },
         flowchart: {
           curve: "linear",
@@ -100,14 +100,14 @@ export default function MermaidDiagram({ chart }: { chart: string }) {
   }, [chart])
 
   return (
-    <figure className="my-6 overflow-hidden rounded-sm border border-primary bg-card">
-      <figcaption className="flex items-center justify-between gap-4 border-b border-border bg-muted px-4 py-2">
+    <figure className="my-8 overflow-hidden border border-line bg-surface">
+      <figcaption className="flex items-center justify-between gap-4 border-b border-line bg-surface-2 px-4 py-2">
         <span className="font-mono text-label uppercase tracking-heading text-muted-foreground">
           diagram
         </span>
       </figcaption>
 
-      <div className="overflow-x-auto bg-background p-4 sm:p-6">
+      <div className="overflow-x-auto bg-background p-4 sm:p-6" tabIndex={0}>
         {failed ? (
           <pre className="m-0 overflow-x-auto font-mono text-sm leading-relaxed text-foreground">
             <code>{chart.trim()}</code>

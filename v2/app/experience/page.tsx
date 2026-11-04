@@ -1,13 +1,12 @@
 import Link from "next/link"
 import type { Metadata } from "next"
 
-import { experiences, metricNotes } from "@/data/identity"
+import { experiences } from "@/data/identity"
 import { skillCategories } from "@/data/skills"
 import { profile } from "@/data/profile"
 import { experienceJsonLd } from "@/lib/schema"
-import MotionRoot from "@/components/identity/MotionRoot"
 import IdentityFooter from "@/components/identity/IdentityFooter"
-import { FadeUp } from "@/components/identity/motion-primitives"
+import { Section } from "@/components/identity/Section"
 
 export const metadata: Metadata = {
   title: "Experience",
@@ -25,117 +24,78 @@ export const metadata: Metadata = {
 
 export default function ExperiencePage() {
   return (
-    <MotionRoot>
+    <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(experienceJsonLd()) }}
       />
-      <main className="min-h-screen bg-background font-sans text-foreground selection:bg-foreground selection:text-background">
-        <div className="mx-auto flex max-w-2xl flex-col gap-10 px-6 pt-32 pb-20">
-          <div className="flex flex-col gap-5">
-            <h1 className="font-mono text-xs uppercase tracking-heading text-muted-foreground">
-              {`// experience - ${profile.name}`}
+      <main id="main" className="page-main">
+        <div className="shell page-content">
+          <header className="flex flex-col gap-5 border-b border-line pb-10">
+            <nav aria-label="Breadcrumb" className="breadcrumb">
+              <Link href="/">home</Link>
+              <span className="sep" aria-hidden>/</span>
+              <span>experience</span>
+            </nav>
+
+            <h1 className="page-title">
+              <span className="sr-only">{"// "}</span>experience
+              <span className="sr-only"> - {profile.name}</span>
             </h1>
-            <FadeUp as="p" className="text-base leading-relaxed text-ring">
-              {profile.name} is a {profile.title.toLowerCase()} based in{" "}
+
+            <p className="lead">
+              {profile.name} is a {profile.title} based in{" "}
               {profile.location.city}, {profile.location.country}. Roles in
               order, most recent first.
-            </FadeUp>
+            </p>
+
+            <div className="link-row">
+              <Link href="/resume" className="action-link">
+                resume <span className="arrow" aria-hidden>→</span>
+              </Link>
+            </div>
+          </header>
+
+          <div className="mt-12 flex flex-col">
+            <Section label="// roles">
+              <div className="timeline">
+                {experiences.map((exp) => (
+                  <article key={`${exp.role}-${exp.company}`} className="timeline-row">
+                    <div className="timeline-meta">
+                      <span className="block text-foreground">{exp.duration}</span>
+                      <span className="mt-1 block">{exp.company}</span>
+                      <span className="mt-1 block">{exp.location}</span>
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <h3 className="timeline-role">{exp.role}</h3>
+                      <p className="timeline-summary">{exp.summary}</p>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </Section>
+
+            <Section label="// skills">
+              <div className="skill-grid">
+                {skillCategories.map((category) => (
+                  <article key={category.name} className="skill-block">
+                    <h3 className="skill-name">{category.name}</h3>
+                    <p className="skill-list">{category.skills.join(" · ")}</p>
+                    <div className="skill-evidence">
+                      {category.evidence.map((item) => (
+                        <Link key={item.href} href={item.href}>
+                          {item.label} <span aria-hidden>→</span>
+                        </Link>
+                      ))}
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </Section>
           </div>
-
-          <section className="flex flex-col gap-6">
-            {experiences.map((exp, i) => (
-              <FadeUp key={`${exp.role}-${exp.company}`} delay={i}>
-                <article className="flex flex-col gap-2">
-                  <h2 className="text-base font-medium text-foreground">
-                    {exp.role}
-                  </h2>
-                  <p className="font-mono text-xs text-muted-foreground">
-                    {exp.company} · {exp.duration} · {exp.location} · {exp.type}
-                  </p>
-                  <p className="text-sm leading-relaxed text-ring">
-                    {exp.summary}
-                  </p>
-                </article>
-              </FadeUp>
-            ))}
-          </section>
-
-          <section className="flex flex-col gap-4">
-            <h2 className="font-mono text-xs uppercase tracking-heading text-muted-foreground">
-              {`// how the numbers were measured`}
-            </h2>
-            <ul className="flex flex-col gap-2">
-              {metricNotes.map((note) => (
-                <li key={note.label} className="text-sm leading-relaxed text-ring">
-                  <span className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
-                    {note.label}
-                  </span>
-                  <br />
-                  {note.detail}
-                </li>
-              ))}
-            </ul>
-          </section>
-
-          <section className="flex flex-col gap-4">
-            <h2 className="font-mono text-xs uppercase tracking-heading text-muted-foreground">
-              {`// skills`}
-            </h2>
-            <ul className="flex flex-col gap-3">
-              {skillCategories.map((category) => (
-                <li key={category.name} className="text-sm text-ring">
-                  <span className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
-                    {category.name}
-                  </span>
-                  <br />
-                  {category.skills.join(", ")}
-                  <span className="mt-1 flex flex-wrap gap-x-3 gap-y-1 font-mono text-xs">
-                    {category.evidence.map((item) => (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        className="text-muted-foreground underline decoration-border underline-offset-4 transition-colors hover:text-foreground hover:decoration-foreground"
-                      >
-                        {item.label} →
-                      </Link>
-                    ))}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </section>
-
-          <nav className="flex flex-wrap items-center gap-x-5 gap-y-2 font-mono text-xs">
-            <a
-              href="/api/experience"
-              className="text-muted-foreground underline decoration-border underline-offset-4 transition-colors hover:text-foreground hover:decoration-foreground"
-            >
-              experience JSON
-            </a>
-            <a
-              href="/api/profile"
-              className="text-muted-foreground underline decoration-border underline-offset-4 transition-colors hover:text-foreground hover:decoration-foreground"
-            >
-              profile JSON
-            </a>
-            <Link
-              href="/resume"
-              className="text-muted-foreground underline decoration-border underline-offset-4 transition-colors hover:text-foreground hover:decoration-foreground"
-            >
-              resume
-            </Link>
-          </nav>
-
-          <Link
-            href="/"
-            className="font-mono text-xs text-muted-foreground underline underline-offset-4 transition-colors hover:text-foreground"
-          >
-            &larr; home
-          </Link>
         </div>
-        <IdentityFooter />
       </main>
-    </MotionRoot>
+      <IdentityFooter />
+    </>
   )
 }

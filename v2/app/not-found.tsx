@@ -1,26 +1,26 @@
 import Link from "next/link"
 
+import IdentityFooter from "@/components/identity/IdentityFooter"
+
 export default function NotFound() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center px-6 font-sans text-foreground selection:bg-foreground selection:text-background">
-      <div className="flex flex-col items-center gap-5 text-center">
-        <span className="font-mono text-xs text-muted-foreground">404</span>
+    <>
+      <main id="main" className="page-main">
+        <div className="shell page-content">
+          <div className="flex max-w-2xl flex-col gap-6">
+            <h1 className="page-title">page not found</h1>
 
-        <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-          page not found
-        </h1>
+            <p className="lead">
+              The page you&apos;re looking for doesn&apos;t exist or has been moved.
+            </p>
 
-        <p className="max-w-sm text-sm leading-relaxed text-muted-foreground">
-          The page you're looking for doesn't exist or has been moved.
-        </p>
-
-        <Link
-          href="/"
-          className="mt-2 font-mono text-xs text-ring underline decoration-border underline-offset-4 transition-colors hover:text-foreground hover:decoration-foreground"
-        >
-          &larr; home
-        </Link>
-      </div>
-    </main>
+            <Link href="/" className="action-primary self-start">
+              <span aria-hidden>←</span> home
+            </Link>
+          </div>
+        </div>
+      </main>
+      <IdentityFooter />
+    </>
   )
 }

@@ -1,17 +1,18 @@
-'use client';
-
 import { bioParagraphs } from '@/data/identity';
-import { FadeUp } from './motion-primitives';
 
-export default function ProfileBio() {
+export default function ProfileBio({ limit }: { limit?: number }) {
+  const paragraphs = typeof limit === 'number' ? bioParagraphs.slice(0, limit) : bioParagraphs;
+
   return (
-    <>
-      {bioParagraphs.map((segments, i) => (
-        <FadeUp
+    <div className="flex measure flex-col gap-4">
+      {paragraphs.map((segments, i) => (
+        <p
           key={i}
-          as="p"
-          delay={i + 1}
-          className="text-base leading-relaxed text-muted-foreground"
+          className={
+            i === 0
+              ? 'text-body-lg leading-body-tight text-foreground'
+              : 'text-body leading-body text-muted-foreground'
+          }
         >
           {segments.map((seg, j) =>
             seg.href ? (
@@ -20,7 +21,7 @@ export default function ProfileBio() {
                 href={seg.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-foreground underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground"
+                className="link-underline text-foreground"
               >
                 {seg.text}
               </a>
@@ -28,8 +29,8 @@ export default function ProfileBio() {
               <span key={j}>{seg.text}</span>
             ),
           )}
-        </FadeUp>
+        </p>
       ))}
-    </>
+    </div>
   );
 }

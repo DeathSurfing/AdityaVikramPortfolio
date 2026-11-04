@@ -1,40 +1,34 @@
-'use client';
-
 import Link from 'next/link';
+
 import { experiences } from '@/data/identity';
-import { FadeUp, SectionHeading } from './motion-primitives';
+import { Section } from './Section';
 
 export default function StorySection() {
   return (
-    <section className="flex flex-col gap-5">
-      <SectionHeading>// story so far</SectionHeading>
-
-      <div className="flex flex-col">
-        {experiences.map((exp, i) => (
-          <FadeUp key={exp.company} delay={i}>
-            <article className="story-row group flex flex-col gap-2 border-b border-border py-5 first:pt-0 last:border-b-0">
-              <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-                <h3 className="text-base font-medium text-foreground">
+    <Section label="// experience">
+      <div className="flex flex-col gap-6">
+        <div className="timeline">
+          {experiences.slice(0, 3).map((exp) => (
+            <article key={`${exp.role}-${exp.company}`} className="timeline-row">
+              <div className="timeline-meta">
+                <span className="block text-foreground">{exp.duration}</span>
+                <span className="mt-1 block">{exp.location}</span>
+              </div>
+              <div className="flex flex-col gap-2">
+                <h3 className="timeline-role">
                   {exp.role}
                   <span className="text-muted-foreground"> · {exp.company}</span>
                 </h3>
-                <span className="font-mono text-xs text-muted-foreground">{exp.duration}</span>
+                <p className="timeline-summary">{exp.summary}</p>
               </div>
-              <span className="font-mono text-xs text-muted-foreground">
-                {exp.location} · {exp.type}
-              </span>
-              <p className="text-sm leading-relaxed text-muted-foreground">{exp.summary}</p>
             </article>
-          </FadeUp>
-        ))}
-      </div>
+          ))}
+        </div>
 
-      <Link
-        href="/experience"
-        className="self-start font-mono text-xs text-muted-foreground underline decoration-border underline-offset-4 transition-colors hover:text-foreground hover:decoration-foreground"
-      >
-        experience and measurement notes →
-      </Link>
-    </section>
+        <Link href="/experience" className="action-link">
+          all roles and systems <span className="arrow" aria-hidden>→</span>
+        </Link>
+      </div>
+    </Section>
   );
 }

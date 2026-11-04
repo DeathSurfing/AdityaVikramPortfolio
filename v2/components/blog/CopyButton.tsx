@@ -30,7 +30,7 @@ export default function CopyButton({ code }: { code: string }) {
         type="button"
         onClick={copy}
         aria-label={copied ? "Code copied to clipboard" : "Copy code to clipboard"}
-        className="inline-flex shrink-0 items-center border border-border bg-background px-2 py-1 font-mono text-label uppercase tracking-heading text-muted-foreground transition-colors hover:border-primary hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+        className="copy-button inline-flex shrink-0 items-center border border-line bg-background px-2 py-1 font-mono text-label uppercase tracking-heading text-muted-foreground hover:border-signal hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal"
       >
         {copied ? "copied" : "copy"}
       </button>

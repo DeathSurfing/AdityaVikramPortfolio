@@ -1,34 +1,35 @@
-'use client';
-
 import { ctaLine } from '@/data/identity';
 import { socialLinks } from '@/data/social';
-import { FadeUp, AnimatedLink } from './motion-primitives';
+import { Section } from './Section';
 
 export default function ContactLinks() {
   return (
-    <section className="flex flex-col gap-5">
-      <FadeUp as="p" className="text-lg font-medium tracking-tight text-foreground">
-        {ctaLine}
-      </FadeUp>
-      <FadeUp delay={1}>
-        <ul className="flex flex-wrap items-center gap-x-6 gap-y-3">
+    <Section label="// contact">
+      <div className="cta-band">
+        <div className="flex flex-col gap-3">
+          <p className="cta-title">{ctaLine}</p>
+        </div>
+
+        <ul className="link-row">
           {socialLinks.map(({ name, icon: Icon, url }) => {
             const external = !url.startsWith('/');
             return (
               <li key={name}>
-                <AnimatedLink
+                <a
                   href={url}
-                  external={external}
-                  className="flex items-center gap-2 font-mono text-sm text-muted-foreground transition-colors hover:text-foreground"
+                  {...(external
+                    ? { target: '_blank', rel: 'noopener noreferrer' }
+                    : {})}
+                  className="social-link"
                 >
-                  <Icon className="size-3.5" />
+                  <Icon className="size-3.5" aria-hidden />
                   {name}
-                </AnimatedLink>
+                </a>
               </li>
             );
           })}
         </ul>
-      </FadeUp>
-    </section>
+      </div>
+    </Section>
   );
 }

@@ -4,9 +4,8 @@ import type { Metadata } from "next"
 import { projects } from "@/data/projects"
 import { profile } from "@/data/profile"
 import { projectsIndexJsonLd } from "@/lib/schema"
-import MotionRoot from "@/components/identity/MotionRoot"
 import IdentityFooter from "@/components/identity/IdentityFooter"
-import { FadeUp } from "@/components/identity/motion-primitives"
+import ProjectCard from "@/components/identity/ProjectCard"
 
 export const metadata: Metadata = {
   title: `Projects`,
@@ -20,61 +19,66 @@ export const metadata: Metadata = {
 }
 
 export default function ProjectsPage() {
+  const featured = projects.filter((project) => Boolean(project.image))
+  const remaining = projects.filter((project) => !project.image)
+
   return (
-    <MotionRoot>
+    <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(projectsIndexJsonLd()) }}
       />
-      <main className="min-h-screen bg-background font-sans text-foreground selection:bg-foreground selection:text-background">
-        <div className="mx-auto flex max-w-2xl flex-col gap-8 px-6 pt-32 pb-20">
-          <div className="flex flex-col gap-5">
-            <h1 className="font-mono text-xs uppercase tracking-heading text-muted-foreground">
-              {`// projects by ${profile.alternateNames[0]}`}
+      <main id="main" className="page-main">
+        <div className="shell page-content">
+          <header className="flex flex-col gap-5 border-b border-line pb-10">
+            <nav aria-label="Breadcrumb" className="breadcrumb">
+              <Link href="/">home</Link>
+              <span className="sep" aria-hidden>/</span>
+              <span>projects</span>
+            </nav>
+
+            <h1 id="projects-title" className="page-title">
+              <span className="sr-only">{"// "}</span>projects
+              <span className="sr-only"> by {profile.alternateNames[0]}</span>
             </h1>
-            <FadeUp as="p" className="text-base leading-relaxed text-ring">
+
+            <p className="lead">
               Open source tools and digital products. Each project has a
               permanent page at its own URL.
-            </FadeUp>
-          </div>
+            </p>
+          </header>
 
-          <div className="flex flex-col gap-2">
-            {projects.map((project, i) => (
-              <FadeUp key={project.slug} delay={i}>
-                <article className="flex flex-col gap-1.5 rounded-md border border-transparent p-3 -mx-3 transition-colors hover:border-border hover:bg-card">
-                  <div className="flex flex-wrap items-center gap-2.5">
-                    <h2 className="text-base font-medium text-foreground">
-                      <Link
-                        href={`/projects/${project.slug}`}
-                        className="transition-colors hover:text-ring"
-                      >
-                        {project.name}
-                      </Link>
-                    </h2>
-                    <span className="rounded-sm border border-border bg-card px-1.5 py-0.5 font-mono text-label text-muted-foreground">
-                      {project.status}
-                    </span>
-                  </div>
-                  <p className="text-sm leading-relaxed text-muted-foreground">
-                    {project.description}
-                  </p>
-                  <span className="font-mono text-xs text-muted-foreground">
-                    {project.technologies.join(" · ")}
-                  </span>
-                </article>
-              </FadeUp>
-            ))}
-          </div>
+          <div className="mt-10 flex flex-col gap-8">
+            {featured.length > 0 && (
+              <div className="project-feature-list">
+                {featured.map((project) => (
+                  <ProjectCard
+                    key={project.slug}
+                    project={project}
+                    variant="feature"
+                    headingLevel={2}
+                  />
+                ))}
+              </div>
+            )}
 
-          <Link
-            href="/"
-            className="font-mono text-xs text-muted-foreground underline underline-offset-4 transition-colors hover:text-foreground"
-          >
-            &larr; home
-          </Link>
+            <div className="project-grid">
+              {remaining.map((project) => (
+                <ProjectCard
+                  key={project.slug}
+                  project={project}
+                  headingLevel={2}
+                />
+              ))}
+            </div>
+
+            <Link href="/" className="action-link">
+              <span className="arrow" aria-hidden>←</span> home
+            </Link>
+          </div>
         </div>
-        <IdentityFooter />
       </main>
-    </MotionRoot>
+      <IdentityFooter />
+    </>
   )
 }

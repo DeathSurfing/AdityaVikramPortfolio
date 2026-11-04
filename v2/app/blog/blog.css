@@ -7,9 +7,9 @@
 
 [data-mdx-content] :not(pre) > code {
   padding: 0.12em 0.35em;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--surface);
   color: var(--foreground);
   font-family: var(--font-mono);
   font-size: 0.875em;
@@ -17,7 +17,7 @@
 }
 
 /* ──────────────────────────────────────────────
-   Code blocks — readable text + quiet scrollbars
+   Code blocks - readable text + quiet scrollbars
    ────────────────────────────────────────────── */
 
 [data-mdx-content] pre {
@@ -51,7 +51,7 @@
 }
 
 /* ──────────────────────────────────────────────
-   Syntax highlighting — dark code blocks
+   Syntax highlighting - dark code blocks
    Palette follows GitHub dark; the block background comes from the
    surrounding component (bg-background).
    ────────────────────────────────────────────── */

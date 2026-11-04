@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import {
   Space_Grotesk,
-  Archivo_Black,
+  Instrument_Serif,
   IBM_Plex_Mono,
 } from "next/font/google";
 
@@ -9,6 +9,7 @@ import "./globals.css";
 
 import StaggeredMenu from "@/components/identity/StaggeredMenu";
 import PageWipe from "@/components/identity/PageWipe";
+import SiteHeader from "@/components/identity/SiteHeader";
 import { siteMetadata } from "@/data/site";
 import { profile } from "@/data/profile";
 import { siteJsonLd } from "@/lib/schema";
@@ -32,24 +33,24 @@ const socialItems = [
   { label: "Hugging Face", link: profile.accounts.huggingface },
 ];
 
-const archivoBlack = Archivo_Black({
+const instrumentSerif = Instrument_Serif({
   subsets: ["latin"],
   weight: "400",
-  variable: "--font-display",
+  variable: "--font-editorial",
   display: "swap",
 });
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
-  weight: "400",
-  variable: "--font-sans",
+  weight: "variable",
+  variable: "--font-space",
   display: "swap",
 });
 
 const plexMono = IBM_Plex_Mono({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-mono",
+  weight: ["400", "500"],
+  variable: "--font-plex",
   display: "swap",
 });
 
@@ -60,7 +61,7 @@ export const metadata: Metadata = siteMetadata;
 export const viewport: Viewport = {
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: '#ffffff' },
-    { media: '(prefers-color-scheme: dark)', color: '#0a0a0a' },
+    { media: '(prefers-color-scheme: dark)', color: '#0a0a09' },
   ],
 };
 
@@ -75,18 +76,17 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`dark ${archivoBlack.variable} ${spaceGrotesk.variable} ${plexMono.variable}`}
-      style={{ colorScheme: "dark" }}
+      className={`dark ${instrumentSerif.variable} ${spaceGrotesk.variable} ${plexMono.variable}`}
     >
       <body className="bg-background text-foreground antialiased">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(siteJsonLd) }}
         />
-        {children}
-        {/* Rendered after the page content so the page's h1 is the first
-            heading in the accessibility tree. The menu is position: fixed,
-            so visual order is unchanged. */}
+        <SiteHeader />
+        {/* The menu is rendered before the page content so the mobile toggle is
+            early in the tab order. The fixed panel is inert while closed and
+            has no headings, so the page h1 remains the first heading. */}
         <StaggeredMenu
           isFixed
           items={menuItems}
@@ -94,7 +94,12 @@ export default function RootLayout({
           displaySocials={true}
           displayItemNumbering={false}
           closeOnClickAway={true}
+          colors={['#121210', '#1c1a16']}
+          menuButtonColor="#f4f1e8"
+          openMenuButtonColor="#ffcc00"
+          accentColor="#ffcc00"
         />
+        {children}
         <PageWipe />
       </body>
     </html>

@@ -1,107 +1,57 @@
-'use client';
-
-import Image from 'next/image';
 import Link from 'next/link';
-import { projects, type Project } from '@/data/projects';
-import { FadeUp, SectionHeading } from './motion-primitives';
 
-function StatusBadge({ status }: { status: Project['status'] }) {
-  return (
-    <span className="flex items-center gap-1.5 rounded-sm border border-border bg-card px-1.5 py-0.5 font-mono text-label text-muted-foreground">
-      <span
-        className={`inline-block size-1 rounded-full bg-muted-foreground${
-          status === 'building' ? ' badge-dot' : ''
-        }`}
-      />
-      {status}
-    </span>
-  );
-}
+import { projects } from '@/data/projects';
+import ProjectCard from './ProjectCard';
+import { Section } from './Section';
 
-function ProjectRow({ project, index }: { project: Project; index: number }) {
+export default function ProjectsSection() {
+  const featured = projects.filter((project) => Boolean(project.image));
+  const remaining = projects.filter((project) => !project.image);
+  const visible = remaining.slice(0, 4);
+  const extra = remaining.slice(4);
+
   return (
-    <FadeUp delay={index}>
-      <article className="project-row group flex gap-4 rounded-md border border-transparent p-3 -mx-3 hover:border-border hover:bg-card">
-        {project.image && (
-          <div className="relative mt-1 hidden size-16 shrink-0 overflow-hidden rounded-sm border border-border sm:block">
-            <Image
-              src={project.image}
-              alt={`${project.name} preview`}
-              fill
-              sizes="64px"
-              className="object-cover grayscale transition-all duration-300 group-hover:grayscale-0"
-            />
+    <Section id="projects" label="// selected projects">
+      <div className="flex flex-col gap-8">
+        {featured.length > 0 && (
+          <div className="project-feature-list">
+            {featured.map((project) => (
+              <ProjectCard
+                key={project.slug}
+                project={project}
+                variant="feature"
+              />
+            ))}
           </div>
         )}
 
-        <div className="flex min-w-0 flex-col gap-1.5">
-          <div className="flex flex-wrap items-center gap-2.5">
-            <h3 className="text-base font-medium text-foreground">
-              {/* Every project has a stable, independently indexable page. */}
-              <Link
-                href={`/projects/${project.slug}`}
-                className="transition-colors hover:text-muted-foreground"
-              >
-                {project.name}
-              </Link>
-            </h3>
-            <StatusBadge status={project.status} />
-          </div>
-
-          <p className="text-sm leading-relaxed text-muted-foreground">{project.description}</p>
-
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 pt-0.5">
-            <span className="font-mono text-xs text-muted-foreground">
-              {project.technologies.join(' · ')}
-            </span>
-            {(project.live || project.repository) && (
-              <span className="flex items-center gap-3 font-mono text-xs">
-                {project.live && (
-                  <a
-                    href={project.live}
-                    target={project.live.startsWith('/') ? undefined : '_blank'}
-                    rel={project.live.startsWith('/') ? undefined : 'noopener noreferrer'}
-                    className="text-muted-foreground underline decoration-border underline-offset-4 transition-colors hover:text-foreground hover:decoration-foreground"
-                  >
-                    live ↗
-                  </a>
-                )}
-                {project.repository && (
-                  <a
-                    href={project.repository}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-muted-foreground underline decoration-border underline-offset-4 transition-colors hover:text-foreground hover:decoration-foreground"
-                  >
-                    github ↗
-                  </a>
-                )}
-              </span>
-            )}
-          </div>
+        <div className="project-grid">
+          {visible.map((project) => (
+            <ProjectCard
+              key={project.slug}
+              project={project}
+            />
+          ))}
         </div>
-      </article>
-    </FadeUp>
-  );
-}
 
-export default function ProjectsSection() {
-  return (
-    <section id="projects" className="flex flex-col gap-5">
-      <SectionHeading>// selected projects</SectionHeading>
+        {extra.length > 0 && (
+          <details className="more-block">
+            <summary>more projects ({extra.length})</summary>
+            <div className="project-grid mt-4">
+              {extra.map((project) => (
+                <ProjectCard
+                  key={project.slug}
+                  project={project}
+                />
+              ))}
+            </div>
+          </details>
+        )}
 
-      <div className="flex flex-col gap-2">
-        {projects.map((project, i) => (
-          <ProjectRow key={project.slug} project={project} index={i} />
-        ))}
+        <Link href="/projects" className="action-link">
+          all projects <span className="arrow" aria-hidden>→</span>
+        </Link>
       </div>
-
-      <Link
-        href="/projects"
-        className="font-mono text-xs text-muted-foreground underline underline-offset-4 transition-colors hover:text-foreground"
-      >
-        all projects →
-      </Link>
-    </section>
+    </Section>
   );
 }

@@ -1,4 +1,5 @@
-import MotionRoot from '@/components/identity/MotionRoot';
+import dynamic from 'next/dynamic';
+
 import Hero from '@/components/identity/Hero';
 import AboutBlurb from '@/components/identity/AboutBlurb';
 import ContactLinks from '@/components/identity/ContactLinks';
@@ -6,7 +7,6 @@ import StackSection from '@/components/identity/StackSection';
 import StorySection from '@/components/identity/StorySection';
 import ProjectsSection from '@/components/identity/ProjectsSection';
 import BlogTeaser from '@/components/identity/BlogTeaser';
-import dynamic from 'next/dynamic';
 import IdentityFooter from '@/components/identity/IdentityFooter';
 
 const ActivityGraph = dynamic(
@@ -15,20 +15,23 @@ const ActivityGraph = dynamic(
 
 export default function HomePage() {
   return (
-    <MotionRoot>
-      <main className="min-h-screen bg-background font-sans text-foreground selection:bg-foreground selection:text-background">
-        <div className="mx-auto flex max-w-2xl flex-col gap-16 px-6 pt-32 pb-20">
+    <>
+      <main id="main" className="page-main">
+        <div className="shell page-content">
           <Hero />
-          <AboutBlurb />
-          <ContactLinks />
-          <StackSection />
-          <StorySection />
-          <ProjectsSection />
-          <BlogTeaser />
-          <ActivityGraph />
+
+          <div className="mt-16 flex flex-col">
+            <AboutBlurb />
+            <StackSection />
+            <StorySection />
+            <ProjectsSection />
+            <BlogTeaser />
+            <ActivityGraph />
+            <ContactLinks />
+          </div>
         </div>
-        <IdentityFooter />
       </main>
-    </MotionRoot>
+      <IdentityFooter />
+    </>
   );
 }

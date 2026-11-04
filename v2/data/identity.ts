@@ -24,7 +24,7 @@ export const heroCopy = {
 export const bioParagraphs: BioSegment[][] = [
   [
     {
-      text: "I'm a full stack developer and machine learning engineer. I build open source tools and digital products, from Rust libraries to web platforms with Next.js and TypeScript. I'm also the founder of ",
+      text: "I build open source tools and digital products, from Rust libraries to web platforms with Next.js and TypeScript. I'm also the founder of ",
     },
     { text: 'LexContra', href: 'https://tech.lexcontra.com/' },
     {

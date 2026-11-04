@@ -5,6 +5,7 @@ import type { MDXComponents as MDXComponentsType } from "mdx/types"
 
 import CodeBlock from "./CodeBlock"
 import MermaidDiagram from "./MermaidDiagram"
+import { slugifyHeading } from "@/lib/slug"
 
 // rehype-highlight turns code into nested spans, so the plain text has to be
 // collected from the React tree for the copy button.
@@ -25,13 +26,13 @@ export const mdxComponents: MDXComponentsType = {
       alt={props.alt || ""}
       width={800}
       height={450}
-      className="my-6 w-full h-auto rounded-sm border border-primary object-cover"
+      className="my-8 h-auto w-full border border-line object-cover"
     />
   ),
   a: (props: ComponentProps<"a">) => (
     <Link
       href={props.href || ""}
-      className="text-foreground underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground"
+      className="link-underline text-foreground"
       target={props.href?.startsWith("http") ? "_blank" : undefined}
       rel={props.href?.startsWith("http") ? "noopener noreferrer" : undefined}
     >
@@ -64,63 +65,61 @@ export const mdxComponents: MDXComponentsType = {
   },
   h1: (props: ComponentProps<"h1">) => (
     <h1
-      className="mt-12 mb-4 border-b border-border pb-2 text-3xl font-semibold tracking-tight text-foreground lg:text-4xl"
+      className="mt-14 mb-4 border-b border-line pb-3 text-3xl font-semibold tracking-tight text-foreground lg:text-4xl"
       {...props}
     />
   ),
   h2: (props: ComponentProps<"h2">) => (
     <h2
-      className="mt-10 mb-3 text-2xl font-semibold tracking-tight text-foreground lg:text-3xl"
       {...props}
+      id={props.id ?? slugifyHeading(textFromNode(props.children))}
+      className="mt-12 mb-4 border-t border-line pt-6 text-2xl font-semibold tracking-tight text-foreground lg:text-3xl"
     />
   ),
   h3: (props: ComponentProps<"h3">) => (
     <h3
-      className="mt-8 mb-2 text-xl font-medium tracking-tight text-foreground lg:text-2xl"
+      className="mt-8 mb-2 text-xl font-medium tracking-tight text-foreground"
       {...props}
     />
   ),
   h4: (props: ComponentProps<"h4">) => (
-    <h4
-      className="mt-6 mb-2 text-lg font-medium text-foreground"
-      {...props}
-    />
+    <h4 className="mt-6 mb-2 text-lg font-medium text-foreground" {...props} />
   ),
   p: (props: ComponentProps<"p">) => (
-    <p className="mb-4 text-base leading-relaxed text-ring" {...props} />
+    <p className="mb-5 text-base leading-body text-ring" {...props} />
   ),
   blockquote: (props: ComponentProps<"blockquote">) => (
     <blockquote
-      className="my-6 border-l-2 border-border pl-4 italic text-muted-foreground"
+      className="my-8 border-l-2 border-signal bg-surface px-5 py-4 text-body leading-relaxed italic text-ring"
       {...props}
     />
   ),
   ul: (props: ComponentProps<"ul">) => (
-    <ul className="my-4 list-disc space-y-1.5 pl-5 marker:text-muted-foreground" {...props} />
+    <ul className="my-5 list-disc space-y-2 pl-5 marker:text-muted-foreground" {...props} />
   ),
   ol: (props: ComponentProps<"ol">) => (
-    <ol className="my-4 list-decimal space-y-1.5 pl-5 marker:text-muted-foreground" {...props} />
+    <ol className="my-5 list-decimal space-y-2 pl-5 marker:text-muted-foreground" {...props} />
   ),
   li: (props: ComponentProps<"li">) => (
-    <li className="text-base leading-relaxed text-ring" {...props} />
+    <li className="text-base leading-body text-ring" {...props} />
   ),
-  hr: () => <hr className="my-10 border-t border-border" />,
+  hr: () => <hr className="my-12 border-t border-line" />,
   table: (props: ComponentProps<"table">) => (
-    <div className="my-6 overflow-x-auto rounded-sm border border-primary">
+    <div className="my-8 overflow-x-auto border border-line">
       <table className="w-full text-sm" {...props} />
     </div>
   ),
   thead: (props: ComponentProps<"thead">) => (
-    <thead className="border-b border-primary bg-card" {...props} />
+    <thead className="border-b border-line bg-surface" {...props} />
   ),
   th: (props: ComponentProps<"th">) => (
-    <th className="px-4 py-2 text-left font-medium text-foreground" {...props} />
+    <th className="px-4 py-2.5 text-left font-medium text-foreground" {...props} />
   ),
   td: (props: ComponentProps<"td">) => (
-    <td className="border-t border-border px-4 py-2 text-ring" {...props} />
+    <td className="border-t border-line px-4 py-2.5 text-ring" {...props} />
   ),
   strong: (props: ComponentProps<"strong">) => (
     <strong className="font-semibold text-foreground" {...props} />
   ),
-  em: (props: ComponentProps<"em">) => <em className="italic" {...props} />,
+  em: (props: ComponentProps<"em">) => <em className="italic text-ring" {...props} />,
 }

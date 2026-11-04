@@ -12,17 +12,22 @@ import readingTime from "reading-time"
 
 import { mdxComponents } from "@/components/blog/MDXComponents"
 import AuthorCard from "@/components/blog/AuthorCard"
+import IdentityFooter from "@/components/identity/IdentityFooter"
 import { getPostBySlug, getRelatedPosts } from "@/lib/blog"
 import { articleJsonLd, breadcrumbJsonLd } from "@/lib/schema"
+import { plainHeading, slugifyHeading } from "@/lib/slug"
 import { profile } from "@/data/profile"
 import { siteConfig } from "@/data/site"
-import MotionRoot from "@/components/identity/MotionRoot"
-import IdentityFooter from "@/components/identity/IdentityFooter"
-import { FadeUp } from "@/components/identity/motion-primitives"
 
 interface PageProps {
   params: Promise<{ slug: string }>
 }
+
+const dateFormat = new Intl.DateTimeFormat("en-US", {
+  month: "long",
+  day: "numeric",
+  year: "numeric",
+})
 
 export async function generateStaticParams() {
   const blogDir = path.join(process.cwd(), "content/blog")
@@ -102,8 +107,23 @@ export default async function BlogPostPage({ params }: PageProps) {
     components: mdxComponents,
   })
 
-  const tags: string[] = data.tags || []
   const readingTimeText = `${Math.ceil(stats.minutes)} min read`
+  const toc: { text: string; id: string }[] = []
+  let inFence = false
+  for (const line of content.split("\n")) {
+    if (line.trim().startsWith("```")) {
+      inFence = !inFence
+      continue
+    }
+    if (inFence) continue
+    const heading = line.match(/^##\s+(.+)$/)
+    if (heading) {
+      toc.push({
+        text: plainHeading(heading[1]),
+        id: slugifyHeading(heading[1]),
+      })
+    }
+  }
   const article = articleJsonLd(post, slug)
   const breadcrumbs = breadcrumbJsonLd([
     { name: "Home", url: siteConfig.url },
@@ -112,144 +132,110 @@ export default async function BlogPostPage({ params }: PageProps) {
   ])
 
   return (
-    <MotionRoot>
-      <main className="min-h-screen bg-background font-sans text-foreground selection:bg-foreground selection:text-background">
-        <article className="mx-auto max-w-2xl px-6 pt-32 pb-20">
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(article) }}
-          />
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbs) }}
-          />
+    <>
+      <main id="main" className="page-main">
+        <div className="reading-progress" aria-hidden />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(article) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbs) }}
+        />
 
-          <FadeUp>
-            <nav
-              aria-label="Breadcrumb"
-              className="mb-10 flex items-center gap-2 font-mono text-xs text-muted-foreground"
-            >
-              <Link href="/" className="transition-colors hover:text-foreground">
-                home
-              </Link>
-              <span aria-hidden>/</span>
-              <Link href="/blog" className="transition-colors hover:text-foreground">
-                blog
-              </Link>
-            </nav>
-          </FadeUp>
+        <div className="shell page-content">
+          <article>
+            <header className="article-header">
+              <nav aria-label="Breadcrumb" className="breadcrumb">
+                <Link href="/">home</Link>
+                <span className="sep" aria-hidden>/</span>
+                <Link href="/blog">blog</Link>
+              </nav>
 
-          <FadeUp as="header" delay={1} className="mb-10 flex flex-col gap-4">
-            <h1 className="text-3xl font-semibold tracking-tight text-foreground lg:text-4xl">
-              {data.title}
-            </h1>
+              <h1 className="article-title">{data.title}</h1>
 
-            {data.description && (
-              <p className="text-base leading-relaxed text-muted-foreground">
-                {data.description}
-              </p>
-            )}
+              {data.description && <p className="lead">{data.description}</p>}
 
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-xs text-muted-foreground">
-              <Link
-                href="/about"
-                className="transition-colors hover:text-foreground"
-              >
-                {data.author || profile.name}
-              </Link>
-              <span aria-hidden>·</span>
-              <time dateTime={data.date}>
-                {new Date(data.date).toLocaleDateString("en-US", {
-                  month: "long",
-                  day: "numeric",
-                  year: "numeric",
-                })}
-              </time>
-              {post.updated && post.updated !== post.date && (
-                <>
-                  <span aria-hidden>·</span>
-                  <span>
-                    updated{" "}
-                    <time dateTime={post.updated}>
-                      {new Date(post.updated).toLocaleDateString("en-US", {
-                        month: "long",
-                        day: "numeric",
-                        year: "numeric",
-                      })}
-                    </time>
-                  </span>
-                </>
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-label text-muted-foreground">
+                <Link href="/about" className="transition-colors hover:text-foreground">
+                  {data.author || profile.name}
+                </Link>
+                <span aria-hidden>·</span>
+                <time dateTime={data.date}>{dateFormat.format(new Date(data.date))}</time>
+                {post.updated && post.updated !== post.date && (
+                  <>
+                    <span aria-hidden>·</span>
+                    <span>
+                      updated{" "}
+                      <time dateTime={post.updated}>
+                        {dateFormat.format(new Date(post.updated))}
+                      </time>
+                    </span>
+                  </>
+                )}
+                <span aria-hidden>·</span>
+                <span>{readingTimeText}</span>
+              </div>
+
+              {data.coverImage && (
+                <div className="mt-2 overflow-hidden border border-line">
+                  <Image
+                    src={data.coverImage}
+                    alt={data.title}
+                    width={post.coverWidth ?? 1200}
+                    height={post.coverHeight ?? 630}
+                    priority
+                    className="h-auto w-full object-cover"
+                  />
+                </div>
               )}
-              <span aria-hidden>·</span>
-              <span>{readingTimeText}</span>
+            </header>
+
+            <div className={toc.length > 0 ? "article-layout" : ""}>
+              {toc.length > 0 && (
+                <nav className="article-rail" aria-label="On this page">
+                  <p className="eyebrow">On this page</p>
+                  <ol className="toc-list">
+                    {toc.map((item) => (
+                      <li key={item.id}>
+                        <a href={`#${item.id}`}>{item.text}</a>
+                      </li>
+                    ))}
+                  </ol>
+                </nav>
+              )}
+
+              <div className="article-body">
+                <div data-mdx-content>{mdxContent}</div>
+                <AuthorCard />
+              </div>
             </div>
 
-            {tags.length > 0 && (
-              <div className="flex flex-wrap gap-1.5">
-                {tags.map((tag: string) => (
-                  <span
-                    key={tag}
-                    className="rounded-sm border border-primary bg-card px-2 py-0.5 font-mono text-xs text-ring"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
+            {related.length > 0 && (
+              <section className="mt-16 border-t border-line pt-8">
+                <p className="eyebrow">Related</p>
+                <ul className="post-list mt-4">
+                  {related.map((r) => (
+                    <li key={r.slug} className="border-b border-line py-3 last:border-b-0">
+                      <Link href={`/blog/${r.slug}`} className="post-title">
+                        {r.title}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </section>
             )}
 
-            {data.coverImage && (
-              <div className="mt-4 overflow-hidden rounded-sm border border-primary">
-                <Image
-                  src={data.coverImage}
-                  alt={data.title}
-                  width={post.coverWidth ?? 1200}
-                  height={post.coverHeight ?? 630}
-                  className="h-auto w-full object-cover"
-                />
-              </div>
-            )}
-          </FadeUp>
-
-          <FadeUp delay={2}>
-            <div data-mdx-content>{mdxContent}</div>
-          </FadeUp>
-
-          <AuthorCard />
-
-          {related.length > 0 && (
-            <section className="mt-16 border-t border-border pt-8">
-              <h2 className="font-mono text-xs uppercase tracking-heading text-muted-foreground">
-                {`// related`}
-              </h2>
-              <ul className="mt-4 flex flex-col gap-3">
-                {related.map((r) => (
-                  <li key={r.slug}>
-                    <Link
-                      href={`/blog/${r.slug}`}
-                      className="text-sm leading-relaxed text-ring transition-colors hover:text-foreground"
-                    >
-                      {r.title}
-                    </Link>
-                    <span className="mt-0.5 block font-mono text-xs text-muted-foreground">
-                      {r.tags.slice(0, 3).join(" · ")}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
-
-          <footer className="mt-16 border-t border-border pt-8">
-            <Link
-              href="/blog"
-              className="font-mono text-xs text-muted-foreground transition-colors hover:text-foreground"
-            >
-              &larr; all posts
-            </Link>
-          </footer>
-        </article>
-        <IdentityFooter />
+            <footer className="mt-16 border-t border-line pt-8">
+              <Link href="/blog" className="action-link">
+                <span className="arrow" aria-hidden>←</span> all posts
+              </Link>
+            </footer>
+          </article>
+        </div>
       </main>
-    </MotionRoot>
+      <IdentityFooter />
+    </>
   )
 }

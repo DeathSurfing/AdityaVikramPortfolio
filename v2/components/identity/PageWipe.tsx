@@ -3,8 +3,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 
-/* Greyscale curtain panels — lightest leads the wipe */
-const PANELS = ['#e5e5e5', '#b0b0b0', '#8a8a8a', '#5c5c5c', '#333333'];
+/* Curtain panels: warm near-black layers ending in the signal colour. */
+const PANELS = ['#121210', '#181815', '#1e1c18', '#2a2823', '#ffcc00'];
 const STAGGER = 45; // ms, matches the old 0.045s
 const DURATION = 350; // ms, matches the old 0.35s
 
@@ -31,6 +31,7 @@ export default function PageWipe() {
     pathnameRef.current = pathname;
     if (pendingRef.current) {
       pendingRef.current = false;
+      window.scrollTo(0, 0);
       setPhase('reveal');
       const total = DURATION + STAGGER * (PANELS.length - 1);
       window.setTimeout(() => {
@@ -53,17 +54,30 @@ export default function PageWipe() {
 
       const href = anchor.getAttribute('href');
       if (!href || !href.startsWith('/')) return;
+      if (anchor.getAttribute('type') === 'text/markdown') return;
 
       const url = new URL(href, window.location.origin);
       // Same-path navigations (tag filters, hash) stay wipe-free
       if (url.pathname === pathnameRef.current) return;
+      // Non-page resources keep their native navigation.
+      if (
+        url.pathname.startsWith('/api/') ||
+        url.pathname.startsWith('/uploads/') ||
+        url.pathname.startsWith('/.well-known/') ||
+        url.pathname === '/feed.xml' ||
+        url.pathname === '/sitemap.xml' ||
+        url.pathname === '/openapi.json'
+      ) {
+        return;
+      }
 
       e.preventDefault();
       if (busyRef.current) return;
 
       const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       if (reduceMotion) {
-        router.push(url.pathname + url.search);
+        window.scrollTo(0, 0);
+        router.push(url.pathname + url.search, { scroll: false });
         return;
       }
 
@@ -74,12 +88,12 @@ export default function PageWipe() {
       const total = DURATION + STAGGER * (PANELS.length - 1);
       window.setTimeout(() => {
         pendingRef.current = true;
-        window.scrollTo(0, 0);
-        router.push(url.pathname + url.search);
+        router.push(url.pathname + url.search, { scroll: false });
         // Safety: if the route never changes, lift the curtain anyway
         window.setTimeout(() => {
           if (pendingRef.current) {
             pendingRef.current = false;
+            window.scrollTo(0, 0);
             setPhase('reveal');
             window.setTimeout(() => {
               busyRef.current = false;
@@ -93,7 +107,6 @@ export default function PageWipe() {
 
     document.addEventListener('click', onClick, true);
     return () => document.removeEventListener('click', onClick, true);
-    {`// eslint-disable-next-line react-hooks/exhaustive-deps`}
   }, [router]);
 
   return (

@@ -1,21 +1,21 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { FadeUp, SectionHeading } from './motion-primitives';
 
-type Day = { date: string; count: number; level: string; color: string };
+import { Section } from './Section';
+
+type Day = { date: string; count: number; level: string };
 type Month = { name: string; weekIndex: number };
-
 
 const fmt = (s: string) =>
   new Date(s).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
-const GH_COLORS: Record<string, string> = {
-  '0': '#161b22',
-  '1': '#0e4429',
-  '2': '#006d32',
-  '3': '#26a641',
-  '4': '#39d353',
+const LEVEL_COLORS: Record<string, string> = {
+  '0': 'var(--surface)',
+  '1': 'color-mix(in srgb, var(--signal) 14%, var(--background))',
+  '2': 'color-mix(in srgb, var(--signal) 34%, var(--background))',
+  '3': 'color-mix(in srgb, var(--signal) 62%, var(--background))',
+  '4': 'var(--signal)',
 };
 
 interface ApiDay {
@@ -49,8 +49,12 @@ export default function ActivityGraph() {
             date: d.date,
             count: Number(d.intensity),
             level: d.intensity,
-            color: GH_COLORS[d.intensity] || GH_COLORS['0'],
           }));
+
+        if (days.length === 0) {
+          setWeeks([]);
+          return;
+        }
 
         const w: Day[][] = [];
         for (let i = 0; i < days.length; i += 7) {
@@ -80,14 +84,17 @@ export default function ActivityGraph() {
       .catch(() => setWeeks([]));
   }, []);
 
-  const handleMove = useCallback((e: React.MouseEvent, day: Day) => {
-    const rect = (e.target as HTMLElement).getBoundingClientRect();
-    const ranges = ['0', '1–9', '10–19', '20–29', '30+'];
-    const label = `${ranges[day.count] || '0'} contribution${day.count === 0 ? '' : 's'} on ${fmt(day.date)}`;
+  const handleMove = useCallback((e: React.MouseEvent<HTMLDivElement>, day: Day) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const content =
+      day.count === 0
+        ? `No contributions on ${fmt(day.date)}`
+        : `Contribution level ${day.level} on ${fmt(day.date)}`;
+    const x = Math.min(Math.max(rect.left + rect.width / 2, 16), window.innerWidth - 16);
     setTooltip({
       show: true,
-      content: label,
-      x: rect.left + rect.width / 2,
+      content,
+      x,
       y: rect.top - 8,
     });
   }, []);
@@ -98,68 +105,81 @@ export default function ActivityGraph() {
     }
   }, [weeks]);
 
+  const activeDays = weeks.flat().filter((day) => day.count > 0).length;
+
   return (
-    <section className="flex flex-col gap-5">
-      <SectionHeading>// contributions</SectionHeading>
-      {weeks.length === 0 ? null : (<>
-
-      <FadeUp>
-        <div ref={scrollRef} className="relative overflow-x-auto pb-1">
-          {/* Month labels */}
-          <div className="relative flex h-5 mb-1">
-            {months.map((m, i) => {
-              const nextIndex = months[i + 1]?.weekIndex ?? weeks.length;
-              const w = (nextIndex - m.weekIndex) * 13;
-              const l = m.weekIndex * 13;
-              return (
-                <div
-                  key={m.name + i}
-                  className="absolute font-mono text-micro text-muted-foreground"
-                  style={{ left: `${l}px`, width: `${w}px` }}
-                >
-                  {m.name}
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Grid */}
-          <div className="flex gap-cell">
-            {weeks.map((week, wi) => (
-              <div key={wi} className="flex flex-col gap-cell">
-                {week.map((day, di) => (
+    <Section label="// contributions">
+      {weeks.length === 0 ? null : (
+        <div className="flex flex-col gap-4">
+          <div
+            ref={scrollRef}
+            className="relative overflow-x-auto pb-1"
+            role="img"
+            aria-label={`GitHub contribution graph for the last year. ${activeDays} active days.`}
+            tabIndex={0}
+            onMouseLeave={() => setTooltip((p) => ({ ...p, show: false }))}
+          >
+            <div className="relative mb-1 flex h-5">
+              {months.map((m, i) => {
+                const nextIndex = months[i + 1]?.weekIndex ?? weeks.length;
+                const w = (nextIndex - m.weekIndex) * 13;
+                const l = m.weekIndex * 13;
+                return (
                   <div
-                    key={di}
-                    className="size-2.5 rounded-cell cursor-pointer"
-                    style={{ backgroundColor: day.color }}
-                    onMouseMove={(e) => handleMove(e, day)}
-                    onMouseLeave={() => setTooltip((p) => ({ ...p, show: false }))}
-                  />
-                ))}
-              </div>
-            ))}
+                    key={m.name + i}
+                    className="absolute font-mono text-micro text-muted-foreground"
+                    style={{ left: `${l}px`, width: `${w}px` }}
+                    aria-hidden
+                  >
+                    {m.name}
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="flex gap-cell" aria-hidden>
+              {weeks.map((week, wi) => (
+                <div key={wi} className="flex flex-col gap-cell">
+                  {week.map((day, di) => (
+                    <div
+                      key={di}
+                      className="size-2.5 cursor-default rounded-cell"
+                      style={{ backgroundColor: LEVEL_COLORS[day.level] ?? LEVEL_COLORS['0'] }}
+                      onMouseMove={(e) => handleMove(e, day)}
+                    />
+                  ))}
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
 
-        {/* Legend */}
-        <div className="flex items-center justify-end gap-1.5 font-mono text-label text-muted-foreground">
-          <span>Less</span>
-          {['0', '1', '2', '3', '4'].map((l) => (
-            <span key={l} className="size-2.5 rounded-cell" style={{ backgroundColor: GH_COLORS[l] }} />
-          ))}
-          <span>More</span>
-        </div>
-      </FadeUp>
+          <div className="flex flex-wrap items-center justify-between gap-3 font-mono text-label text-muted-foreground">
+            <span>{activeDays} active days in the last year</span>
+            <div className="flex items-center gap-1.5">
+              <span>Less</span>
+              {['0', '1', '2', '3', '4'].map((level) => (
+                <span
+                  key={level}
+                  className="size-2.5 rounded-cell"
+                  style={{ backgroundColor: LEVEL_COLORS[level] }}
+                  aria-hidden
+                />
+              ))}
+              <span>More</span>
+            </div>
+          </div>
 
-      {tooltip.show && (
-        <div
-          className="pointer-events-none fixed z-50 -translate-x-1/2 -translate-y-full rounded-sm border border-border bg-card px-2.5 py-1.5 font-mono text-xs text-muted-foreground shadow-lg"
-          style={{ left: tooltip.x, top: tooltip.y }}
-        >
-          {tooltip.content}
+          {tooltip.show && (
+            <div
+              className="pointer-events-none fixed z-50 -translate-x-1/2 -translate-y-full border border-line-strong bg-card px-2.5 py-1.5 font-mono text-xs text-foreground"
+              style={{ left: tooltip.x, top: tooltip.y }}
+              role="status"
+            >
+              {tooltip.content}
+            </div>
+          )}
         </div>
       )}
-      </>)}
-    </section>
+    </Section>
   );
 }

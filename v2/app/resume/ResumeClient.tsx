@@ -11,12 +11,7 @@ import {
   RocketIcon,
   TargetIcon,
 } from "@radix-ui/react-icons";
-import MotionRoot from "@/components/identity/MotionRoot";
 import IdentityFooter from "@/components/identity/IdentityFooter";
-import {
-  AnimatedLink,
-  FadeUp,
-} from "@/components/identity/motion-primitives";
 import { profile } from "@/data/profile";
 import { siteConfig } from "@/data/site";
 
@@ -32,7 +27,7 @@ const RESUME_OPTIONS: ResumeOption[] = [
   {
     id: "fullstack",
     label: "Full Stack Engineer",
-    icon: <PersonIcon className="size-3.5" />,
+    icon: <PersonIcon className="size-3.5" aria-hidden />,
     file: "/uploads/Resume-FullStack.pdf",
     description:
       "General software engineering: full-stack, backend, and technical leadership.",
@@ -40,7 +35,7 @@ const RESUME_OPTIONS: ResumeOption[] = [
   {
     id: "ai-ml",
     label: "AI / ML Engineer",
-    icon: <RocketIcon className="size-3.5" />,
+    icon: <RocketIcon className="size-3.5" aria-hidden />,
     file: "/uploads/Resume-AI-ML.pdf",
     description:
       "Machine learning, deep learning, NLP, and AI research experience.",
@@ -48,7 +43,7 @@ const RESUME_OPTIONS: ResumeOption[] = [
   {
     id: "mlops",
     label: "MLOps Engineer",
-    icon: <GearIcon className="size-3.5" />,
+    icon: <GearIcon className="size-3.5" aria-hidden />,
     file: "/uploads/Resume-MLOps.pdf",
     description:
       "Kubernetes, CI/CD, infrastructure automation, and deployment of AI workloads.",
@@ -56,7 +51,7 @@ const RESUME_OPTIONS: ResumeOption[] = [
   {
     id: "forward-deployed",
     label: "Forward Deployed Engineer",
-    icon: <TargetIcon className="size-3.5" />,
+    icon: <TargetIcon className="size-3.5" aria-hidden />,
     file: "/uploads/Resume-Forward-Deployed.pdf",
     description:
       "Embedded, client-facing engineering - privacy compliance and PII ML discovery.",
@@ -67,36 +62,44 @@ export default function ResumeClient() {
   const [selected, setSelected] = useState<ResumeOption>(RESUME_OPTIONS[0]);
 
   return (
-    <MotionRoot>
-      <main className="min-h-screen bg-background font-sans text-foreground selection:bg-foreground selection:text-background">
-        <div className="mx-auto flex max-w-3xl flex-col gap-8 px-6 pt-32 pb-20">
-          {/* Heading */}
-          <div className="flex flex-col gap-5">
-            <div className="flex items-center gap-4">
-              <Image
-                src={profile.image}
-                alt={profile.name}
-                width={64}
-                height={64}
-                className="size-14 shrink-0 rounded-full border border-border object-cover grayscale transition-all duration-500 hover:grayscale-0"
-              />
-              <h1 className="font-mono text-xs uppercase tracking-heading text-muted-foreground">
-                {`// resume - ${profile.name}`}
-              </h1>
-            </div>
-            <FadeUp
-              as="p"
-              className="text-base leading-relaxed text-ring"
-            >
-              {profile.shortBio} Pick a role and the PDF below swaps to the
-              tailored version.
-            </FadeUp>
-          </div>
+    <>
+      <main id="main" className="page-main">
+        <div className="shell page-content">
+          <header className="flex flex-col gap-5 border-b border-line pb-10">
+            <nav aria-label="Breadcrumb" className="breadcrumb">
+              <Link href="/">home</Link>
+              <span className="sep" aria-hidden>/</span>
+              <span>resume</span>
+            </nav>
 
-          {/* Role selector */}
-          <FadeUp delay={1}>
+            <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+              <div className="flex flex-col gap-4">
+                <h1 className="page-title">
+                  <span className="sr-only">{"// "}</span>resume
+                  <span className="sr-only"> - {profile.name}</span>
+                </h1>
+                <p className="lead">
+                  {profile.shortBio} Pick a role and the PDF below swaps to the
+                  tailored version.
+                </p>
+              </div>
+
+              <div className="relative size-16 shrink-0 overflow-hidden border border-line">
+                <Image
+                  src={profile.image}
+                  alt={profile.name}
+                  fill
+                  sizes="64px"
+                  priority
+                  className="object-cover grayscale transition duration-300 hover:grayscale-0"
+                />
+              </div>
+            </div>
+          </header>
+
+          <div className="mt-10 flex flex-col gap-8">
             <div className="flex flex-col gap-3">
-              <div className="flex flex-wrap gap-2">
+              <div className="role-grid">
                 {RESUME_OPTIONS.map((option) => {
                   const active = selected.id === option.id;
                   return (
@@ -104,11 +107,7 @@ export default function ResumeClient() {
                       key={option.id}
                       type="button"
                       onClick={() => setSelected(option)}
-                      className={`role-tap flex items-center gap-2 rounded-sm border px-3 py-1.5 font-mono text-xs transition-colors ${
-                        active
-                          ? "border-foreground bg-foreground text-background"
-                          : "border-primary text-muted-foreground hover:border-border hover:text-foreground"
-                      }`}
+                      className="role-button"
                       aria-pressed={active}
                     >
                       {option.icon}
@@ -121,45 +120,40 @@ export default function ResumeClient() {
               <p key={selected.id} className="role-fade text-sm text-muted-foreground">
                 {selected.description}
               </p>
-              <p className="text-sm leading-relaxed text-muted-foreground">
+              <p className="measure text-sm leading-relaxed text-muted-foreground">
                 These PDFs are tailored snapshots. The current full record,
                 including LexContra and iGlobus, is on the{" "}
                 <Link
                   href="/experience"
-                  className="text-foreground underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground"
+                  className="link-underline text-foreground"
                 >
                   experience page
                 </Link>
                 .
               </p>
             </div>
-          </FadeUp>
 
-          {/* Actions */}
-          <FadeUp delay={2}>
-            <div className="flex flex-wrap items-center gap-4 font-mono text-xs">
-              <AnimatedLink
+            <div className="link-row">
+              <a
                 href={selected.file}
                 download={`Aditya_Vikram_Mahendru_${selected.label.replace(/[^A-Za-z0-9]+/g, "_")}.pdf`}
-                className="gap-2 text-ring transition-colors hover:text-foreground"
+                className="action-primary"
               >
-                <DownloadIcon className="size-3.5" />
+                <DownloadIcon className="size-3.5" aria-hidden />
                 download pdf
-              </AnimatedLink>
-              <AnimatedLink
+              </a>
+              <a
                 href={selected.file}
-                external
-                className="gap-2 text-ring transition-colors hover:text-foreground"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="action-ghost"
               >
-                <ExternalLinkIcon className="size-3.5" />
+                <ExternalLinkIcon className="size-3.5" aria-hidden />
                 open in new tab
-              </AnimatedLink>
+              </a>
             </div>
-          </FadeUp>
 
-          {/* PDF viewer */}
-          <FadeUp delay={3}>
-            <div className="overflow-hidden rounded-sm border border-primary bg-card">
+            <div className="pdf-frame hidden lg:block">
               <div className="relative aspect-a4 w-full">
                 <iframe
                   key={selected.id}
@@ -169,24 +163,39 @@ export default function ResumeClient() {
                 />
               </div>
             </div>
-          </FadeUp>
 
-          {/* Contact */}
-          <FadeUp delay={4}>
+            <div className="pdf-preview lg:hidden">
+              <div className="pdf-preview-sheet" aria-hidden>
+                <span />
+                <span />
+                <span />
+                <span />
+                <span />
+                <span />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <p className="text-sm font-medium text-foreground">{selected.label}</p>
+                <p className="text-xs leading-relaxed text-muted-foreground">
+                  Use download or open in a new tab above to read the full
+                  document.
+                </p>
+              </div>
+            </div>
+
             <p className="text-sm leading-relaxed text-muted-foreground">
               Interested in working together?{" "}
-              <AnimatedLink
+              <a
                 href={`mailto:${siteConfig.email}`}
-                className="inline text-foreground"
+                className="link-underline text-foreground"
               >
                 Get in touch
-              </AnimatedLink>
+              </a>
               .
             </p>
-          </FadeUp>
+          </div>
         </div>
-        <IdentityFooter />
       </main>
-    </MotionRoot>
+      <IdentityFooter />
+    </>
   );
 }

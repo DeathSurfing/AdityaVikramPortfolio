@@ -1,84 +1,35 @@
-'use client';
-
 import Link from 'next/link';
-import { useState } from 'react';
+
 import { stackSummary } from '@/data/identity';
 import { skillCategories } from '@/data/skills';
-import { FadeUp, SectionHeading } from './motion-primitives';
+import { Section } from './Section';
 
-// pruned: was AnimatePresence with an animated height:auto and staggered
-// item fades. The drawer now animates grid-template-rows 0fr -> 1fr in CSS,
-// which needs no height measurement and no runtime.
 export default function StackSection() {
-  const [expanded, setExpanded] = useState(false);
-
   return (
-    <section className="flex flex-col gap-5">
-      <SectionHeading>// tools i use</SectionHeading>
+    <Section label="// tools i use">
+      <div className="flex flex-col gap-6">
+        <p className="body-text">{stackSummary}</p>
+        <p className="text-body-sm leading-relaxed text-muted-foreground">
+          Each group links to a shipped artifact, so you can check depth instead
+          of taking the label at face value.
+        </p>
 
-      <FadeUp as="p" className="text-base leading-relaxed text-muted-foreground">
-        {stackSummary}
-      </FadeUp>
-
-      <FadeUp as="p" className="text-sm leading-relaxed text-muted-foreground">
-        Each group links to a shipped artifact, so you can check depth instead
-        of taking the label at face value.
-      </FadeUp>
-
-      <FadeUp delay={1}>
-        <button
-          type="button"
-          onClick={() => setExpanded((v) => !v)}
-          className="group flex items-center gap-2 self-start font-mono text-xs text-muted-foreground transition-colors hover:text-foreground"
-          aria-expanded={expanded}
-          aria-controls="stack-drawer"
-        >
-          <span className="stack-plus" data-open={expanded} aria-hidden>
-            +
-          </span>
-          {expanded ? 'show less' : 'show all'}
-        </button>
-      </FadeUp>
-
-      <div
-        id="stack-drawer"
-        className="stack-drawer"
-        data-open={expanded}
-        inert={!expanded}
-      >
-        <div>
-          <div className="flex flex-col gap-5 border-l border-border pl-5">
-            {skillCategories.map((category) => (
-              <div key={category.name} className="flex flex-col gap-2">
-                <span className="font-mono text-label uppercase tracking-label text-muted-foreground">
-                  {category.name}
-                </span>
-                <div className="flex flex-wrap gap-1.5">
-                  {category.skills.map((skill) => (
-                    <span
-                      key={skill}
-                      className="rounded-sm border border-border bg-card px-2 py-0.5 font-mono text-xs text-muted-foreground"
-                    >
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-                <div className="flex flex-wrap gap-x-3 gap-y-1 font-mono text-xs">
-                  {category.evidence.map((item) => (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      className="text-muted-foreground underline decoration-border underline-offset-4 transition-colors hover:text-foreground hover:decoration-foreground"
-                    >
-                      {item.label} →
-                    </Link>
-                  ))}
-                </div>
+        <div className="skill-grid">
+          {skillCategories.map((category) => (
+            <div key={category.name} className="skill-block">
+              <h3 className="skill-name">{category.name}</h3>
+              <p className="skill-list">{category.skills.join(' · ')}</p>
+              <div className="skill-evidence">
+                {category.evidence.map((item) => (
+                  <Link key={item.href} href={item.href}>
+                    {item.label} <span aria-hidden>→</span>
+                  </Link>
+                ))}
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
       </div>
-    </section>
+    </Section>
   );
 }

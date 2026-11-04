@@ -1,44 +1,57 @@
 'use client';
 
 import Link from 'next/link';
+
 import { profile } from '@/data/profile';
-import { FadeUp } from './motion-primitives';
 
 export default function IdentityFooter() {
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({ top: 0, behavior: reducedMotion ? 'auto' : 'smooth' });
   };
 
   return (
-    <FadeUp className="border-t border-border">
-      <footer className="mx-auto flex max-w-2xl items-center justify-between px-6 py-8 font-mono text-xs text-muted-foreground">
-        <span>© 2026 {profile.name}</span>
-        <div className="flex items-center gap-5">
-          <Link
-            href="/about"
-            className="transition-colors hover:text-foreground"
-          >
-            about
-          </Link>
-          <a
-            href="/sitemap.xml"
-            className="link-sweep relative inline-flex items-center transition-colors hover:text-muted-foreground"
-          >
-            sitemap
-            <span
-              aria-hidden
-              className="link-sweep-bar absolute -bottom-0.5 left-0 h-px w-full bg-current"
-            />
-          </a>
-          <button
-            type="button"
-            onClick={scrollToTop}
-            className="transition-colors hover:text-muted-foreground"
-          >
-            top ↑
-          </button>
+    <footer className="site-footer">
+      <div className="shell">
+        <div className="footer-grid">
+          <div className="flex flex-col gap-4">
+            <p className="footer-mark" aria-hidden>
+              Vikk<span>.</span>
+            </p>
+            <p className="measure-xs font-mono text-label leading-relaxed text-muted-foreground">
+              {profile.title}. {profile.location.city}, {profile.location.country}.
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-5 sm:items-end">
+            <nav aria-label="Footer" className="footer-meta">
+              <Link href="/about" className="footer-link">
+                about
+              </Link>
+              <a href="/api/experience" className="footer-link">
+                experience json
+              </a>
+              <a href="/api/profile" className="footer-link">
+                profile json
+              </a>
+              <a href="/sitemap.xml" className="footer-link">
+                sitemap
+              </a>
+              <button type="button" onClick={scrollToTop} className="footer-link">
+                top ↑
+              </button>
+            </nav>
+            <p className="font-mono text-label leading-relaxed text-muted-foreground sm:text-right">
+              Built with Next.js and Tailwind.
+            </p>
+          </div>
         </div>
-      </footer>
-    </FadeUp>
+
+        <div className="footer-legal">
+          <span>© 2026 {profile.name}</span>
+          <span>Last updated {profile.updated}</span>
+        </div>
+      </div>
+    </footer>
   );
 }

@@ -75,7 +75,7 @@ export const projects: Project[] = [
     type: 'product',
     technologies: ['Next.js', 'Convex', 'Stripe', 'WorkOS', 'TypeScript'],
     live: 'https://69k.lol',
-    image: '/card/69k.lol.png',
+    image: '/card/69k-lol.png',
     highlights: [
       'Live at 69k.lol with WorkOS authentication, Stripe subscription billing, and a real-time Convex backend.',
       'Owned the stack 0 to 1: schema and API design, auth boundaries, billing webhooks, and production deployment.',

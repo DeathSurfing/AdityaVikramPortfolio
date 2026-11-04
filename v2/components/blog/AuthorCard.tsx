@@ -15,25 +15,25 @@ const accounts = [
 
 export default function AuthorCard() {
   return (
-    <aside className="mt-16 flex flex-col gap-4 border-t border-border pt-8 sm:flex-row">
-      <Image
-        src={profile.image}
-        alt={profile.name}
-        width={128}
-        height={128}
-        className="size-16 shrink-0 rounded-full border border-border object-cover grayscale transition-all duration-500 hover:grayscale-0"
-      />
+    <aside className="mt-16 flex flex-col gap-5 border-t border-line pt-8 sm:flex-row">
+      <div className="relative size-16 shrink-0 overflow-hidden border border-line">
+        <Image
+          src={profile.image}
+          alt={profile.name}
+          fill
+          sizes="64px"
+          className="object-cover grayscale transition duration-300 hover:grayscale-0"
+        />
+      </div>
       <div className="flex flex-col gap-2">
-        <p className="font-mono text-xs uppercase tracking-heading text-muted-foreground">
-          {`// written by`}
-        </p>
+        <p className="eyebrow">Written by</p>
         <Link
           href="/about"
-          className="text-base font-medium text-foreground transition-colors hover:text-muted-foreground"
+          className="text-base font-medium text-foreground transition-colors hover:text-signal"
         >
           {profile.name}
         </Link>
-        <p className="text-sm leading-relaxed text-muted-foreground">
+        <p className="measure-narrow text-sm leading-relaxed text-muted-foreground">
           {profile.shortBio}
         </p>
         <div className="flex flex-wrap gap-x-4 gap-y-1">
