@@ -115,6 +115,23 @@ export const projects: Project[] = [
     author: { name: profile.name, url: profile.url },
   },
   {
+    slug: 'askline',
+    name: 'Askline',
+    description:
+      'Chat agent with one tool, web search - cited answers, timestamped SQLite memory, and generated OpenUI cards on a LangGraph loop that runs in one compose command.',
+    status: 'building',
+    type: 'open-source',
+    technologies: ['LangGraph', 'Python', 'FastAPI', 'SQLite', 'llama.cpp', 'SearXNG', 'OpenUI'],
+    live: '/blog/one-tool-chat-agent',
+    repository: 'https://github.com/DeathSurfing/askline',
+    highlights: [
+      'One web_search tool with a two-round cap; every citation maps to a numbered result that was actually retrieved.',
+      'SQLite stores each question with a UTC timestamp and an FTS5 index; recall returns recent and matching questions with browser-local times.',
+      'Delegated research is capped at three layers and seven nodes; the bundled llama.cpp and SearXNG stack starts with ./run.sh up.',
+    ],
+    author: { name: profile.name, url: profile.url },
+  },
+  {
     slug: 'kronos-vs-alphazerobeta',
     name: 'kronos-vs-alphazerobeta',
     description:
